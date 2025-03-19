@@ -49,11 +49,11 @@ export const Input = ({
         </div> : null 
       }
       <div
-        className={`flex gap-2 items-center border rounded-lg ${props.disabled ? 'bg-black/10' : 'bg-gray-200 dark:bg-zinc-800'} ${
+        className={`flex gap-2 items-center border rounded-xl ${props.disabled ? 'bg-black/10' : 'bg-gray-200 dark:bg-zinc-800'} ${
           register.errors.function &&
           register.errors.function[props.name]
             ? 'border-red-400'
-            : 'border-gray-200 dark:border-zinc-800'
+            : 'border-transparent'
         } ${variants[size]} ${className}`}
       >
         <label

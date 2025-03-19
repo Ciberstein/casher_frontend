@@ -6,7 +6,7 @@ import { useEffect } from "react";
 {/* Auth Imports */}
 import { LoginPage } from "./components/pages/auth/login/LoginPage";
 import { RegisterPage } from "./components/pages/auth/register/RegisterPage";
-import { RecoveryPage } from "./components/pages/auth/recovery/partials/RecoveryPage";
+import { RecoveryPage } from "./components/pages/auth/recovery/RecoveryPage";
 {/* End Auth Imports */}
 
 {/* User Imports */}

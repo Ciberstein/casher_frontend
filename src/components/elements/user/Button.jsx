@@ -83,7 +83,7 @@ export const Button = ({
 
   return (
     <As
-      className={`rounded-lg px-6 text-center hover:brightness-75 disabled:brightness-75
+      className={`rounded-xl px-6 text-center hover:brightness-75 disabled:brightness-75
         ${variants[size][variant][color]}
         ${className}`}
       {...props}

@@ -1,11 +1,11 @@
 import React from 'react'
 import { PreAuthLayout } from '../../../layouts/PreAuthLayout'
-import { RegisterForm } from './partials/RegisterForm'
+import { RecoveryForm } from './partials/RecoveryForm'
 
-export const RegisterPage = () => {
+export const RecoveryPage = () => {
   return (
     <PreAuthLayout>
-      <RegisterForm />
+      <RecoveryForm />    
     </PreAuthLayout>
   )
 }
