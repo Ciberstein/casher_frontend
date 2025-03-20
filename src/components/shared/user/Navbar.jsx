@@ -2,9 +2,14 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { NavLink } from '../../elements/user/NavLink';
 import { SwitchDakMode } from '../../SwitchDakMode';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../elements/user/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import AuthContext from '../../../context/AuthContext';
+import api from '../../../api/axios';
+import appError from '../../../utils/appError';
+import { setLoad } from '../../../store/slices/loader.slice';
 
 export const PreAuthNavbar = ({ className = '' }) => {
   
@@ -29,7 +34,20 @@ export const PreAuthNavbar = ({ className = '' }) => {
 export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) => {
   
   const darkMode = useSelector((state) => state.darkMode);
+  const account = useSelector((state) => state.account);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   
+  const logout = async () => {
+    dispatch(setLoad(false));
+    const url = `/api/v1/auth/logout`;
+
+    await api.post(url)
+      .then(() => location.reload())
+      .catch((err) => appError(err))
+      .finally(() => dispatch(setLoad(true)))
+  }
+
   return (
     <nav className={`p-3 lg:rounded-b-2xl flex gap-4 dark:text-white items-center
       justify-between bg-white dark:bg-zinc-900 shadow-lg ${className}`}
@@ -52,14 +70,14 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
                 text-sm font-semibold text-gray-900 dark:text-gray-200 hover:bg-gray-100 
                 hover:dark:bg-zinc-800"
               >
-              <div className="size-10 bg-cover bg-center rounded-full border"
-                style={{
-                  backgroundImage: 
-                    'url(img/profile.png)'
-                }}
-              />
+              <div className="size-10 rounded-full border flex flex-col justify-center items-center bg-slate-200">
+                <span className="text-lg text-zinc-500 uppercase">
+                  {account.first_name?.split("")[0]}
+                  {account.last_name?.split("")[0]}
+                </span>
+              </div>
               <span className="hidden sm:block">
-                {`Luis Daniel Rojas Urdaneta`}
+                {`${account.first_name} ${account.last_name}`}
               </span>
               <div className="pr-2 hidden sm:block">
                 <ChevronDownIcon aria-hidden="true" className="size-5 text-gray-900 dark:text-gray-200" />
@@ -69,13 +87,13 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
 
           <MenuItems
             transition
-            className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+            className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 dark:divide-zinc-700 rounded-md bg-white dark:bg-zinc-800 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
           >
             <div className="py-1">
               <MenuItem>
                 <a
                   href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-white dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                 >
                   Edit
                 </a>
@@ -83,7 +101,7 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
               <MenuItem>
                 <a
                   href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-white dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                 >
                   Duplicate
                 </a>
@@ -91,45 +109,9 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
             </div>
             <div className="py-1">
               <MenuItem>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                >
-                  Archive
-                </a>
-              </MenuItem>
-              <MenuItem>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                >
-                  Move
-                </a>
-              </MenuItem>
-            </div>
-            <div className="py-1">
-              <MenuItem>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                >
-                  Share
-                </a>
-              </MenuItem>
-              <MenuItem>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                >
-                  Add to favorites
-                </a>
-              </MenuItem>
-            </div>
-            <div className="py-1">
-              <MenuItem>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                <a href="#"
+                  onClick={() => logout()}
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-white dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
                 >
                   Cerrar sessión
                 </a>
@@ -143,9 +125,9 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
 }
 
 export const Navbar = ({ className = '', openSidebar, setOpenSidebar }) => {
-  const sessionAuth = sessionStorage.getItem('authToken');
+  const { auth } = useContext(AuthContext);
 
-  if(sessionAuth) {
+  if(auth) {
     return (
       <PosAuthNavbar 
         className={className}

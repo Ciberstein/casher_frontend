@@ -1,11 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navbar } from '../shared/user/Navbar'
 import { Footer } from '../shared/user/Footer'
 import { Sidebar } from '../shared/user/Sidebar'
+import { useDispatch } from 'react-redux'
+import { accountThunk } from '../../store/slices/account.slice'
 
 export const PosAuthLayout = ({ children, className = '' }) => {
 
   const [openSidebar, setOpenSidebar] = useState(false)
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(accountThunk())
+  }, [])
 
   return (
     <div className="bg-bottom bg-cover bg-no-repeat dark:bg-zinc-800">

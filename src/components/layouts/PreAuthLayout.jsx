@@ -1,15 +1,17 @@
 import { Navbar } from '../shared/user/Navbar'
 import { Footer } from '../shared/user/Footer'
-import { useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/AuthContext';
 
 export const PreAuthLayout = ({ children }) => {
 
-  const sessionAuth = sessionStorage.getItem('authToken');
+  const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (sessionAuth) Navigate('/');
-  }, [sessionAuth]);
+    if (auth) navigate('/');
+  }, [auth]);
 
   return (
     <div className="bg-bottom bg-cover bg-no-repeat dark:bg-zinc-800">

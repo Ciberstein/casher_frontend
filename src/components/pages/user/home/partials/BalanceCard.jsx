@@ -6,7 +6,11 @@ import currencyFormat from '../../../../../utils/currency'
 
 export const BalanceCard = ({ balance = 0 }) => {
 
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
+
+  const handleShow = () => {
+    setShow(!show)
+  }
 
   return (
     <div className="rounded-2xl p-4 flex flex-col gap-6 text-white bg-green-500/80 bg-cover bg-center"
@@ -18,7 +22,7 @@ export const BalanceCard = ({ balance = 0 }) => {
         <span className="font-medium text-xl">
           Saldo disponible
         </span>
-        <button onClick={() => setShow(!show)}>
+        <button onClick={() => handleShow()}>
           {
             show 
               ? <EyeSlashIcon className="size-6" />
@@ -38,25 +42,25 @@ export const BalanceCard = ({ balance = 0 }) => {
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-medium text-sm">
         <button className="flex flex-col items-center gap-1">
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full">
+          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
             <PlusIcon className="size-6" />
           </div>
           <span>Cargar</span>
         </button>
         <button className="flex flex-col items-center gap-1">
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full">
+          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
             <ArrowTurnUpRightIcon className="size-6" />
           </div>
           <span>Enviar</span>
         </button>
         <button className="flex flex-col items-center gap-1">
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full">
+          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
             <ArrowTurnDownLeftIcon className="size-6" />
           </div>
           <span>Solicitar</span>
         </button>
         <button className="flex flex-col items-center gap-1">
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full">
+          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
             <MinusIcon className="size-6" />
           </div>
           <span>Retirar</span>

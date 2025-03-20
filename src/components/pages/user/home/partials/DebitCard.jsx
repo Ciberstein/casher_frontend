@@ -6,7 +6,11 @@ import currencyFormat from '../../../../../utils/currency'
 
 export const DebitCard = ({ balance = 0 }) => {
 
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
+
+  const handleShow = () => {
+    setShow(!show)
+  }
 
   return (
     <div className="rounded-2xl p-4 flex flex-col gap-6 text-white bg-orange-500/80 bg-cover bg-center"
@@ -18,7 +22,7 @@ export const DebitCard = ({ balance = 0 }) => {
         <span className="font-medium text-xl">
           Saldo pendiente
         </span>
-        <button onClick={() => setShow(!show)}>
+        <button onClick={() => handleShow()}>
           {
             show 
               ? <EyeSlashIcon className="size-6" />
@@ -40,14 +44,14 @@ export const DebitCard = ({ balance = 0 }) => {
         {
             balance > 0 ?
               <button className="flex flex-col items-center gap-1">
-                <div className="bg-orange-600 hover:bg-orange-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full">
+                <div className="bg-orange-600 hover:bg-orange-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
                   <PlusIcon className="size-6" />
                 </div>
                 <span>Abonar</span>
               </button>
             :
             <button className="flex flex-col items-center gap-1">
-              <div className="bg-orange-600 hover:bg-orange-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full">
+              <div className="bg-orange-600 hover:bg-orange-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
                 <ArrowTurnDownLeftIcon className="size-6" />
               </div>
               <span>Solicitar</span>
