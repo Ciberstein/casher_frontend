@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { BalanceCard } from "./partials/BalanceCard"
 import { DebitCard } from "./partials/DebitCard"
-import { TransactionsTable } from "./partials/TransactionsTable"
+import { LastTransactionsTable } from "./partials/LastTransactionsTable"
 
 export const HomePage = () => {
 
@@ -13,7 +13,7 @@ export const HomePage = () => {
         <BalanceCard balance={account.balance_available} />
         <DebitCard balance={account.balance_pending} />
       </div>
-      <TransactionsTable />
+      <LastTransactionsTable />
     </div>
   )
 }

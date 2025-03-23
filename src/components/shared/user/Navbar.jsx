@@ -91,30 +91,22 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
           >
             <div className="py-1">
               <MenuItem>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-white dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                <button
+                  onClick={() => navigate("/settings")}
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-white dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 w-full text-left"
                 >
-                  Edit
-                </a>
-              </MenuItem>
-              <MenuItem>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-white dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
-                >
-                  Duplicate
-                </a>
+                  Configuracion
+                </button>
               </MenuItem>
             </div>
             <div className="py-1">
               <MenuItem>
-                <a href="#"
+                <button
                   onClick={() => logout()}
-                  className="block px-4 py-2 text-sm text-gray-700 dark:text-white dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900"
+                  className="block px-4 py-2 text-sm text-red-400 dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 w-full text-left"
                 >
                   Cerrar sessión
-                </a>
+                </button>
               </MenuItem>
             </div>
           </MenuItems>

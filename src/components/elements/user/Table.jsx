@@ -5,6 +5,7 @@ import { ChevronDoubleDownIcon, ChevronUpIcon, MagnifyingGlassIcon, XMarkIcon } 
 import { useTranslation } from 'react-i18next';
 import { Input } from './Input';
 import { SearchOffOutlined } from '@mui/icons-material';
+import convertDate from '../../../utils/convertDate';
 
 const variants = {
   sm: { className: 'text-sm p-1', size: 'small' },
@@ -13,25 +14,6 @@ const variants = {
   xl: { className: 'text-xl p-4', size: 'large' },
 };
 
-const convertDate = (
-  date,
-  options = {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  },
-) => {
-  const OriginalDate = new Date(date);
-  return OriginalDate.toLocaleString(
-    'en-US',
-    options,
-  );
-};
-
-export default convertDate;
 
 const getFieldVal = (field, array1, array2) => {
   const item = array1.find(i => i.field === field);

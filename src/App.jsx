@@ -14,6 +14,7 @@ import { ProtectedRoutes as UserProtectedRoutes } from "./components/pages/sessi
 import { HomePage as UserHomePage } from "./components/pages/user/home/HomePage";
 import { Recipients as UserRecipients } from "./components/pages/user/recipients/Recipients";
 import { Requests as UserRequests } from "./components/pages/user/requests/Requests";
+import { SettingsPage as UserSettingsPage} from "./components/pages/user/settings/SettingsPage";
 {/* End User Imports */}
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path="/" element={<UserHomePage />}/>
         <Route path="/recipients" element={<UserRecipients />}/>
         <Route path="/requests" element={<UserRequests />}/>
+        <Route path="/settings" element={<UserSettingsPage />}/>
       </Route>
     </Routes>
   )

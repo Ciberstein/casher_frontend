@@ -8,9 +8,7 @@ export const DebitCard = ({ balance = 0 }) => {
 
   const [show, setShow] = useState(false);
 
-  const handleShow = () => {
-    setShow(!show)
-  }
+  const handleShow = () => setShow(!show);
 
   return (
     <div className="rounded-2xl p-4 flex flex-col gap-6 text-white bg-orange-500/80 bg-cover bg-center"
