@@ -52,8 +52,8 @@ export const LastTransactionsTable = () => {
 					</tr>
 					<tr className="bg-gray-200 dark:bg-zinc-950">
 						<th className="p-4 font-semibold">ID</th>
-						<th className="p-4 font-semibold">Descripcion</th>
-						<th className="p-4 font-semibold">Estatus</th>
+						<th className="p-4 font-semibold">Descripción</th>
+						<th className="p-4 font-semibold">Estátus</th>
 						<th className="p-4 font-semibold">Importe</th>
 						<th className="p-4 font-semibold">Fecha</th>
 						<th className="p-4 font-semibold"></th>
@@ -125,7 +125,7 @@ export const LastTransactionsTable = () => {
 							<div className="p-4 flex justify-center">
 							{ transactions.length > 5 &&
 								<Link to={"/transactions"} className="font-semibold text-lg hover:underline">
-									Ver todo
+									Ver más
 								</Link>
 							}
 							</div>
