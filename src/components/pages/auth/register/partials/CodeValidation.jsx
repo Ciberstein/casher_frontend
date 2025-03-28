@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { Input } from '../../../../elements/user/Input';
 import { Button } from '../../../../elements/user/Button';
+import reSendAuthCode from '../../../../../utils/reSendAuthCode';
 
 export const CodeValidation = ({ account }) => {
 
@@ -21,46 +22,19 @@ export const CodeValidation = ({ account }) => {
 
     dispatch(setLoad(false))
 
-    const url = `/api/v1/auth/code`
+    await reSendAuthCode(account.email)
+      .finally(() => dispatch(setLoad(true)));
 
-    await api.post(url, { email: account.email })
-      .then(res => { 
-        Swal.fire({
-          toast: true,
-          position: 'bottom-right',
-          icon: 'success',
-          text: res.data.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        })
-      })
-      .catch(err => { 
-        appError(err)
-        Swal.fire({
-          toast: true,
-          position: 'bottom-right',
-          icon: 'error',
-          text: err.response.data.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        });
-    })
-    .finally(() => dispatch(setLoad(true)))
   }
-
 
   const submit = async (data) => {
 
     dispatch(setLoad(false));
 
-    const url = `/api/v1/auth/register/validation/`
+    const url = `/api/v1/auth/register/validation/`;
 
     const formData = data;
     formData.accountId = account.id
-
-    console.log(formData);
 
     await api.post(url, formData)
       .then(res => { 
@@ -86,9 +60,6 @@ export const CodeValidation = ({ account }) => {
         });
       })
       .finally(() => dispatch(setLoad(true)))
-
-
-
   }
 
   return (

@@ -13,11 +13,11 @@ export const Button = ({
 
     sm: {
       outline: {
-        red: "py-1 border-red-500 text-red-500 text-sm",
-        gray: "py-1 border-gray-500 text-gray-500 text-sm",
-        blue: "py-1 border-blue-600 text-blue-600 text-sm",
-        green: "py-1 border-green-700 text-green-700 text-sm",
-        yellow: "py-1 border-yellow-500 text-black text-sm",
+        red: "py-1 !border-red-500 text-red-500 text-sm",
+        gray: "py-1 !border-gray-500 text-gray-500 text-sm",
+        blue: "py-1 !border-blue-600 text-blue-600 text-sm",
+        green: "py-1 !border-green-700 text-green-700 text-sm",
+        yellow: "py-1 !border-yellow-500 text-black text-sm",
       },
       normal: {
         red: "py-1 bg-red-600 text-white text-sm",
@@ -31,10 +31,10 @@ export const Button = ({
     md: {
       outline: {
         red: "bg-red-500 text-red-500",
-        gray: "py-2 border-gray-500 text-gray-500",
-        blue: "py-2 border-blue-600 text-blue-600",
-        green: "py-2 border-green-700 text-green-700",
-        yellow: "py-2 border-yellow-500 text-black",
+        gray: "py-2 !border-gray-500 text-gray-500",
+        blue: "py-2 !border-blue-600 text-blue-600",
+        green: "py-2 !border-green-700 text-green-700",
+        yellow: "py-2 !border-yellow-500 text-black",
       },
       normal: {
         red: "py-2 bg-red-600 text-white",
@@ -47,11 +47,11 @@ export const Button = ({
 
     lg: {
       outline: {
-        red: "py-2 border-red-500 text-red-500 text-xl",
-        gray: "py-2 border-gray-500 text-gray-500 text-xl",
-        blue: "py-2 border-blue-600 text-blue-600 text-xl",
-        green: "py-2 border-green-700 text-green-700 text-xl",
-        yellow: "py-2 border-yellow-500 text-black text-xl",
+        red: "py-2 !border-red-500 text-red-500 text-xl",
+        gray: "py-2 !border-gray-500 text-gray-500 text-xl",
+        blue: "py-2 !border-blue-600 text-blue-600 text-xl",
+        green: "py-2 !border-green-700 text-green-700 text-xl",
+        yellow: "py-2 !border-yellow-500 text-black text-xl",
       },
       normal: {
         red: "py-2 bg-red-600 text-white text-xl",
@@ -64,11 +64,11 @@ export const Button = ({
 
     xl: {
       outline: {
-        red: "border-red-600 text-red-600 text-2xl",
-        gray: "py-3 border-gray-500 text-gray-500 text-2xl",
-        blue: "py-3 border-blue-600 text-blue-600 text-2xl",
-        green: "py-3 border-green-700 text-green-700 text-2xl",
-        yellow: "py-3 border-yellow-500 text-black text-2xl",
+        red: "!border-red-600 text-red-600 text-2xl",
+        gray: "py-3 !border-gray-500 text-gray-500 text-2xl",
+        blue: "py-3 !border-blue-600 text-blue-600 text-2xl",
+        green: "py-3 !border-green-700 text-green-700 text-2xl",
+        yellow: "py-3 !border-yellow-500 text-black text-2xl",
       },
       normal: {
         red: "py-3 bg-red-500 text-white text-2xl",
