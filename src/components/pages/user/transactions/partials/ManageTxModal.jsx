@@ -1,14 +1,59 @@
 import React from 'react'
 import Modal from '../../../../elements/user/Modal'
 import currencyFormat from '../../../../../utils/currency'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import convertDate from '../../../../../utils/convertDate'
 import { Button } from '../../../../elements/user/Button'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import api from '../../../../../api/axios'
+import appError from '../../../../../utils/appError'
+import { setLoad } from '../../../../../store/slices/loader.slice'
+import { transactionsThunk } from '../../../../../store/slices/transactions.slice'
+import { accountThunk } from '../../../../../store/slices/account.slice'
+import Swal from 'sweetalert2'
+import Barcode from 'react-barcode'
 
 const ManageTxModal = ({ open, setOpen, tx }) => {
 
 	const account = useSelector(state => state.account);
+  const dispatch = useDispatch();
+
+  const handleManageTx = async (status) => {
+
+    dispatch(setLoad(false));
+
+    const url =  `/api/v1/transactions/request/${tx.id}`;
+    const data = { status };
+
+    await api.patch(url, data)
+      .then(res => {
+        setOpen(false)
+        dispatch(accountThunk());
+        dispatch(transactionsThunk());
+        Swal.fire({
+          toast: true,
+          position: 'bottom-right',
+          icon: 'success',
+          text: res.data.message,
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+        }); 
+      })
+      .catch(err => {
+        appError(err);
+        Swal.fire({
+          toast: true,
+          position: 'bottom-right',
+          icon: 'error',
+          text: err.response.data.message,
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+        });
+      })
+      .finally(() => dispatch(setLoad(true)))
+  };
 
   if(tx)
     return (
@@ -20,9 +65,11 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
             filter: 'drop-shadow'
           }}
         >
-          <header className="flex flex-col items-center sm:px-28 relative">
+          <header className="flex flex-col items-center sm:px-28 relative gap-4">
             <img src="/img/logo.svg" className="max-h-16" />
-            <h3 className="text-xl font-medium text-gray-400">{tx.hash}</h3>
+            <div className="rounded-xl overflow-hidden">
+              <Barcode value={tx.hash} />
+            </div>
             <h3 className={`text-xl font-medium uppercase
               ${tx.status === 'completed' && 'text-green-400'}
               ${tx.status === 'pending' && 'text-yellow-400'}
@@ -46,7 +93,7 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
                 </span>
               </div>
               <div className="flex justify-between gap-6">
-                <span className="text-gray-400">Correo electrónico</span>
+                <span className="text-gray-400">E-Mail</span>
                 <span className="font-medium">
                   {tx.owner.email}
                 </span>
@@ -63,7 +110,7 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
                 </span>
               </div>
               <div className="flex justify-between gap-6">
-                <span className="text-gray-400">Correo electrónico</span>
+                <span className="text-gray-400">E-Mail</span>
                 <span className="font-medium">
                   {tx.receiver.email}
                 </span>
@@ -80,7 +127,7 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
                 </span>
               </div>
               <div className="flex justify-between gap-6">
-                <span className="text-gray-400">Monto</span>
+                <span className="text-gray-400">Importe</span>
                 <span className={`font-medium ${tx.owner.id === account.id ?
                   'text-red-400' : 'text-green-400'}`}
                 >
@@ -96,8 +143,14 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
                 Administrar
               </h4>
               <div className="flex gap-4">
-                { account.id === tx.owner.id && <Button color="green" className="w-full">Confirmar</Button> }
-                <Button color="red" className="w-full">Cancelar</Button>
+                { account.id === tx.owner.id && 
+                  <Button color="green" className="w-full" onClick={() => handleManageTx(true)}>
+                    Confirmar
+                  </Button> 
+                }
+                <Button color="red" className="w-full" onClick={() => handleManageTx(false)}>
+                  Cancelar
+                </Button>
               </div>
             </footer>
           }
