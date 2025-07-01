@@ -94,7 +94,7 @@ export default function Modal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className={`relative transform rounded-lg border-black/10 dark:border-black text-black dark:text-white bg-slate-50 dark:bg-zinc-900 text-left shadow-xl transition-all sm:m-8 sm:w-full sm:max-w-lg`}>
+              <Dialog.Panel className={`relative transform rounded-2xl border-black/10 dark:border-black text-black dark:text-white bg-slate-50 dark:bg-zinc-900 text-left shadow-xl transition-all sm:m-8 sm:w-full sm:max-w-lg`}>
                 { header &&
                   <header className="flex justify-between items-center gap-4 p-2">
                     <span className="font-semibold text-sm flex-grow pl-2">

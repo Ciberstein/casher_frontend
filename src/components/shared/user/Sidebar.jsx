@@ -5,6 +5,7 @@ import { HomeIcon, QueueListIcon, UsersIcon } from '@heroicons/react/24/outline'
 
 import { Link, useLocation } from 'react-router-dom'
 import { NavLink } from '../../elements/user/NavLink';
+import { useSelector } from 'react-redux';
 
 export const ContentSidebar = () => {
 
@@ -51,6 +52,9 @@ export const ContentSidebar = () => {
 }
 
 export const DialogSidebar = ({ open, setOpen, children }) => {
+  
+  const darkMode = useSelector((state) => state.darkMode);
+
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
       <DialogBackdrop
@@ -66,11 +70,11 @@ export const DialogSidebar = ({ open, setOpen, children }) => {
             >
               <div className="flex h-full flex-col overflow-y-auto bg-white dark:bg-zinc-800 shadow-xl p-4 gap-12">
                 <header className="flex gap-4 justify-between items-center">
-                  <img src="img/logo.svg" className="max-h-10"/>
+                  <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-10"/>
                   <button className="hover:text-gray-400 text-gray-900 transition-colors ease-out"
                     onClick={() => setOpen(false)}
                   >
-                    <XMarkIcon aria-hidden="true" className="h-6 w-6" />
+                    <XMarkIcon aria-hidden="true" className="h-6 w-6 dark:text-white" />
                   </button>
                 </header>
                 {children}

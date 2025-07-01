@@ -1,11 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { transactionsThunk } from '../../../../../store/slices/transactions.slice';
 import { Link } from 'react-router-dom';
 import { SearchOffOutlined } from '@mui/icons-material';
 import convertDate from '../../../../../utils/convertDate';
-import { ArrowTurnDownLeftIcon, ArrowTurnUpRightIcon } from '@heroicons/react/24/outline';
+import { ArrowTurnDownLeftIcon, ArrowTurnUpRightIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import currencyFormat from '../../../../../utils/currency';
+import ManageTxModal from '../../transactions/partials/ManageTxModal';
 
 export const IconTx = ({ tx }) => {
 
@@ -34,13 +35,22 @@ export const LastTransactionsTable = () => {
 
 	const dispatch = useDispatch();
 	const transactions = useSelector(state => state.transactions);
+	const account = useSelector(state => state.account);
+	const [selected, setSelected] = useState(null);
+	const [txModal, setTxModal] = useState(false);
 
+	const handleTxDetails = (tx) => {
+		setSelected(tx)
+		setTxModal(true);
+	};
+	
 	useEffect(() => {
 		dispatch(transactionsThunk());
 	}, []);
 
 	return (
 		<div className="!p-0 overflow-auto rounded-2xl dark:bg-zinc-900 bg-slate-50 h-full flex flex-col justify-between">
+			<ManageTxModal open={txModal} setOpen={setTxModal} tx={selected} />
 			<table>
 				<thead>
 					<tr>
@@ -51,8 +61,7 @@ export const LastTransactionsTable = () => {
 						</th>
 					</tr>
 					<tr className="bg-gray-200 dark:bg-zinc-950">
-						<th className="p-4 font-semibold">ID</th>
-						<th className="p-4 font-semibold">Descripción</th>
+						<th className="p-4 font-semibold">Serial</th>
 						<th className="p-4 font-semibold">Estátus</th>
 						<th className="p-4 font-semibold">Importe</th>
 						<th className="p-4 font-semibold">Fecha</th>
@@ -63,29 +72,42 @@ export const LastTransactionsTable = () => {
 					{
 						transactions.length > 0 ?
 							transactions.slice(0, 5).map((transaction, index) => (
-								<tr className="border-b text-md p-2 dark:border-black/20" key={index}>
+								<tr
+									onClick={() => handleTxDetails(transaction)} key={index}
+									className={`border-b text-md p-2 dark:border-black/20
+										hover:dark:bg-zinc-800 hover:bg-white  cursor-pointer`
+									}
+								>
 									<td>
 										<div className="flex items-center justify-center px-4 py-2">
 											{transaction.hash}
 										</div>
 									</td>
 									<td>
-										<div className="flex items-center justify-center px-4 py-2">
-											{transaction.hash}
+										<div className="flex items-center justify-center w-full">
+											<div className={`px-4 rounded-full text-center w-full
+												${transaction.status === 'completed' && 'bg-green-300'}
+												${transaction.status === 'pending' && 'bg-yellow-300'}
+												${transaction.status === 'cancelled' && 'bg-red-300'}
+											`}>
+												<span className="uppercase italic text-black">
+													{transaction.status}
+												</span>
+											</div>
 										</div>
 									</td>
 									<td>
 										<div className="flex items-center justify-center px-4 py-2">
-											{transaction.status}
+											<span className={`font-medium ${transaction.owner.id === account.id ?
+												'text-red-400' : 'text-green-400'}`}
+											>
+												{transaction.owner.id === account.id ? '-' : '+'}
+												{currencyFormat(transaction.data.amount)}
+											</span>
 										</div>
 									</td>
 									<td>
-										<div className="flex items-center justify-center px-4 py-2">
-											{currencyFormat(transaction.data.amount)}
-										</div>
-									</td>
-									<td>
-										<div className="flex items-center justify-center px-4 py-2">
+										<div className="flex items-center justify-center px-4 py-2 text-nowrap">
 											{convertDate(transaction.createdAt)}
 										</div>
 									</td>

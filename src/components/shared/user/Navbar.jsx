@@ -24,8 +24,12 @@ export const PreAuthNavbar = ({ className = '' }) => {
       </Link>
       <div className="flex gap-4 items-center">
         <SwitchDakMode />
-        <Button as={Link} to="/login" className="font-medium !rounded-full">Ingresar</Button>
-        <Button color="green" as={Link} to="/register" className="font-medium !rounded-full">Registrarse</Button>        
+        <Button as={Link} to="/login" className="font-medium !rounded-full">
+          Ingresar
+        </Button>
+        <Button color="green" as={Link} to="/register" className="font-medium !rounded-full">
+          Registrarse
+        </Button>        
       </div>
     </nav>
   )
@@ -58,7 +62,9 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
         >
           <Bars3Icon className="size-6 text-gray-900 dark:text-white"/>
         </button>
-        <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-10 -my-6 hidden sm:block"/>
+        <Link to="/" className="flex items-center">
+          <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-10 -my-6 hidden sm:block"/>
+        </Link>
       </div>
       <div className="flex gap-4 items-center">
         <SwitchDakMode />
