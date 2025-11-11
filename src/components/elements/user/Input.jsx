@@ -52,7 +52,7 @@ export const Input = ({
         className={`flex gap-2 items-center border rounded-xl ${props.disabled ? 'bg-black/10' : 'bg-gray-200 dark:bg-zinc-800'} ${
           register.errors.function &&
           register.errors.function[props.name]
-            ? 'border-red-400'
+            ? 'border-red-400 text-red-400'
             : 'border-transparent'
         } ${variants[size]} ${className}`}
       >

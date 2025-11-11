@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 export const RegisterForm = ({ setAccount, firebase }) => {
-  console.log(firebase);
+
   const [hide1, setHide1] = useState(true);
   const [hide2, setHide2] = useState(true);
 
