@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Input } from '../../../../elements/user/Input'
-import { EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline'
+import { CalendarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline'
 import { useForm } from 'react-hook-form';
 import isEmailValid from '../../../../../utils/isEmailValid';
 import { Button } from '../../../../elements/user/Button';
@@ -71,7 +71,7 @@ export const RegisterForm = ({ setAccount, firebase }) => {
           icon={<UserIcon className="size-6"/>}
           id="first_name"
           name="first_name"
-          label="Nombre"
+          label="Primer nombre"
           defaultValue={firebase ? firebase.name.split(" ")[0] : ""}
           placeholder={"Ej. Juan"}
           register={{
@@ -84,15 +84,45 @@ export const RegisterForm = ({ setAccount, firebase }) => {
                   value: 2,
                   message: 'Must be at least 2 characters',
                 },
+                maxLength: {
+                  value: 20,
+                  message: 'Must be at 20 characters maximum',
+                },
               },
             },
           }}
         />
+
+        <Input
+          icon={<UserIcon className="size-6"/>}
+          id="middle_name"
+          name="middle_name"
+          label="Segundo nombre"
+          placeholder={"Ej. David"}
+          register={{
+            function: register,
+            errors: {
+              function: errors,
+              rules: {
+                required: false,
+                minLength: {
+                  value: 2,
+                  message: 'Must be at least 2 characters',
+                },
+                maxLength: {
+                  value: 20,
+                  message: 'Must be at 20 characters maximum',
+                },
+              },
+            },
+          }}
+        />
+
         <Input 
           icon={<UserIcon className="size-6"/>}
-          id="last_name"
-          name="last_name"
-          label="Apellido"
+          id="surname_1"
+          name="surname_1"
+          label="Primer apellido"
           defaultValue={firebase ? firebase.name.split(" ")[1] : ""}
           placeholder={"Ej. Pérez"}
           register={{
@@ -105,10 +135,57 @@ export const RegisterForm = ({ setAccount, firebase }) => {
                   value: 2,
                   message: 'Must be at least 2 characters',
                 },
+                maxLength: {
+                  value: 20,
+                  message: 'Must be at 20 characters maximum',
+                },
               },
             },
           }}
         />
+
+        <Input
+          icon={<UserIcon className="size-6"/>}
+          id="surname_2"
+          name="surname_2"
+          label="Segundo apellido"
+          placeholder={"Ej. Torres"}
+          register={{
+            function: register,
+            errors: {
+              function: errors,
+              rules: {
+                required: false,
+                minLength: {
+                  value: 2,
+                  message: 'Must be at least 2 characters',
+                },
+                maxLength: {
+                  value: 20,
+                  message: 'Must be at 20 characters maximum',
+                },
+              },
+            },
+          }}
+        />
+        <div className="sm:col-span-2">
+          <Input
+            icon={<CalendarIcon className="size-6"/>}
+            id="birthday"
+            name="birthday"
+            label="Fecha de nacimiento"
+            type="date"
+            register={{
+              function: register,
+              errors: {
+                function: errors,
+                rules: {
+                  required: 'Birthday is required',
+                },
+              },
+            }}
+          /> 
+        </div>
         <div className="sm:col-span-2">
           { firebase ?
               <Input

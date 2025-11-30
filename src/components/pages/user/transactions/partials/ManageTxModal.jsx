@@ -89,7 +89,7 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
               <div className="flex justify-between gap-6">
                 <span className="text-gray-400">Nombre</span>
                 <span className="font-medium">
-                  {`${tx.owner.first_name} ${tx.owner.last_name}`}
+                  {`${tx.owner.data?.first_name} ${tx.owner.data?.surname_1}`}
                 </span>
               </div>
               <div className="flex justify-between gap-6">
@@ -106,7 +106,7 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
               <div className="flex justify-between gap-6">
                 <span className="text-gray-400">Nombre</span>
                 <span className="font-medium">
-                  {`${tx.receiver.first_name} ${tx.receiver.last_name}`}
+                  {`${tx.receiver.data?.first_name} ${tx.receiver.data?.surname_1}`}
                 </span>
               </div>
               <div className="flex justify-between gap-6">

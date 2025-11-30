@@ -1,4 +1,4 @@
-const currencyFormat = (value, currency = 'USD', country = 'es-CO') => {
+const currencyFormat = (value, currency = 'COP', country = 'es-CO') => {
   const output = new Intl.NumberFormat(country, {
     style: 'currency',
     currency,

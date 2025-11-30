@@ -12,7 +12,8 @@ import appError from '../../../../../utils/appError';
 import Swal from 'sweetalert2';
 import { GoogleIcon } from '../../../../../assets/GoogleIcon';
 import { signInWithPopup } from 'firebase/auth'
-import { auth, googleProvider } from '../../../../../utils/firebaseConfig';
+import { auth, googleProvider } from '../../../../../../firebase/config';
+
 
 export const LoginForm = ({ setAccount }) => {
 

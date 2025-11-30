@@ -17,12 +17,12 @@ export const { setAccount } =
 export default accountSlice.reducer;
 
 export const accountThunk =
-    () => async (dispatch) => {
-        dispatch(setLoad(false));
-        const url = `/api/v1/auth/`;
-        await api
-            .get(url)
-            .then((res) => dispatch(setAccount(res.data)))
-            .catch((err) => appError(err))
-            .finally(() => dispatch(setLoad(true)));
+  () => async (dispatch) => {
+    dispatch(setLoad(false));
+    const url = `/api/v1/auth/`;
+    await api
+      .get(url)
+      .then((res) => dispatch(setAccount(res.data)))
+      .catch((err) => appError(err))
+      .finally(() => dispatch(setLoad(true)));
 };

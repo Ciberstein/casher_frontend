@@ -117,8 +117,8 @@ export const LastTransactionsTable = () => {
 												<div className="absolute top-0 left-0">
 													<div className="size-10 rounded-full border-[2px] border-gray-300 dark:border-black flex flex-col justify-center items-center bg-slate-200">
 														<span className="text-lg text-zinc-500 uppercase">
-															{transaction.owner.first_name?.split("")[0]}
-															{transaction.owner.last_name?.split("")[0]}
+															{transaction.owner.data?.first_name.split("")[0]}
+															{transaction.owner.data?.surname_1.split("")[0]}
 														</span>
 													</div>					
 												</div>

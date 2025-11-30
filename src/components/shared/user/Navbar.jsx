@@ -7,9 +7,8 @@ import { Button } from '../../elements/user/Button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import AuthContext from '../../../context/AuthContext';
-import api from '../../../api/axios';
-import appError from '../../../utils/appError';
-import { setLoad } from '../../../store/slices/loader.slice';
+import auth from '../../../services/auth.services';
+
 
 export const PreAuthNavbar = ({ className = '' }) => {
   
@@ -39,18 +38,7 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
   
   const darkMode = useSelector((state) => state.darkMode);
   const account = useSelector((state) => state.account);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const logout = async () => {
-    dispatch(setLoad(false));
-    const url = `/api/v1/auth/logout`;
-
-    await api.post(url)
-      .then(() => location.reload())
-      .catch((err) => appError(err))
-      .finally(() => dispatch(setLoad(true)))
-  }
 
   return (
     <nav className={`p-3 lg:rounded-b-2xl flex gap-4 dark:text-white items-center
@@ -78,12 +66,12 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
               >
               <div className="size-10 rounded-full border flex flex-col justify-center items-center bg-slate-200">
                 <span className="text-lg text-zinc-500 uppercase">
-                  {account.first_name?.split("")[0]}
-                  {account.last_name?.split("")[0]}
+                  {account.data?.first_name.split("")[0]}
+                  {account.data?.surname_1.split("")[0]}
                 </span>
               </div>
               <span className="hidden sm:block">
-                {`${account.first_name} ${account.last_name}`}
+                {`${account.data?.first_name} ${account.data?.surname_1}`}
               </span>
               <div className="pr-2 hidden sm:block">
                 <ChevronDownIcon aria-hidden="true" className="size-5 text-gray-900 dark:text-gray-200" />
@@ -108,7 +96,7 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
             <div className="py-1">
               <MenuItem>
                 <button
-                  onClick={() => logout()}
+                  onClick={() => auth.disconnect()}
                   className="block px-4 py-2 text-sm text-red-400 dark:data-[focus]:bg-zinc-700 data-[focus]:bg-gray-100 w-full text-left"
                 >
                   Cerrar sessión

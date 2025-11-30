@@ -12,15 +12,14 @@ import { accountThunk } from '../../../../../store/slices/account.slice';
 
 export const UpdatePersonalDataForm = () => {
 
-  const { register, handleSubmit, formState: { errors }, } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors }, } = useForm();
   const account = useSelector(state => state.account);
-  const [defaultData, setDefaultData] = useState(account);
   const dispatch = useDispatch();
 
   const submit = async (data) => {
     dispatch(setLoad(false));
 
-    const url = `/api/v1/auth/update/personal/`;
+    const url = `/api/v1/auth/update/personal`;
 
     await api.patch(url, data)
       .then(res => {
@@ -51,7 +50,10 @@ export const UpdatePersonalDataForm = () => {
   };
 
   useEffect(() => {
-    setDefaultData(account)
+    setValue("first_name", account.data?.first_name);
+    setValue("middle_name", account.data?.middle_name);
+    setValue("surname_1", account.data?.surname_1);
+    setValue("surname_2", account.data?.surname_2);
   }, [account]);
 
   return (
@@ -67,9 +69,9 @@ export const UpdatePersonalDataForm = () => {
           icon={<UserIcon className="size-6"/>}
           id="first_name"
           name="first_name"
-          label="Nombre"
-          defaultValue={defaultData.first_name}
-          placeholder={defaultData.first_name}
+          label="Primer nombre"
+          defaultValue={account.data?.first_name}
+          placeholder={account.data?.first_name}
           register={{
             function: register,
             errors: {
@@ -80,26 +82,84 @@ export const UpdatePersonalDataForm = () => {
                   value: 2,
                   message: 'Mínimo 2 caracteres',
                 },
+                maxLength: {
+                  value: 20,
+                  message: 'Máximo 20 caracteres',
+                },
+              },
+            },
+          }}
+        />
+        <Input
+          icon={<UserIcon className="size-6"/>}
+          id="middle_name"
+          name="middle_name"
+          label="Segundo nombre"
+          defaultValue={account.data?.middle_name}
+          placeholder={account.data?.middle_name}
+          register={{
+            function: register,
+            errors: {
+              function: errors,
+              rules: {
+                required: false,
+                minLength: {
+                  value: 2,
+                  message: 'Mínimo 2 caracteres',
+                },
+                maxLength: {
+                  value: 20,
+                  message: 'Máximo 20 caracteres',
+                },
               },
             },
           }}
         />
         <Input 
           icon={<UserIcon className="size-6"/>}
-          id="last_name"
-          name="last_name"
-          label="Apellido"
-          defaultValue={defaultData.last_name}
-          placeholder={defaultData.last_name}
+          id="surname_1"
+          name="surname_1"
+          label="Primer apellido"
+          defaultValue={account.data?.surname_1}
+          placeholder={account.data?.surname_1}
           register={{
             function: register,
             errors: {
               function: errors,
               rules: {
-                required: 'El apellido es requerido',
+                required: 'El primer apellido es requerido',
                 minLength: {
                   value: 2,
                   message: 'Mínimo 2 caracteres',
+                },
+                maxLength: {
+                  value: 20,
+                  message: 'Máximo 20 caracteres',
+                },
+              },
+            },
+          }}
+        />
+        <Input 
+          icon={<UserIcon className="size-6"/>}
+          id="surname_2"
+          name="surname_2"
+          label="Segundo apellido"
+          defaultValue={account.data?.surname_2}
+          placeholder={account.data?.surname_2}
+          register={{
+            function: register,
+            errors: {
+              function: errors,
+              rules: {
+                required: false,
+                minLength: {
+                  value: 2,
+                  message: 'Mínimo 2 caracteres',
+                },
+                maxLength: {
+                  value: 20,
+                  message: 'Máximo 20 caracteres',
                 },
               },
             },

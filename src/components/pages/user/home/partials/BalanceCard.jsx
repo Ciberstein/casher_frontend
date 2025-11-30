@@ -223,8 +223,8 @@ const SendOrRequestModal = ({ open, setOpen, txType }) => {
                 <div className="flex gap-4 items-center p-3">
                   <div className="size-10 rounded-full border flex flex-col justify-center items-center bg-slate-200">
                     <span className="text-lg text-zinc-500 uppercase font-medium">
-                      {params.first_name?.split("")[0]}
-                      {params.last_name?.split("")[0]}
+                      {params.data?.first_name.split("")[0]}
+                      {params.data?.surname_1.split("")[0]}
                     </span>
                   </div>
                   <div className="flex flex-col">
