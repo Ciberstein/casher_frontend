@@ -11,7 +11,7 @@ import { setLoad } from '../../../../../store/slices/loader.slice'
 import { transactionsThunk } from '../../../../../store/slices/transactions.slice'
 import { accountThunk } from '../../../../../store/slices/account.slice'
 import Swal from 'sweetalert2'
-import Barcode from 'react-barcode'
+import { QRCodeSVG } from 'qrcode.react'
 
 const ManageTxModal = ({ open, setOpen, tx }) => {
 
@@ -67,8 +67,12 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
         >
           <header className="flex flex-col items-center sm:px-28 relative gap-4">
             <img src="/img/logo.svg" className="max-h-16" />
-            <div className="rounded-xl overflow-hidden">
-              <Barcode value={tx.hash} />
+            <div className="rounded-xl overflow-hidden p-3 bg-white">
+              <QRCodeSVG
+                value={`${window.location.origin}/tx/${tx.hash}`}
+                size={160}
+                imageSettings={{ src: '/img/favicon.svg', width: 32, height: 32, excavate: true }}
+              />
             </div>
             <h3 className={`text-xl font-medium uppercase
               ${tx.status === 'completed' && 'text-green-400'}

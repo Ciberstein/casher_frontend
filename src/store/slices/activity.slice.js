@@ -4,7 +4,7 @@ import appError from '../../utils/appError';
 
 const activitySlice = createSlice({
   name: 'activity',
-  initialState: [],
+  initialState: null,
   reducers: {
     setActivity: (_, action) => action.payload,
   },

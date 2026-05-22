@@ -104,12 +104,12 @@ export const LastTransactionsTable = () => {
     dispatch(activityThunk());
   }, []);
 
-  const loading = activity.length === 0;
+  const loading = activity === null;
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg dark:text-white">Transacciones recientes</h3>
+        <h3 className="font-semibold text-lg dark:text-white">Transferencias recientes</h3>
         <Link to="/transactions" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">Ver todas →</Link>
       </div>
 

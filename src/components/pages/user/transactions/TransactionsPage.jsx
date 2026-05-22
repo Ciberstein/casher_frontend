@@ -6,6 +6,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { Button } from '../../../elements/user/Button'
 import { LoanRequestModal, WithdrawalRequestModal } from '../requests/Requests'
+import { SendOrRequestModal } from '../home/partials/BalanceCard'
+import ManageTxModal from './partials/ManageTxModal'
 import { accountThunk } from '../../../../store/slices/account.slice'
 import { activityThunk } from '../../../../store/slices/activity.slice'
 import { setLoad } from '../../../../store/slices/loader.slice'
@@ -70,11 +72,16 @@ const dateLabel = (date) => {
   return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
-const ActivityRow = ({ item }) => {
+const ActivityRow = ({ item, onClick }) => {
   const cfg = KIND_CONFIG[item.kind];
   const sub = subtitle(item);
+  const isTransfer = item.kind === 'transfer_sent' || item.kind === 'transfer_received';
   return (
-    <li className="flex items-center gap-3 px-4 py-3.5">
+    <li
+      onClick={isTransfer && onClick ? () => onClick(item) : undefined}
+      className={`flex items-center gap-3 px-4 py-3.5 transition-colors
+        ${isTransfer && onClick ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-800/60' : ''}`}
+    >
       <div className={`size-9 rounded-full flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
         {cfg.icon}
       </div>
@@ -94,7 +101,7 @@ const ActivityRow = ({ item }) => {
   );
 };
 
-const ActivityList = ({ items, loading, emptyText }) => {
+const ActivityList = ({ items, loading, emptyText, onRowClick }) => {
   if (loading)
     return (
       <div className="flex flex-col gap-3 p-5">
@@ -125,11 +132,11 @@ const ActivityList = ({ items, loading, emptyText }) => {
     <div className="flex flex-col gap-2">
       {groups.map(({ date, items: groupItems }) => (
         <div key={date.toISOString()} className="flex flex-col gap-2">
-          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 px-1">
+          <p className="sticky top-0 z-10 text-xs font-semibold text-gray-400 dark:text-gray-500 px-1 py-1 bg-white dark:bg-zinc-800">
             {dateLabel(date)}
           </p>
           <ul className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 divide-y divide-gray-100 dark:divide-zinc-800 overflow-hidden">
-            {groupItems.map(item => <ActivityRow key={item.id} item={item} />)}
+            {groupItems.map(item => <ActivityRow key={item.id} item={item} onClick={onRowClick} />)}
           </ul>
         </div>
       ))}
@@ -165,7 +172,7 @@ const GroupedList = ({ items, renderRow }) => {
     <div className="flex flex-col gap-2">
       {groups.map(({ date, items: groupItems }) => (
         <div key={date.toISOString()} className="flex flex-col gap-2">
-          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 px-1">{dateLabel(date)}</p>
+          <p className="sticky top-0 z-10 text-xs font-semibold text-gray-400 dark:text-gray-500 px-1 py-1 bg-white dark:bg-zinc-800">{dateLabel(date)}</p>
           <ul className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 divide-y divide-gray-100 dark:divide-zinc-800 overflow-hidden">
             {groupItems.map(renderRow)}
           </ul>
@@ -354,6 +361,18 @@ export const TransactionsPage = () => {
   const [tab, setTab] = useState('all');
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [txModal, setTxModal] = useState(false);
+  const [txType, setTxType] = useState(true);
+  const [selectedTx, setSelectedTx] = useState(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const openDetail = async (item) => {
+    try {
+      const res = await api.get(`/api/v1/transactions/${item.meta.hash}`);
+      setSelectedTx(res.data);
+      setDetailOpen(true);
+    } catch (err) { appError(err); }
+  };
 
   useEffect(() => {
     api.get('/api/v1/activity?all=true')
@@ -365,9 +384,9 @@ export const TransactionsPage = () => {
   const transfers = activity.filter(i => i.kind === 'transfer_sent' || i.kind === 'transfer_received');
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold dark:text-white">Transacciones</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-1 bg-gray-100 dark:bg-zinc-900 rounded-xl w-full p-1">
+    <div className="h-full flex flex-col gap-4">
+      <h1 className="text-2xl font-semibold dark:text-white shrink-0">Transacciones</h1>
+      <div className="shrink-0 grid grid-cols-1 sm:grid-cols-4 gap-1 bg-gray-100 dark:bg-zinc-900 rounded-xl w-full p-1">
         {TABS.map(t => (
           <button
             key={t.key}
@@ -383,16 +402,31 @@ export const TransactionsPage = () => {
         ))}
       </div>
 
-      {tab === 'all' && (
-        <ActivityList items={activity} loading={loading} emptyText="Sin actividad aún" />
-      )}
+      <div className="flex-1 overflow-y-auto pb-6 bg-white dark:bg-zinc-800">
+        <ManageTxModal open={detailOpen} setOpen={setDetailOpen} tx={selectedTx} />
 
-      {tab === 'transfers' && (
-        <ActivityList items={transfers} loading={loading} emptyText="Sin transferencias aún" />
-      )}
+        {tab === 'all' && (
+          <ActivityList items={activity} loading={loading} emptyText="Sin actividad aún" onRowClick={openDetail} />
+        )}
 
-      {tab === 'loans' && <LoansTab />}
-      {tab === 'withdrawals' && <WithdrawalsTab />}
+        {tab === 'transfers' && (
+          <div className="flex flex-col gap-4">
+            <SendOrRequestModal open={txModal} setOpen={setTxModal} txType={txType} />
+            <div className="flex justify-end gap-2">
+              <Button size="sm" onClick={() => { setTxType(false); setTxModal(true); }} className="flex items-center gap-1.5">
+                <ArrowDownLeftIcon className="size-4" /> Solicitar
+              </Button>
+              <Button size="sm" onClick={() => { setTxType(true); setTxModal(true); }} className="flex items-center gap-1.5">
+                <ArrowUpRightIcon className="size-4" /> Enviar
+              </Button>
+            </div>
+            <ActivityList items={transfers} loading={loading} emptyText="Sin transferencias aún" onRowClick={openDetail} />
+          </div>
+        )}
+
+        {tab === 'loans' && <LoansTab />}
+        {tab === 'withdrawals' && <WithdrawalsTab />}
+      </div>
     </div>
   );
 };

@@ -31,7 +31,7 @@ const ChargeModal = ({ open, setOpen }) => {
   )
 }
 
-const SendOrRequestModal = ({ open, setOpen, txType }) => {
+export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
   const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange', defaultValues: { currency: 'COP' } });
   const [success, setSuccess] = useState(false);

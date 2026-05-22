@@ -24,6 +24,10 @@ import { AdminProtectedRoutes } from "./components/pages/session/admin/AdminProt
 import { AdminPage } from "./components/pages/admin/AdminPage";
 {/* End Admin Imports */}
 
+{/* Public Imports */}
+import { TransactionPublicPage } from "./components/pages/public/TransactionPublicPage";
+{/* End Public Imports */}
+
 function App() {
   const darkMode = useSelector((state) => state.darkMode);
   const dispatch = useDispatch();
@@ -49,6 +53,7 @@ function App() {
       <Route path="/admin" element={<AdminProtectedRoutes />}>
         <Route index element={<AdminPage />}/>
       </Route>
+      <Route path="/tx/:hash" element={<TransactionPublicPage />}/>
     </Routes>
   )
 }
