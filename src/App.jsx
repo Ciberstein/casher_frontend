@@ -14,8 +14,15 @@ import { ProtectedRoutes as UserProtectedRoutes } from "./components/pages/sessi
 import { HomePage as UserHomePage } from "./components/pages/user/home/HomePage";
 import { Recipients as UserRecipients } from "./components/pages/user/recipients/Recipients";
 import { Requests as UserRequests } from "./components/pages/user/requests/Requests";
+import { TransactionsPage } from "./components/pages/user/transactions/TransactionsPage";
 import { SettingsPage as UserSettingsPage} from "./components/pages/user/settings/SettingsPage";
+import { BankAccountsPage } from "./components/pages/user/bank-accounts/BankAccountsPage";
 {/* End User Imports */}
+
+{/* Admin Imports */}
+import { AdminProtectedRoutes } from "./components/pages/session/admin/AdminProtectedRoutes";
+import { AdminPage } from "./components/pages/admin/AdminPage";
+{/* End Admin Imports */}
 
 function App() {
   const darkMode = useSelector((state) => state.darkMode);
@@ -33,9 +40,14 @@ function App() {
       <Route path="/recovery" element={<RecoveryPage />}/>
       <Route path="/" element={<UserProtectedRoutes />}>
         <Route path="/" element={<UserHomePage />}/>
+        <Route path="/bank-accounts" element={<BankAccountsPage />}/>
         <Route path="/recipients" element={<UserRecipients />}/>
         <Route path="/requests" element={<UserRequests />}/>
+        <Route path="/transactions" element={<TransactionsPage />}/>
         <Route path="/settings" element={<UserSettingsPage />}/>
+      </Route>
+      <Route path="/admin" element={<AdminProtectedRoutes />}>
+        <Route index element={<AdminPage />}/>
       </Route>
     </Routes>
   )
