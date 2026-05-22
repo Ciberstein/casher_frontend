@@ -64,12 +64,19 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
                 text-sm font-semibold text-gray-900 dark:text-gray-200 hover:bg-gray-100 
                 hover:dark:bg-zinc-800"
               >
-              <div className="size-10 rounded-full border flex flex-col justify-center items-center bg-slate-200">
-                <span className="text-lg text-zinc-500 uppercase">
-                  {account.data?.first_name.split("")[0]}
-                  {account.data?.surname_1.split("")[0]}
-                </span>
-              </div>
+                { account.picture ? 
+                    <div
+                      className="size-10 rounded-full bg-center bg-cover"
+                      style={{ backgroundImage: `url(${account.picture})` }}
+                    />
+                  :
+                  <div className="size-10 rounded-full border flex flex-col justify-center items-center bg-slate-200">
+                    <span className="text-lg text-zinc-500 uppercase">
+                      {account.data?.first_name.split("")[0]}
+                      {account.data?.surname_1.split("")[0]}
+                    </span>
+                  </div>
+                }
               <span className="hidden sm:block">
                 {`${account.data?.first_name} ${account.data?.surname_1}`}
               </span>

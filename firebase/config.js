@@ -1,8 +1,12 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, } from 'firebase/auth';
-import service from './service.json'
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
-const app = initializeApp(service);
+const localModules = import.meta.glob('./service.json', { eager: true });
+const firebaseConfig = import.meta.env.VITE_FIREBASE_CONFIG
+  ? JSON.parse(atob(import.meta.env.VITE_FIREBASE_CONFIG))
+  : localModules['./service.json']?.default;
+
+const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();

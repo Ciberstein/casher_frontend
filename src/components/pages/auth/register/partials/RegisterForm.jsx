@@ -32,6 +32,7 @@ export const RegisterForm = ({ setAccount, firebase }) => {
     if(firebase) {
       formData.email = firebase.email;
       formData.email_verified = firebase.email_verified;
+      formData.picture = firebase.picture;
     }
 
     await api.post(url, formData)
