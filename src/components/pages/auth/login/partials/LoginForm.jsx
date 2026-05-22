@@ -63,7 +63,7 @@ export const LoginForm = ({ setAccount }) => {
   const google = async () => {
     try {
       const res = await signInWithPopup(auth, googleProvider);
-      await firebase(res.user.accessToken)
+      await firebase(await res.user.getIdToken())
     } catch (err) {
       appError(err);
     }
