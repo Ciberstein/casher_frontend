@@ -4,6 +4,7 @@ import { Footer } from '../shared/user/Footer'
 import { Sidebar } from '../shared/user/Sidebar'
 import { useDispatch } from 'react-redux'
 import { accountThunk } from '../../store/slices/account.slice'
+import { currencyThunk } from '../../store/slices/currency.slice'
 
 export const PosAuthLayout = ({ children, className = '' }) => {
 
@@ -12,12 +13,13 @@ export const PosAuthLayout = ({ children, className = '' }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(accountThunk())
+    dispatch(accountThunk());
+    dispatch(currencyThunk());
   }, [])
 
   return (
     <div className="bg-bottom bg-cover bg-no-repeat dark:bg-zinc-800">
-      <div className="w-full lg:w-3/4 xl:w-4/5 h-screen flex flex-col gap-6 justify-center mx-auto">
+      <div className="w-full lg:w-3/5 h-screen flex flex-col gap-6 justify-center mx-auto">
         <Navbar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar}/>
         <div className="h-full grid col-span-3 lg:grid-cols-4 gap-6 overflow-hidden">
           <Sidebar open={openSidebar} setOpen={setOpenSidebar}/>

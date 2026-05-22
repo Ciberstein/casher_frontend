@@ -17,7 +17,7 @@ export const UpdatePasswordForm = ({ setPassword }) => {
 
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, formState: { errors }, } = useForm();
+    const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
     const submit = async (data) => {
 
@@ -163,7 +163,7 @@ export const UpdatePasswordForm = ({ setPassword }) => {
                     }
                 />
             </div>
-            <Button type="submit">
+            <Button type="submit" disabled={!isValid}>
                 {"Actualizar"}
             </Button>
         </form>

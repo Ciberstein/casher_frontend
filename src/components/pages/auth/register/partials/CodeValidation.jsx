@@ -13,7 +13,7 @@ import reSendAuthCode from '../../../../../utils/reSendAuthCode';
 
 export const CodeValidation = ({ account }) => {
 
-  const { register, handleSubmit, formState: { errors }, } = useForm();
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -92,7 +92,7 @@ export const CodeValidation = ({ account }) => {
           }}
         />
 
-        <Button type="submit" size="lg" className="w-full">
+        <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
           Validar
         </Button>
       </form>

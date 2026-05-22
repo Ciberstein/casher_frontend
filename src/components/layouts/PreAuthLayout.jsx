@@ -15,7 +15,7 @@ export const PreAuthLayout = ({ children }) => {
 
   return (
     <div className="bg-bottom bg-cover bg-no-repeat dark:bg-zinc-800">
-      <div className="w-full lg:w-3/4 xl:w-4/5 h-screen flex flex-col gap-6 justify-center mx-auto">
+      <div className="w-full lg:w-3/5 h-screen flex flex-col gap-6 justify-center mx-auto">
         <Navbar />
         <div className="col-span-3 h-full overflow-y-auto dark:text-white px-6 lg:p-0">
           {children}

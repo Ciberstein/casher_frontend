@@ -12,7 +12,7 @@ import { accountThunk } from '../../../../../store/slices/account.slice';
 
 export const UpdatePersonalDataForm = () => {
 
-  const { register, handleSubmit, setValue, formState: { errors }, } = useForm();
+  const { register, handleSubmit, setValue, trigger, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
   const account = useSelector(state => state.account);
   const dispatch = useDispatch();
 
@@ -54,6 +54,7 @@ export const UpdatePersonalDataForm = () => {
     setValue("middle_name", account.data?.middle_name);
     setValue("surname_1", account.data?.surname_1);
     setValue("surname_2", account.data?.surname_2);
+    trigger();
   }, [account]);
 
   return (
@@ -166,7 +167,7 @@ export const UpdatePersonalDataForm = () => {
           }}
         />
       </div>
-      <Button type="submit">
+      <Button type="submit" disabled={!isValid}>
         {"Actualizar"}
       </Button>
     </form>

@@ -12,7 +12,7 @@ import appError from '../../../../../utils/appError';
 
 export const RecoveryForm = ({ setAccount }) => {
 
-  const { register, handleSubmit, formState: { errors }, } = useForm();
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
   const dispatch = useDispatch();
 
@@ -78,7 +78,7 @@ export const RecoveryForm = ({ setAccount }) => {
             },
           }}
         />
-        <Button type="submit" size="lg">
+        <Button type="submit" size="lg" disabled={!isValid}>
           Recuperar
         </Button>
       </form>

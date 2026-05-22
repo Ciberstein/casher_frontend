@@ -21,7 +21,7 @@ export const LoginForm = ({ setAccount }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { register, handleSubmit, formState: { errors }} = useForm();
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
   const trigger = (res) => {
 
@@ -153,7 +153,7 @@ export const LoginForm = ({ setAccount }) => {
           />
         </div>
         <div className="grid grid-cols-1 gap-4">
-          <Button type="submit" size="lg">
+          <Button type="submit" size="lg" disabled={!isValid}>
             Ingresar
           </Button>
           <div className="flex gap-2 items-center justify-center">

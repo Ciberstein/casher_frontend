@@ -12,7 +12,7 @@ import isEmailValid from '../../../../../utils/isEmailValid';
 
 export const UpdateEmailForm = ({ setEmail }) => {
 
-  const { register, handleSubmit, formState: { errors }, } = useForm();
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
   const account = useSelector(state => state.account);
   const dispatch = useDispatch();
 
@@ -143,7 +143,7 @@ export const UpdateEmailForm = ({ setEmail }) => {
           }}
         />
       </div>
-      <Button type="submit">
+      <Button type="submit" disabled={!isValid}>
         {"Actualizar"}
       </Button>
     </form>

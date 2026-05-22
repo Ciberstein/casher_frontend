@@ -20,7 +20,7 @@ export const RegisterForm = ({ setAccount, firebase }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { register, handleSubmit, formState: { errors }} = useForm();
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
   const submit = async (data) => {
     dispatch(setLoad(false));
@@ -280,7 +280,7 @@ export const RegisterForm = ({ setAccount, firebase }) => {
           }
         />
 
-        <Button type="submit" size="lg" color="green" className="sm:col-span-2">
+        <Button type="submit" size="lg" color="green" className="sm:col-span-2" disabled={!isValid}>
           Registrarse
         </Button>
       </form>
