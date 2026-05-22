@@ -1,28 +1,31 @@
 import { useRef, useState } from 'react';
 import { CloudArrowUpIcon, DocumentCheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { uploadFile } from '../../../firebase/storage';
+import api from '../../../api/axios';
 
 export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 'image/*,application/pdf', error }) => {
   const inputRef = useRef(null);
-  const [progress, setProgress] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [done, setDone] = useState(false);
   const [uploadError, setUploadError] = useState(null);
 
   const handleFile = async (file) => {
     if (!file) return;
     setFileName(file.name);
     setUploading(true);
+    setDone(false);
     setUploadError(null);
-    setProgress(0);
 
-    const ext = file.name.split('.').pop();
-    const path = `${storagePath}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', storagePath);
 
     try {
-      const url = await uploadFile(file, path);
-      onUpload(url);
-      setProgress(100);
+      const res = await api.post('/api/v1/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      onUpload(res.data.url);
+      setDone(true);
     } catch (err) {
       setUploadError('Error al subir el archivo. Intenta de nuevo.');
       setFileName(null);
@@ -35,7 +38,7 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
   const clear = (e) => {
     e.stopPropagation();
     setFileName(null);
-    setProgress(null);
+    setDone(false);
     setUploadError(null);
     onUpload(null);
     if (inputRef.current) inputRef.current.value = '';
@@ -51,7 +54,7 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
           ${error ? 'border-red-400' : 'border-gray-300 dark:border-zinc-600'}
           bg-gray-50 dark:bg-zinc-800`}
       >
-        {fileName && progress === 100 ? (
+        {done ? (
           <DocumentCheckIcon className="size-5 text-green-500 shrink-0" />
         ) : (
           <CloudArrowUpIcon className="size-5 text-gray-400 shrink-0" />
@@ -68,7 +71,7 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
               <div className="h-full bg-blue-500 rounded-full animate-pulse w-full" />
             </div>
           )}
-          {progress === 100 && !uploading && (
+          {done && !uploading && (
             <p className="text-xs text-green-500 mt-0.5">Subido correctamente</p>
           )}
         </div>
