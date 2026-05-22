@@ -19,8 +19,9 @@ export const PreAuthNavbar = ({ className = '' }) => {
     <nav className={`p-3 lg:rounded-b-2xl flex gap-4 dark:text-white items-center
       justify-between bg-white dark:bg-zinc-900 shadow-lg ${className}`}
     >
-      <Link to="/" className="p-4 flex">
+      <Link to="/" className="p-4 flex items-center gap-2">
         <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-10 -my-6 hidden sm:block"/>
+        <span className="hidden sm:block text-xs text-gray-400 dark:text-gray-500 font-medium -mb-1">by Cyberstein</span>
       </Link>
       <div className="flex gap-4 items-center">
         <SwitchDakMode />
@@ -51,8 +52,9 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
         >
           <Bars3Icon className="size-6 text-gray-900 dark:text-white"/>
         </button>
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="flex items-center gap-2">
           <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-10 -my-6 hidden sm:block"/>
+          <span className="hidden sm:block text-xs text-gray-400 dark:text-gray-500 font-medium -mb-1">by Cyberstein</span>
         </Link>
       </div>
       <div className="flex gap-4 items-center">
@@ -127,8 +129,9 @@ export const AdminNavbar = () => {
   return (
     <nav className="p-3 flex gap-4 dark:text-white items-center justify-between bg-white dark:bg-zinc-900 shadow-lg">
       <div className="flex items-center gap-3">
-        <Link to="/admin" className="flex items-center">
+        <Link to="/admin" className="flex items-center gap-2">
           <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-10 -my-6 hidden sm:block" />
+          <span className="hidden sm:block text-xs text-gray-400 dark:text-gray-500 font-medium -mb-1">by Cyberstein</span>
         </Link>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-semibold">
           <ShieldCheckIcon className="size-3.5" />

@@ -79,7 +79,8 @@ export const TransactionPublicPage = () => {
             <QRCodeSVG
               value={`${window.location.origin}/tx/${tx.hash}`}
               size={140}
-              imageSettings={{ src: '/img/favicon.svg', width: 28, height: 28, excavate: true }}
+              level="H"
+              imageSettings={{ src: '/img/favicon.svg', width: 28, height: 28, excavate: false }}
             />
           </div>
 

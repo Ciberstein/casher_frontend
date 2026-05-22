@@ -71,7 +71,8 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
               <QRCodeSVG
                 value={`${window.location.origin}/tx/${tx.hash}`}
                 size={160}
-                imageSettings={{ src: '/img/favicon.svg', width: 32, height: 32, excavate: true }}
+                level="H"
+                imageSettings={{ src: '/img/favicon.svg', width: 32, height: 32, excavate: false }}
               />
             </div>
             <h3 className={`text-xl font-medium uppercase

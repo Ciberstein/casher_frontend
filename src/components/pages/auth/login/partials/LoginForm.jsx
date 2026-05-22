@@ -1,22 +1,20 @@
 import React, { useState } from 'react'
-import { Input } from '../../../../elements/user/Input';
-import { useForm } from 'react-hook-form';
-import { EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import isEmailValid from '../../../../../utils/isEmailValid';
-import { Button } from '../../../../elements/user/Button';
-import { useNavigate } from 'react-router-dom';
-import { setLoad } from '../../../../../store/slices/loader.slice';
-import { useDispatch } from 'react-redux';
-import api from '../../../../../api/axios';
-import appError from '../../../../../utils/appError';
-import Swal from 'sweetalert2';
-import { GoogleIcon } from '../../../../../assets/GoogleIcon';
+import { Input } from '../../../../elements/user/Input'
+import { useForm } from 'react-hook-form'
+import { EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import isEmailValid from '../../../../../utils/isEmailValid'
+import { Button } from '../../../../elements/user/Button'
+import { Link, useNavigate } from 'react-router-dom'
+import { setLoad } from '../../../../../store/slices/loader.slice'
+import { useDispatch } from 'react-redux'
+import api from '../../../../../api/axios'
+import appError from '../../../../../utils/appError'
+import Swal from 'sweetalert2'
+import { GoogleIcon } from '../../../../../assets/GoogleIcon'
 import { signInWithPopup } from 'firebase/auth'
-import { auth, googleProvider } from '../../../../../../firebase/config';
-
+import { auth, googleProvider } from '../../../../../../firebase/config'
 
 export const LoginForm = ({ setAccount }) => {
-
   const [hide, setHide] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,150 +22,96 @@ export const LoginForm = ({ setAccount }) => {
   const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
 
   const trigger = (res) => {
-
-    if(res.status === 200) {
-      location.reload()
-    }
-
-    else if(res.status === 201) {
-      navigate("/register", { state: { data: res.data } })
-    }
-
-    else if(res.status === 202) {
-      setAccount(res.data.account)
-    }
-  }
+    if (res.status === 200) location.reload();
+    else if (res.status === 201) navigate('/register', { state: { data: res.data } });
+    else if (res.status === 202) setAccount(res.data.account);
+  };
 
   const firebase = async (token) => {
     dispatch(setLoad(false));
-
-    const url = `/api/v1/auth/login/firebase`;
-    
-    await api.post(url, { token })
+    await api.post('/api/v1/auth/login/firebase', { token })
       .then((res) => trigger(res))
       .catch((err) => {
         appError(err);
-        Swal.fire({
-          toast: true,
-          position: 'bottom-right',
-          icon: 'error',
-          text: err.response.data.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        });
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
       })
       .finally(() => dispatch(setLoad(true)));
-  }
+  };
 
   const google = async () => {
     try {
       const res = await signInWithPopup(auth, googleProvider);
-      await firebase(await res.user.getIdToken())
-    } catch (err) {
-      appError(err);
-    }
+      await firebase(await res.user.getIdToken());
+    } catch (err) { appError(err); }
   };
 
   const submit = async (data) => {
     dispatch(setLoad(false));
-    
-    const url = `/api/v1/auth/login`;
-
-    await api.post(url, data)
+    await api.post('/api/v1/auth/login', data)
       .then((res) => trigger(res))
       .catch((err) => {
         appError(err);
-        Swal.fire({
-          toast: true,
-          position: 'bottom-right',
-          icon: 'error',
-          text: err.response.data.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        });
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
       })
       .finally(() => dispatch(setLoad(true)));
   };
 
   return (
-    <div className="h-full flex flex-col justify-center">
-      <form onSubmit={handleSubmit(submit)} 
-        className="grid grid-cols-1 gap-6 max-w-lg sm:mx-auto p-6 rounded-2xl bg-white dark:bg-zinc-900 shadow-lg"
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5">
+      <Input
+        icon={<EnvelopeIcon className="size-5" />}
+        id="email" name="email" type="email"
+        label="Correo electrónico" placeholder="usuario@dominio.com"
+        register={{
+          function: register,
+          errors: {
+            function: errors,
+            rules: {
+              required: 'Requerido',
+              validate: { isEmailValid: (v) => isEmailValid(v) || 'Correo inválido' },
+            },
+          },
+        }}
+      />
+
+      <Input
+        icon={<LockClosedIcon className="size-5" />}
+        id="password" name="password"
+        type={hide ? 'password' : 'text'}
+        label="Contraseña" placeholder="••••••••"
+        register={{
+          function: register,
+          errors: {
+            function: errors,
+            rules: { required: 'Requerido', minLength: { value: 8 } },
+          },
+        }}
+        helperLink={{ url: '/recovery', text: '¿Olvidaste tu contraseña?' }}
+        element={
+          <button type="button" onClick={() => setHide(!hide)}>
+            {hide ? <EyeIcon className="size-5" /> : <EyeSlashIcon className="size-5" />}
+          </button>
+        }
+      />
+
+      <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
+        Ingresar
+      </Button>
+
+      <div className="flex items-center gap-3">
+        <hr className="flex-1 border-gray-200 dark:border-zinc-700" />
+        <span className="text-xs text-gray-400 uppercase font-medium">o continúa con</span>
+        <hr className="flex-1 border-gray-200 dark:border-zinc-700" />
+      </div>
+
+      <button
+        type="button"
+        onClick={google}
+        className="w-full flex items-center justify-center gap-3 border border-gray-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
       >
-        <div className="grid grid-cols-1 gap-6">
-          <Input
-            icon={<EnvelopeIcon className="size-6"/>}
-            id="email"
-            name="email"
-            type="email"
-            label={"Correo electrónico"}
-            placeholder={"username@domain.com"}
-            register={{
-              function: register,
-              errors: {
-                function: errors,
-                rules: {
-                  required: 'Email is required',
-                  validate: {
-                    isEmailValid: (value) => {
-                      if (!isEmailValid(value)) {
-                        return 'Invalid email format';
-                      }
-                      return true;
-                    },
-                  },
-                },
-              },
-            }}
-          />
-          <Input
-            icon={<LockClosedIcon className="size-6" />}
-            id="password"
-            name="password"
-            type={hide ? 'password' : 'text'}
-            label={"Contraseña"}
-            placeholder={"*************"}
-            register={{
-              function: register,
-              errors: {
-                function: errors,
-                rules: {
-                  required: 'Password is required',
-                  minLength: {
-                    value: 8,
-                  },
-                },
-              },
-            }}
-            helperLink={{
-              url: '/recovery',
-              text: 'Forgot password?'
-            }}
-            element={
-              <button type="button" onClick={() => setHide(!hide)} >
-                {hide ? (<EyeIcon className="size-6" /> ) : ( <EyeSlashIcon className="size-6" />)}
-              </button>
-            }
-          />
-        </div>
-        <div className="grid grid-cols-1 gap-4">
-          <Button type="submit" size="lg" disabled={!isValid}>
-            Ingresar
-          </Button>
-          <div className="flex gap-2 items-center justify-center">
-            <hr className="flex-grow border-black/20 dark:border-gray-500"/>
-            <span className="text-xs text-center uppercase font-medium text-black/50 dark:text-gray-500">
-                {"Or log in with"}
-            </span>
-            <hr className="flex-grow border-black/20 dark:border-gray-500"/>
-          </div>
-          <Button type="button" size="xl" variant="outline" className="flex justify-center" onClick={google}>
-            <GoogleIcon />
-          </Button>          
-        </div>
-      </form>
-    </div>
-  )
-}
+        <GoogleIcon />
+        Google
+      </button>
+    </form>
+  );
+};

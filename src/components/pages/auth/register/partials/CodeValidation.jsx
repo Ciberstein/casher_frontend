@@ -1,101 +1,68 @@
 import React from 'react'
-import { useForm } from 'react-hook-form';
-import Swal from 'sweetalert2';
-import appError from '../../../../../utils/appError';
-import api from '../../../../../api/axios';
-import { setLoad } from '../../../../../store/slices/loader.slice';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { Input } from '../../../../elements/user/Input';
-import { Button } from '../../../../elements/user/Button';
-import reSendAuthCode from '../../../../../utils/reSendAuthCode';
+import { useForm } from 'react-hook-form'
+import Swal from 'sweetalert2'
+import appError from '../../../../../utils/appError'
+import api from '../../../../../api/axios'
+import { setLoad } from '../../../../../store/slices/loader.slice'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline'
+import { Input } from '../../../../elements/user/Input'
+import { Button } from '../../../../elements/user/Button'
+import reSendAuthCode from '../../../../../utils/reSendAuthCode'
 
 export const CodeValidation = ({ account }) => {
-
   const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const reSendCode = async () => {
-
-    dispatch(setLoad(false))
-
-    await reSendAuthCode(account.email)
-      .finally(() => dispatch(setLoad(true)));
-
-  }
+    dispatch(setLoad(false));
+    await reSendAuthCode(account.email).finally(() => dispatch(setLoad(true)));
+  };
 
   const submit = async (data) => {
-
     dispatch(setLoad(false));
-
-    const url = `/api/v1/auth/register/validation/`;
-
-    const formData = data;
-    formData.accountId = account.id
-
-    await api.post(url, formData)
-      .then(res => { 
-        Swal.fire({
-          icon: 'success',
-          title: 'Done!',
-          text: res.data.message,
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        }).then(() => navigate('/'));
+    const formData = { ...data, accountId: account.id };
+    await api.post('/api/v1/auth/register/validation/', formData)
+      .then(res => {
+        Swal.fire({ icon: 'success', title: '¡Listo!', text: res.data.message, showConfirmButton: false, timer: 3000, timerProgressBar: true })
+          .then(() => navigate('/'));
       })
-      .catch(err => { 
-        appError(err)
-        Swal.fire({
-          toast: true,
-          position: 'bottom-right',
-          icon: 'error',
-          text: err.response.data.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        });
+      .catch(err => {
+        appError(err);
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
       })
-      .finally(() => dispatch(setLoad(true)))
-  }
+      .finally(() => dispatch(setLoad(true)));
+  };
 
   return (
-    <div className="h-full flex flex-col justify-center">
-      <form onSubmit={handleSubmit(submit)} 
-        className="flex flex-col items-center gap-6 max-w-lg sm:mx-auto p-6 rounded-2xl bg-white dark:bg-zinc-900 shadow-lg"
-      >
-        <EnvelopeIcon className="size-20"/>
-        <p className="text-sm text-center">
-          {"We have sent a verification code to your email address"} <br />
-          <b>{account.email}</b>, {"please enter it here."}
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5">
+      <div className="flex flex-col items-center gap-3 py-2">
+        <div className="size-14 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <EnvelopeIcon className="size-7 text-green-600 dark:text-green-400" />
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          Enviamos un código de 6 dígitos a <span className="font-semibold text-gray-800 dark:text-white">{account.email}</span>
         </p>
+      </div>
 
-        <Input
-          icon={<LockClosedIcon className="size-6" />}
-          id="code"
-          name="code"
-          maxLength="6"
-          full
-          label={"Verification code"}
-          helperLink={{ url: "", text: <button type="button" onClick={reSendCode}>{"Send again"}</button> }}
-          register={{
-            function: register,
-            errors: {
-              function: errors,
-              rules: {
-                required: 'Code is required',
-              },
-            },
-          }}
-        />
+      <Input
+        icon={<LockClosedIcon className="size-5" />}
+        id="code" name="code"
+        maxLength="6"
+        label="Código de verificación"
+        placeholder="000000"
+        helperLink={{ url: '', text: <button type="button" onClick={reSendCode} className="text-green-600 dark:text-green-400 hover:underline">Reenviar código</button> }}
+        register={{
+          function: register,
+          errors: { function: errors, rules: { required: 'Requerido' } },
+        }}
+      />
 
-        <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
-          Validar
-        </Button>
-      </form>
-    </div>
-  )
-}
+      <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
+        Verificar
+      </Button>
+    </form>
+  );
+};
