@@ -8,7 +8,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import api from '../../../../../api/axios'
 import appError from '../../../../../utils/appError'
 import { setLoad } from '../../../../../store/slices/loader.slice'
-import { transactionsThunk } from '../../../../../store/slices/transactions.slice'
+import { transfersThunk } from '../../../../../store/slices/transfers.slice'
 import { accountThunk } from '../../../../../store/slices/account.slice'
 import Swal from 'sweetalert2'
 import { QRCodeSVG } from 'qrcode.react'
@@ -22,14 +22,14 @@ const ManageTxModal = ({ open, setOpen, tx }) => {
 
     dispatch(setLoad(false));
 
-    const url =  `/api/v1/transactions/request/${tx.id}`;
+    const url =  `/api/v1/transfers/request/${tx.id}`;
     const data = { status };
 
     await api.patch(url, data)
       .then(res => {
         setOpen(false)
         dispatch(accountThunk());
-        dispatch(transactionsThunk());
+        dispatch(transfersThunk());
         Swal.fire({
           toast: true,
           position: 'bottom-right',

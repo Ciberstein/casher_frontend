@@ -75,7 +75,7 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
 
           <MenuItems
             transition
-            className="absolute right-0 z-10 mt-2 w-60 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-gray-100 dark:border-zinc-800 overflow-hidden focus:outline-none
+            className="absolute right-0 z-20 mt-2 w-60 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-gray-100 dark:border-zinc-800 overflow-hidden focus:outline-none
               data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 transition"
           >
             <div className="px-4 py-3 border-b border-gray-100 dark:border-zinc-800">
@@ -154,7 +154,7 @@ export const AdminNavbar = () => {
           </MenuButton>
           <MenuItems
             transition
-            className="absolute right-0 z-10 mt-2 w-60 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-gray-100 dark:border-zinc-800 overflow-hidden focus:outline-none
+            className="absolute right-0 z-20 mt-2 w-60 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl border border-gray-100 dark:border-zinc-800 overflow-hidden focus:outline-none
               data-[closed]:scale-95 data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 transition"
           >
             <div className="px-4 py-3 border-b border-gray-100 dark:border-zinc-800">

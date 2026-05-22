@@ -368,7 +368,7 @@ export const TransactionsPage = () => {
 
   const openDetail = async (item) => {
     try {
-      const res = await api.get(`/api/v1/transactions/${item.meta.hash}`);
+      const res = await api.get(`/api/v1/transfers/${item.meta.hash}`);
       setSelectedTx(res.data);
       setDetailOpen(true);
     } catch (err) { appError(err); }

@@ -15,7 +15,7 @@ import api from '../../../../../api/axios'
 import Swal from 'sweetalert2'
 import appError from '../../../../../utils/appError'
 import { accountThunk } from '../../../../../store/slices/account.slice'
-import { transactionsThunk } from '../../../../../store/slices/transactions.slice'
+import { transfersThunk } from '../../../../../store/slices/transfers.slice'
 import { activityThunk } from '../../../../../store/slices/activity.slice'
 
 const CURRENCY_OPTIONS = [
@@ -55,7 +55,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
   const submit = async (data) => {
     dispatch(setLoad(false));
-    const url = `/api/v1/transactions/${txType ? 'send' : 'request'}`;
+    const url = `/api/v1/transfers/${txType ? 'send' : 'request'}`;
     const formData = data;
     formData.type = type;
     formData.confirmation = section == 3 ? true : false;
@@ -76,7 +76,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
           setSection(1);
           setSuccess(true);
           dispatch(accountThunk());
-          dispatch(transactionsThunk());
+          dispatch(transfersThunk());
           dispatch(activityThunk());
         }
       })
