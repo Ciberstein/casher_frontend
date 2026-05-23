@@ -14,7 +14,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 export const RecoveryForm = ({ setAccount }) => {
   const [captchaToken, setCaptchaToken] = useState(null)
   const turnstileRef = useRef(null)
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' })
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' })
   const dispatch = useDispatch()
 
   const submit = async (data) => {
@@ -59,7 +59,7 @@ export const RecoveryForm = ({ setAccount }) => {
         />
       </div>
 
-      <Button type="submit" size="lg" className="w-full" disabled={!isValid || !captchaToken}>
+      <Button type="submit" size="lg" className="w-full" disabled={!isValid || !captchaToken || isSubmitting}>
         Enviar código
       </Button>
     </form>

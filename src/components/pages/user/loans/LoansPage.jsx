@@ -17,7 +17,7 @@ const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rec
 const statusColor = { pending: 'text-yellow-500', accepted: 'text-emerald-500', rejected: 'text-red-500', paid: 'text-blue-500' };
 
 const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
-  const { register, handleSubmit, reset, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const dispatch = useDispatch();
 
   const submit = async (data) => {
@@ -53,7 +53,7 @@ const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
             <option value="USD">USD</option>
           </select>
         </div>
-        <Button type="submit" disabled={!isValid}>Solicitar</Button>
+        <Button type="submit" disabled={!isValid || isSubmitting}>Solicitar</Button>
       </form>
     </Modal>
   );

@@ -25,7 +25,7 @@ const CURRENCY_OPTIONS = [
 ];
 
 export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
-  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const dispatch = useDispatch();
 
   const submit = async (data) => {
@@ -54,14 +54,14 @@ export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
               onChange={field.onChange} placeholder="Selecciona moneda"
               error={errors.currency} searchable={false} />
           )} />
-        <Button type="submit" disabled={!isValid}>Solicitar</Button>
+        <Button type="submit" disabled={!isValid || isSubmitting}>Solicitar</Button>
       </form>
     </Modal>
   );
 };
 
 export const WithdrawalRequestModal = ({ open, setOpen, onSuccess }) => {
-  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
@@ -127,7 +127,7 @@ export const WithdrawalRequestModal = ({ open, setOpen, onSuccess }) => {
                 Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{availableFormatted}</span>
               </span>
             </div>
-            <Button type="submit" disabled={!isValid}>Solicitar retiro</Button>
+            <Button type="submit" disabled={!isValid || isSubmitting}>Solicitar retiro</Button>
           </form>
         )
       }

@@ -12,7 +12,7 @@ import appError from '../../../../../utils/appError';
 
 export const CodePasswordValidation = ({ setPassword, password }) => {
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
 
   const account = useSelector(state => state.account);
   const dispatch = useDispatch();
@@ -83,7 +83,7 @@ export const CodePasswordValidation = ({ setPassword, password }) => {
           },
         }}
       />
-      <Button type="submit" className="w-full" disabled={!isValid}>
+      <Button type="submit" className="w-full" disabled={!isValid || isSubmitting}>
         {"Validate"}
       </Button>
     </form>

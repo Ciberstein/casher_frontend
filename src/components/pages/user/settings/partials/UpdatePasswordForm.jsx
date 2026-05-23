@@ -17,7 +17,7 @@ export const UpdatePasswordForm = ({ setPassword }) => {
 
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+    const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
 
     const submit = async (data) => {
 
@@ -161,7 +161,7 @@ export const UpdatePasswordForm = ({ setPassword }) => {
                 />
             </div>
             <div className="flex justify-end">
-                <Button type="submit" color="green" disabled={!isValid}>
+                <Button type="submit" color="green" disabled={!isValid || isSubmitting}>
                     Guardar cambios
                 </Button>
             </div>

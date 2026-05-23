@@ -8,7 +8,7 @@ export const Loader = () => {
     <div
       className={`${
         loader && 'hidden'
-      } absolute z-50 bg-black/50 w-full h-full`}
+      } fixed inset-0 z-[100] bg-black/50 w-full h-full`}
     >
       <div className="flex flex-colum flex-grow h-full justify-center items-center backdrop-blur-lg">
         <Ring

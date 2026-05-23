@@ -12,7 +12,7 @@ import { accountThunk } from '../../../../../store/slices/account.slice';
 
 export const UpdatePersonalDataForm = () => {
 
-  const { register, handleSubmit, setValue, trigger, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, setValue, trigger, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const account = useSelector(state => state.account);
   const dispatch = useDispatch();
 
@@ -166,7 +166,7 @@ export const UpdatePersonalDataForm = () => {
         />
       </div>
       <div className="flex justify-end">
-        <Button type="submit" color="green" disabled={!isValid}>
+        <Button type="submit" color="green" disabled={!isValid || isSubmitting}>
           Guardar cambios
         </Button>
       </div>

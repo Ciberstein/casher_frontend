@@ -126,7 +126,7 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
 const ACCOUNT_TYPE_LABEL = { savings: 'Ahorros', checking: 'Corriente' };
 
 export const ChargeModal = ({ open, setOpen }) => {
-  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [accounts, setAccounts] = useState([]);
   const [file, setFile] = useState(null);
   const [fileError, setFileError] = useState(false);
@@ -236,14 +236,14 @@ export const ChargeModal = ({ open, setOpen }) => {
           deferred
           error={fileError && !file ? { message: 'Requerido' } : null}
         />
-        <Button type="submit" color="green" disabled={!isValid}>Enviar solicitud</Button>
+        <Button type="submit" color="green" disabled={!isValid || isSubmitting}>Enviar solicitud</Button>
       </form>
     </Modal>
   );
 };
 
 export const SendOrRequestModal = ({ open, setOpen, txType }) => {
-  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({
+  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({
     mode: 'onChange', defaultValues: { currency: 'COP' },
   });
   const [section, setSection] = useState(1);
@@ -338,7 +338,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
                 {errors.user && <p className="text-xs text-red-400 mt-1">{errors.user.message}</p>}
               </div>
 
-              <Button type="submit" disabled={!isValid} className="w-full">
+              <Button type="submit" disabled={!isValid || isSubmitting} className="w-full">
                 Continuar
               </Button>
             </>
@@ -374,7 +374,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <Button color="gray" type="button" variant="outline" onClick={() => setSection(1)}>Volver</Button>
-                <Button type="submit" disabled={!isValid}>Continuar</Button>
+                <Button type="submit" disabled={!isValid || isSubmitting}>Continuar</Button>
               </div>
             </>
           )}
@@ -408,7 +408,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
               <div className="grid grid-cols-2 gap-3">
                 <Button color="gray" type="button" variant="outline" onClick={() => setSection(2)}>Volver</Button>
-                <Button color="green" type="submit" disabled={!isValid}>
+                <Button color="green" type="submit" disabled={!isValid || isSubmitting}>
                   {txType ? 'Enviar' : 'Solicitar'}
                 </Button>
               </div>
@@ -421,7 +421,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 };
 
 const WithdrawModal = ({ open, setOpen, onSuccess }) => {
-  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
@@ -482,7 +482,7 @@ const WithdrawModal = ({ open, setOpen, onSuccess }) => {
                 Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{availableFormatted}</span>
               </span>
             </div>
-            <Button type="submit" disabled={!isValid}>Solicitar retiro</Button>
+            <Button type="submit" disabled={!isValid || isSubmitting}>Solicitar retiro</Button>
           </form>
         )
       }

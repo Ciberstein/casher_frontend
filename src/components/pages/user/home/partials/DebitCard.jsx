@@ -23,7 +23,7 @@ const CURRENCY_OPTIONS = [
 ];
 
 const PayModal = ({ open, setOpen, pendingBalance, onSuccess }) => {
-  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange', defaultValues: { currency: 'COP' } });
+  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange', defaultValues: { currency: 'COP' } });
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
   const { rate } = useSelector((state) => state.currency);
@@ -83,7 +83,7 @@ const PayModal = ({ open, setOpen, pendingBalance, onSuccess }) => {
             <span>Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{fmt(available)}</span></span>
           </div>
         </div>
-        <Button type="submit" color="green" disabled={!isValid}>Abonar</Button>
+        <Button type="submit" color="green" disabled={!isValid || isSubmitting}>Abonar</Button>
       </form>
     </Modal>
   );

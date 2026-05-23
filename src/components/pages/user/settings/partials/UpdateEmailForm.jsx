@@ -12,7 +12,7 @@ import isEmailValid from '../../../../../utils/isEmailValid';
 
 export const UpdateEmailForm = ({ setEmail }) => {
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const account = useSelector(state => state.account);
   const dispatch = useDispatch();
 
@@ -142,7 +142,7 @@ export const UpdateEmailForm = ({ setEmail }) => {
         />
       </div>
       <div className="flex justify-end">
-        <Button type="submit" color="green" disabled={!isValid}>
+        <Button type="submit" color="green" disabled={!isValid || isSubmitting}>
           Guardar cambios
         </Button>
       </div>

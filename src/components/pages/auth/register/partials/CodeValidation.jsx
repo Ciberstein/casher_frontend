@@ -12,7 +12,7 @@ import { Button } from '../../../../elements/user/Button'
 import reSendAuthCode from '../../../../../utils/reSendAuthCode'
 
 export const CodeValidation = ({ account }) => {
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ export const CodeValidation = ({ account }) => {
         }}
       />
 
-      <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
+      <Button type="submit" size="lg" className="w-full" disabled={!isValid || isSubmitting}>
         Verificar
       </Button>
     </form>

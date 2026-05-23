@@ -20,7 +20,7 @@ const ACCOUNT_TYPE_OPTIONS = [
 ];
 
 const AddBankAccountModal = ({ open, setOpen, onSuccess }) => {
-  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const dispatch = useDispatch();
   const banks = useSelector((state) => state.banks);
   const documentTypes = useSelector((state) => state.documentTypes);
@@ -86,14 +86,14 @@ const AddBankAccountModal = ({ open, setOpen, onSuccess }) => {
             label="Número de documento" placeholder="00000000"
             register={{ function: register, errors: { function: errors, rules: { required: 'Requerido' } } }} />
         </div>
-        <Button type="submit" disabled={!isValid}>Agregar</Button>
+        <Button type="submit" disabled={!isValid || isSubmitting}>Agregar</Button>
       </form>
     </Modal>
   );
 };
 
 const EditBankAccountModal = ({ open, setOpen, account, onSuccess }) => {
-  const { register, handleSubmit, reset, control, trigger, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, trigger, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const dispatch = useDispatch();
   const banks = useSelector((state) => state.banks);
   const documentTypes = useSelector((state) => state.documentTypes);
@@ -172,7 +172,7 @@ const EditBankAccountModal = ({ open, setOpen, account, onSuccess }) => {
             label="Número de documento" placeholder="00000000"
             register={{ function: register, errors: { function: errors, rules: { required: 'Requerido' } } }} />
         </div>
-        <Button type="submit" disabled={!isValid}>Guardar cambios</Button>
+        <Button type="submit" disabled={!isValid || isSubmitting}>Guardar cambios</Button>
       </form>
     </Modal>
   );

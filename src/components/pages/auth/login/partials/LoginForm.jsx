@@ -22,7 +22,7 @@ export const LoginForm = ({ setAccount }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' })
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' })
 
   const trigger = (res) => {
     if (res.status === 200) location.reload()
@@ -110,7 +110,7 @@ export const LoginForm = ({ setAccount }) => {
         />
       </div>
 
-      <Button type="submit" size="lg" className="w-full" disabled={!isValid || !captchaToken}>
+      <Button type="submit" size="lg" className="w-full" disabled={!isValid || !captchaToken || isSubmitting}>
         Ingresar
       </Button>
 

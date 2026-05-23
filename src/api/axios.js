@@ -21,7 +21,9 @@ api.interceptors.response.use(
   async err => {
     const originalRequest = err.config;
 
-    if (err.response?.status === 401 && !originalRequest._retry) {
+    const isPublicAuth = /\/api\/v1\/auth\/(login|register|recovery|code)/.test(originalRequest.url || '');
+
+    if (err.response?.status === 401 && !originalRequest._retry && !isPublicAuth) {
       originalRequest._retry = true;
 
       if (isRefreshing) {

@@ -21,7 +21,7 @@ export const RegisterForm = ({ setAccount, firebase }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' })
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' })
 
   const submit = async (data) => {
     dispatch(setLoad(false))
@@ -180,7 +180,7 @@ export const RegisterForm = ({ setAccount, firebase }) => {
         />
       </div>
 
-      <Button type="submit" size="lg" color="green" className="w-full mt-1" disabled={!isValid || !captchaToken}>
+      <Button type="submit" size="lg" color="green" className="w-full mt-1" disabled={!isValid || !captchaToken || isSubmitting}>
         Crear cuenta
       </Button>
     </form>

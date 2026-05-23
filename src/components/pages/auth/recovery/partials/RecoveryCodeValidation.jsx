@@ -12,7 +12,7 @@ import { Button } from '../../../../elements/user/Button'
 import reSendAuthCode from '../../../../../utils/reSendAuthCode'
 
 export const RecoveryCodeValidation = ({ account }) => {
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [hide1, setHide1] = useState(true);
   const [hide2, setHide2] = useState(true);
 
@@ -94,7 +94,7 @@ export const RecoveryCodeValidation = ({ account }) => {
         }}
       />
 
-      <Button type="submit" size="lg" className="w-full mt-1" disabled={!isValid}>
+      <Button type="submit" size="lg" className="w-full mt-1" disabled={!isValid || isSubmitting}>
         Restablecer contraseña
       </Button>
     </form>

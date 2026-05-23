@@ -18,7 +18,7 @@ const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rec
 const statusColor = { pending: 'text-yellow-500', accepted: 'text-emerald-500', rejected: 'text-red-500' };
 
 const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
-  const { register, handleSubmit, reset, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
 
@@ -68,7 +68,7 @@ const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
                 <option value="USD">USD</option>
               </select>
             </div>
-            <Button type="submit" disabled={!isValid}>Solicitar retiro</Button>
+            <Button type="submit" disabled={!isValid || isSubmitting}>Solicitar retiro</Button>
           </form>
         )
       }
