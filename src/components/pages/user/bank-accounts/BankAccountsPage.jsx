@@ -63,7 +63,7 @@ const AddBankAccountModal = ({ open, setOpen, onSuccess }) => {
               error={errors.bank_name} icon={<BuildingLibraryIcon className="size-6" />} />
           )} />
         <Input icon={<BuildingLibraryIcon className="size-6" />} id="account_number" name="account_number"
-          label="Número de cuenta" placeholder="000-000000-00"
+          label="Cuenta" placeholder="Email, número de cuenta..."
           register={{ function: register, errors: { function: errors, rules: { required: 'Requerido' } } }} />
         <Input icon={<BuildingLibraryIcon className="size-6" />} id="owner_name" name="owner_name"
           label="Titular" placeholder="Nombre completo"
@@ -149,7 +149,7 @@ const EditBankAccountModal = ({ open, setOpen, account, onSuccess }) => {
               error={errors.bank_name} icon={<BuildingLibraryIcon className="size-6" />} />
           )} />
         <Input icon={<BuildingLibraryIcon className="size-6" />} id="account_number" name="account_number"
-          label="Número de cuenta" placeholder="000-000000-00"
+          label="Cuenta" placeholder="Email, número de cuenta..."
           register={{ function: register, errors: { function: errors, rules: { required: 'Requerido' } } }} />
         <Input icon={<BuildingLibraryIcon className="size-6" />} id="owner_name" name="owner_name"
           label="Titular" placeholder="Nombre completo"
