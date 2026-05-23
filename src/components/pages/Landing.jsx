@@ -10,7 +10,7 @@ import {
 const FEATURES = [
   {
     icon: <ArrowUpRightIcon className="size-6" />,
-    color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+    color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
     title: 'Transferencias instantáneas',
     desc: 'Envía y solicita dinero a cualquier usuario de Casher en segundos, sin comisiones ocultas.',
   },
@@ -86,7 +86,7 @@ export const Landing = () => {
           <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
             <Link
               to="/register"
-              className="inline-flex items-center justify-center gap-2 bg-white text-green-600 font-semibold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              className="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 font-semibold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all"
             >
               Crear cuenta gratis
               <ArrowRightIcon className="size-4" />
@@ -116,8 +116,8 @@ export const Landing = () => {
         <div className="grid grid-cols-3 gap-6">
           {STATS.map((s) => (
             <div key={s.label} className="flex flex-col items-center text-center gap-1">
-              <span className="text-2xl md:text-3xl font-bold text-green-500">{s.value}</span>
-              <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">{s.label}</span>
+              <span className="text-2xl md:text-3xl font-bold text-emerald-500">{s.value}</span>
+              <span className="text-xs md:text-sm text-slate-500 dark:text-slate-400">{s.label}</span>
             </div>
           ))}
         </div>
@@ -126,10 +126,10 @@ export const Landing = () => {
       {/* Features */}
       <section className="max-w-5xl mx-auto px-6 py-12 w-full flex flex-col gap-10">
         <div className="text-center flex flex-col gap-2">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
             Todo lo que necesitas en un solo lugar
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm md:text-base max-w-lg mx-auto">
+          <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base max-w-lg mx-auto">
             Casher centraliza tu actividad financiera con herramientas pensadas para simplificar tu día a día.
           </p>
         </div>
@@ -138,14 +138,14 @@ export const Landing = () => {
           {FEATURES.map((f) => (
             <div
               key={f.title}
-              className="bg-white dark:bg-neutral-800 rounded-2xl border border-gray-100 dark:border-neutral-700 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-neutral-800 rounded-2xl border border-slate-100 dark:border-neutral-700 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className={`size-12 rounded-xl flex items-center justify-center ${f.color}`}>
                 {f.icon}
               </div>
               <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-gray-900 dark:text-white">{f.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
+                <h3 className="font-semibold text-slate-900 dark:text-white">{f.title}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{f.desc}</p>
               </div>
             </div>
           ))}
@@ -165,7 +165,7 @@ export const Landing = () => {
           </p>
           <Link
             to="/register"
-            className="relative inline-flex items-center gap-2 bg-white text-green-600 font-semibold px-8 py-3.5 rounded-full shadow-lg hover:scale-105 transition-transform"
+            className="relative inline-flex items-center gap-2 bg-white text-emerald-600 font-semibold px-8 py-3.5 rounded-full shadow-lg hover:scale-105 transition-transform"
           >
             Registrarme ahora
             <ArrowRightIcon className="size-4" />
@@ -180,12 +180,12 @@ export const Landing = () => {
             src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`}
             className="max-h-7 opacity-70"
           />
-          <p className="text-xs text-gray-400 text-center">
+          <p className="text-xs text-slate-400 text-center">
             © {new Date().getFullYear()} Casher. Todos los derechos reservados.
           </p>
-          <div className="flex gap-4 text-xs text-gray-400">
-            <Link to="/login" className="hover:text-green-500 transition-colors">Ingresar</Link>
-            <Link to="/register" className="hover:text-green-500 transition-colors">Registrarse</Link>
+          <div className="flex gap-4 text-xs text-slate-400">
+            <Link to="/login" className="hover:text-emerald-500 transition-colors">Ingresar</Link>
+            <Link to="/register" className="hover:text-emerald-500 transition-colors">Registrarse</Link>
           </div>
         </div>
       </footer>

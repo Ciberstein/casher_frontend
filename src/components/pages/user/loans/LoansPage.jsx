@@ -14,7 +14,7 @@ import { accountThunk } from '../../../../store/slices/account.slice'
 import useCurrency from '../../../../hooks/useCurrency'
 
 const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rechazado', paid: 'Pagado' };
-const statusColor = { pending: 'text-yellow-500', accepted: 'text-green-500', rejected: 'text-red-500', paid: 'text-blue-500' };
+const statusColor = { pending: 'text-yellow-500', accepted: 'text-emerald-500', rejected: 'text-red-500', paid: 'text-blue-500' };
 
 const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
   const { register, handleSubmit, reset, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
@@ -48,7 +48,7 @@ const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium dark:text-white">Moneda</label>
           <select {...register('currency', { required: true })}
-            className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-gray-600">
+            className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-neutral-600">
             <option value="COP">COP</option>
             <option value="USD">USD</option>
           </select>
@@ -86,20 +86,20 @@ export const LoansPage = () => {
       </div>
       <LoanRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       <div className="flex flex-col gap-3">
-        {loans.length === 0 && <p className="text-gray-400 text-sm">No tienes préstamos aún.</p>}
+        {loans.length === 0 && <p className="text-slate-400 text-sm">No tienes préstamos aún.</p>}
         {loans.map(loan => (
           <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <span className="font-semibold dark:text-white">{loan.amount.toLocaleString()} {loan.currency}</span>
               <span className={`text-sm font-medium ${statusColor[loan.status]}`}>{statusLabel[loan.status]}</span>
             </div>
-            <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
               <span>Tasa: {loan.interest_rate}% diario</span>
               {loan.status === 'accepted' && loan.outstanding != null && (
                 <span>Saldo actual: {format(loan.outstanding)}</span>
               )}
             </div>
-            <span className="text-xs text-gray-400">{new Date(loan.createdAt).toLocaleDateString()}</span>
+            <span className="text-xs text-slate-400">{new Date(loan.createdAt).toLocaleDateString()}</span>
           </div>
         ))}
       </div>

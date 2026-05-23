@@ -18,7 +18,7 @@ import { documentTypesThunk } from '../../../store/slices/documentTypes.slice'
 const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rechazado', paid: 'Pagado' };
 const statusColor = {
   pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  accepted: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  accepted: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
   rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   paid: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
 };
@@ -59,20 +59,20 @@ const AcceptWithdrawalModal = ({ open, setOpen, withdrawal, onSuccess }) => {
   return (
     <Modal open={open} setOpen={handleClose} title="Confirmar retiro" className="grid gap-6">
       {withdrawal && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-700">
-          <div className="size-11 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
-            <span className="text-sm font-bold text-green-700 dark:text-green-400">{initials}</span>
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700">
+          <div className="size-11 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
+            <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">{initials}</span>
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{withdrawal.account?.username}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{withdrawal.account?.email}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{withdrawal.account?.username}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{withdrawal.account?.email}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
               {withdrawal.bankAccount?.bank_name} · {withdrawal.bankAccount?.account_number}
             </p>
           </div>
           <div className="ml-auto shrink-0 text-right">
-            <p className="text-lg font-bold text-gray-900 dark:text-white">{withdrawal.amount?.toLocaleString()}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{withdrawal.currency}</p>
+            <p className="text-lg font-bold text-slate-900 dark:text-white">{withdrawal.amount?.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{withdrawal.currency}</p>
           </div>
         </div>
       )}
@@ -91,22 +91,22 @@ const AcceptWithdrawalModal = ({ open, setOpen, withdrawal, onSuccess }) => {
 };
 
 const InfoRow = ({ icon, text }) => (
-  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
     {icon}
     <span>{text}</span>
   </div>
 );
 
 const ViewToggle = ({ value, onChange }) => (
-  <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-lg p-0.5 w-fit text-xs">
+  <div className="flex gap-1 bg-slate-100 dark:bg-neutral-800 rounded-lg p-0.5 w-fit text-xs">
     {['pending', 'history'].map(v => (
       <button
         key={v}
         onClick={() => onChange(v)}
         className={`px-3 py-1.5 rounded-md font-medium transition-colors
           ${value === v
-            ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            ? 'bg-white dark:bg-neutral-700 text-slate-900 dark:text-white shadow-sm'
+            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
           }`}
       >
         {v === 'pending' ? 'Pendientes' : 'Historial'}
@@ -143,14 +143,14 @@ const LoansPanel = () => {
     <div className="flex flex-col gap-4">
       <ViewToggle value={view} onChange={setView} />
       {loans.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
           <BanknotesIcon className="size-10 opacity-40" />
           <p className="text-sm">{view === 'pending' ? 'No hay préstamos pendientes' : 'Sin historial'}</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
           {loans.map(loan => (
-            <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+            <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-neutral-800">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col gap-2 min-w-0">
                   <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${loan.account?.username} · ${loan.account?.email}`} />
@@ -160,20 +160,20 @@ const LoansPanel = () => {
                       {statusLabel[loan.status]}
                     </span>
                   </div>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Tasa {loan.interest_rate}% diario</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">Tasa {loan.interest_rate}% diario</span>
                   {loan.outstanding != null && (
-                    <span className="text-sm text-gray-500 dark:text-gray-400">Saldo actual: {loan.outstanding.toLocaleString()} COP</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">Saldo actual: {loan.outstanding.toLocaleString()} COP</span>
                   )}
                   <InfoRow icon={<CalendarIcon className="size-4 shrink-0" />} text={new Date(loan.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })} />
                 </div>
                 {view === 'pending' && (
                   <div className="flex gap-2 shrink-0">
                     <button onClick={() => action(loan.id, 'accept')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors">
                       <CheckIcon className="size-4" /> Aceptar
                     </button>
                     <button onClick={() => action(loan.id, 'reject')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
@@ -235,14 +235,14 @@ const WithdrawalsPanel = () => {
       <AcceptWithdrawalModal open={modal} setOpen={setModal} withdrawal={selected} onSuccess={() => fetchWithdrawals()} />
       <ViewToggle value={view} onChange={setView} />
       {withdrawals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
           <ArrowDownTrayIcon className="size-10 opacity-40" />
           <p className="text-sm">{view === 'pending' ? 'No hay retiros pendientes' : 'Sin historial'}</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
           {withdrawals.map(w => (
-            <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+            <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-neutral-800">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col gap-2 min-w-0">
                   <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${w.account?.username} · ${w.account?.email}`} />
@@ -264,11 +264,11 @@ const WithdrawalsPanel = () => {
                 {view === 'pending' && (
                   <div className="flex gap-2 shrink-0">
                     <button onClick={() => { setSelected(w); setModal(true); }}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors">
                       <CheckIcon className="size-4" /> Aceptar
                     </button>
                     <button onClick={() => reject(w.id)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
@@ -312,14 +312,14 @@ const DepositRequestsPanel = () => {
       <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <ViewToggle value={view} onChange={setView} />
       {requests.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
           <ArrowDownTrayIcon className="size-10 opacity-40 rotate-180" />
           <p className="text-sm">{view === 'pending' ? 'No hay solicitudes pendientes' : 'Sin historial'}</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
           {requests.map(req => (
-            <div key={req.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
+            <div key={req.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-neutral-800">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col gap-2 min-w-0">
                   <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${req.account?.username} · ${req.account?.email}`} />
@@ -342,11 +342,11 @@ const DepositRequestsPanel = () => {
                 {view === 'pending' && (
                   <div className="flex gap-2 shrink-0">
                     <button onClick={() => action(req.id, 'accept')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors">
                       <CheckIcon className="size-4" /> Aprobar
                     </button>
                     <button onClick={() => action(req.id, 'reject')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
@@ -528,28 +528,28 @@ const AppBankAccountsPanel = () => {
         <button
           onClick={() => setAddModal(true)}
           className="flex flex-col gap-2 justify-center items-center min-h-36 rounded-2xl border-2 border-dashed
-            border-gray-200 dark:border-neutral-700 text-gray-400 dark:text-slate-500
-            hover:border-gray-400 dark:hover:border-slate-600 hover:text-gray-600 dark:hover:text-slate-300
+            border-slate-200 dark:border-neutral-700 text-slate-400 dark:text-slate-500
+            hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-600 dark:hover:text-slate-300
             transition-colors"
         >
           <PlusIcon className="size-8" />
           <span className="text-sm font-medium">Agregar nueva cuenta</span>
         </button>
         {accounts.map(acc => (
-          <div key={acc.id} className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36 shadow-sm">
+          <div key={acc.id} className="bg-white dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36 shadow-sm">
             <div className="flex justify-between items-start">
-              <span className="font-bold text-gray-900 dark:text-white text-base">{acc.bank_name}</span>
+              <span className="font-bold text-slate-900 dark:text-white text-base">{acc.bank_name}</span>
               <div className="flex gap-2">
                 <button
                   onClick={() => { setEditing(acc); setEditModal(true); }}
-                  className="size-8 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center
-                    text-gray-500 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="size-8 rounded-full bg-slate-100 dark:bg-neutral-800 flex items-center justify-center
+                    text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-neutral-700 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
                   <PencilSquareIcon className="size-4" />
                 </button>
                 <button
                   onClick={() => remove(acc.id)}
-                  className="size-8 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center
+                  className="size-8 rounded-full bg-slate-100 dark:bg-neutral-800 flex items-center justify-center
                     text-red-400 hover:bg-red-500 hover:text-white transition-colors"
                 >
                   <TrashIcon className="size-4" />
@@ -557,15 +557,15 @@ const AppBankAccountsPanel = () => {
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm text-gray-600 dark:text-slate-300">
+              <span className="text-sm text-slate-600 dark:text-slate-300">
                 {acc.account_number}
                 <span className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${acc.account_type === 'savings' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'}`}>
                   {accountTypeLabel[acc.account_type]}
                 </span>
               </span>
-              <span className="text-sm text-gray-500 dark:text-slate-400">{acc.owner_name}</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">{acc.owner_name}</span>
               {acc.documentType && (
-                <span className="text-sm text-gray-500 dark:text-slate-400">
+                <span className="text-sm text-slate-500 dark:text-slate-400">
                   {acc.documentType.abbreviation} {acc.document_number}
                 </span>
               )}
@@ -574,7 +574,7 @@ const AppBankAccountsPanel = () => {
         ))}
       </div>
       {accounts.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-10 gap-3 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-10 gap-3 text-slate-400">
           <BuildingLibraryIcon className="size-10 opacity-40" />
           <p className="text-sm">No hay cuentas registradas</p>
         </div>
@@ -618,18 +618,18 @@ export const AdminPage = () => {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold dark:text-white">Panel de administración</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona las solicitudes pendientes</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Gestiona las solicitudes pendientes</p>
       </div>
 
-      <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-slate-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${tab === t.key
-                ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-neutral-700 text-slate-900 dark:text-white shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
           >
             {t.icon}

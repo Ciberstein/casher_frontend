@@ -77,7 +77,7 @@ const CropModal = ({ open, imageSrc, onConfirm, onCancel }) => {
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-neutral-700 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
           >
             <XMarkIcon className="size-4" /> Cancelar
           </button>

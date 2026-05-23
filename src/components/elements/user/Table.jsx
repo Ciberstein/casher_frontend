@@ -225,7 +225,7 @@ export const Table = ({
 							</div>
 						</th>
 					</tr>
-          <tr className="bg-gray-200 dark:bg-neutral-950">
+          <tr className="bg-slate-200 dark:bg-neutral-950">
             { check && (<th aria-label="check" />) }
             { header.map((th) => (
               <th className={`${variants[size].className} ${th.hidden && 'hidden'} p-4`} key={th.name}>
@@ -267,17 +267,17 @@ export const Table = ({
                           <button
                             aria-label="dropdown-btn"
                             onClick={() => setDrop(null)}
-                            className="!rounded-full hover:bg-gray-100"
+                            className="!rounded-full hover:bg-slate-100"
                           >
-                            <ChevronUpIcon className="text-gray-500 size-7" />
+                            <ChevronUpIcon className="text-slate-500 size-7" />
                           </button>)
                           : (
                             <button
                               aria-label="dropdown-btn"
                               onClick={() => setDrop(index)}
-                              className="!rounded-full hover:bg-gray-100"
+                              className="!rounded-full hover:bg-slate-100"
                             >
-                              <ChevronDoubleDownIcon className="text-gray-500 size-7" />
+                              <ChevronDoubleDownIcon className="text-slate-500 size-7" />
                             </button>)}
                       </div>
                     </td>)}
@@ -306,7 +306,7 @@ export const Table = ({
         <span className="font-normal">Total: {pagination.total || totalItems}</span>
         <div className="flex flex-wrap gap-4 text-black">
           <label htmlFor="tableRows" className="flex gap-4 items-center rounded-full p-1 px-3
-						bg-gray-200 font-normal"
+						bg-slate-200 font-normal"
           >
 						Filas:
 						<select
@@ -319,7 +319,7 @@ export const Table = ({
 							<option defaultValue={50}>50</option>
 						</select>
           </label>
-          <div className="p-1 rounded-full bg-gray-200">
+          <div className="p-1 rounded-full bg-slate-200">
             <Pagination
               count={pagination.count || totalPages}
               page={pagination.page || currentPage}

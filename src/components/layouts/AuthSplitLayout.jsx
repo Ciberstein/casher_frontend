@@ -49,7 +49,7 @@ const BrandPanel = ({ darkMode }) => (
       <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-5 flex flex-col gap-4 border border-white/20">
         <div className="flex justify-between items-center">
           <span className="text-white/70 text-xs font-medium">Saldo disponible</span>
-          <div className="size-2 rounded-full bg-green-300 animate-pulse" />
+          <div className="size-2 rounded-full bg-emerald-300 animate-pulse" />
         </div>
         <span className="text-white text-2xl font-bold">$ 4.250.000</span>
         <div className="flex gap-2">

@@ -78,9 +78,9 @@ const PayModal = ({ open, setOpen, pendingBalance, onSuccess }) => {
                 noExceedDebt:      (v) => Number(v) <= pending   || `Máximo adeudado: ${fmt(pending)}`,
               },
             }}}} />
-          <div className="flex justify-between text-xs text-gray-400">
-            <span>Deuda pendiente: <span className="font-medium text-gray-600 dark:text-gray-300">{fmt(pending)}</span></span>
-            <span>Disponible: <span className="font-medium text-gray-600 dark:text-gray-300">{fmt(available)}</span></span>
+          <div className="flex justify-between text-xs text-slate-400">
+            <span>Deuda pendiente: <span className="font-medium text-slate-600 dark:text-slate-300">{fmt(pending)}</span></span>
+            <span>Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{fmt(available)}</span></span>
           </div>
         </div>
         <Button type="submit" color="green" disabled={!isValid}>Abonar</Button>

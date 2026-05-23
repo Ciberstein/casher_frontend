@@ -84,7 +84,7 @@ export const UpdateEmailForm = ({ setEmail }) => {
         defaultValue={account.email}
         element={
           <span title={"Verified"}>
-            <CheckCircleIcon className="size-6 text-green-500" />
+            <CheckCircleIcon className="size-6 text-emerald-500" />
           </span>
         }
         disabled

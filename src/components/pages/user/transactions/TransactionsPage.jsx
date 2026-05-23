@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   ArrowUpRightIcon, ArrowDownLeftIcon, ArrowDownTrayIcon, BanknotesIcon,
@@ -475,13 +475,18 @@ export const TransactionsPage = () => {
   }
 
   useEffect(() => {
-    api.get('/api/v1/activity?all=true')
+    const controller = new AbortController()
+    api.get('/api/v1/activity?all=true', { signal: controller.signal })
       .then(r => setActivity(r.data))
-      .catch(appError)
+      .catch(err => { if (err.name !== 'CanceledError') appError(err) })
       .finally(() => setLoading(false))
+    return () => controller.abort()
   }, [])
 
-  const transfers = activity.filter(i => i.kind === 'transfer_sent' || i.kind === 'transfer_received')
+  const transfers = useMemo(
+    () => activity.filter(i => i.kind === 'transfer_sent' || i.kind === 'transfer_received'),
+    [activity]
+  )
 
   return (
     <div className="flex flex-col gap-6">

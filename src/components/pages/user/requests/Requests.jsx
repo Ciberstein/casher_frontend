@@ -17,7 +17,7 @@ import { activityThunk } from '../../../../store/slices/activity.slice'
 import useCurrency from '../../../../hooks/useCurrency'
 
 const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rechazado', paid: 'Pagado', cancelled: 'Cancelado' };
-const statusColor = { pending: 'text-yellow-500', accepted: 'text-green-500', rejected: 'text-red-500', paid: 'text-blue-500', cancelled: 'text-gray-400' };
+const statusColor = { pending: 'text-yellow-500', accepted: 'text-emerald-500', rejected: 'text-red-500', paid: 'text-blue-500', cancelled: 'text-slate-400' };
 
 const CURRENCY_OPTIONS = [
   { value: 'COP', label: 'COP' },
@@ -104,7 +104,7 @@ export const WithdrawalRequestModal = ({ open, setOpen, onSuccess }) => {
   return (
     <Modal open={open} setOpen={setOpen} title="Solicitar retiro" className="grid gap-6">
       {bankAccounts.length === 0
-        ? <p className="text-sm text-gray-400">Primero agrega una cuenta bancaria en la sección Cuentas bancarias.</p>
+        ? <p className="text-sm text-slate-400">Primero agrega una cuenta bancaria en la sección Cuentas bancarias.</p>
         : (
           <form onSubmit={handleSubmit(submit)} className="grid gap-4">
             <Controller name="bankAccountId" control={control} rules={{ required: 'Requerido' }}
@@ -123,8 +123,8 @@ export const WithdrawalRequestModal = ({ open, setOpen, onSuccess }) => {
               <Input icon={<CurrencyDollarIcon className="size-6" />} id="amount" name="amount"
                 type="number" min="1" step="0.01" label="Monto" placeholder="0.00"
                 register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', min: { value: 1, message: 'Mínimo 1' }, max: { value: available, message: 'Saldo insuficiente' } } } }} />
-              <span className="text-xs text-gray-400 text-right">
-                Disponible: <span className="font-medium text-gray-600 dark:text-gray-300">{availableFormatted}</span>
+              <span className="text-xs text-slate-400 text-right">
+                Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{availableFormatted}</span>
               </span>
             </div>
             <Button type="submit" disabled={!isValid}>Solicitar retiro</Button>
@@ -180,7 +180,7 @@ const LoansSection = () => {
         </Button>
       </div>
       <LoanRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
-      {loans.length === 0 && <p className="text-gray-400 text-sm">No tienes préstamos aún.</p>}
+      {loans.length === 0 && <p className="text-slate-400 text-sm">No tienes préstamos aún.</p>}
       {loans.map(loan => (
         <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
@@ -195,13 +195,13 @@ const LoansSection = () => {
               <span className={`text-sm font-medium ${statusColor[loan.status]}`}>{statusLabel[loan.status]}</span>
             </div>
           </div>
-          <div className="flex gap-6 text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
             <span>Tasa: {loan.interest_rate}% diario</span>
             {loan.status === 'accepted' && loan.outstanding != null && (
               <span>Saldo actual: {format(loan.outstanding)}</span>
             )}
           </div>
-          <span className="text-xs text-gray-400">{new Date(loan.createdAt).toLocaleDateString()}</span>
+          <span className="text-xs text-slate-400">{new Date(loan.createdAt).toLocaleDateString()}</span>
         </div>
       ))}
     </div>
@@ -269,7 +269,7 @@ const WithdrawalsSection = () => {
       </div>
       <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <WithdrawalRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
-      {withdrawals.length === 0 && <p className="text-gray-400 text-sm">No tienes retiros aún.</p>}
+      {withdrawals.length === 0 && <p className="text-slate-400 text-sm">No tienes retiros aún.</p>}
       {withdrawals.map(w => (
         <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
@@ -284,7 +284,7 @@ const WithdrawalsSection = () => {
               <span className={`text-sm font-medium ${statusColor[w.status]}`}>{statusLabel[w.status]}</span>
             </div>
           </div>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
             {w.bankAccount?.bank_name} · {w.bankAccount?.account_number}
           </span>
           {w.screenshot && (
@@ -293,7 +293,7 @@ const WithdrawalsSection = () => {
               <LinkIcon className="size-3" /> Ver comprobante
             </button>
           )}
-          <span className="text-xs text-gray-400">{new Date(w.createdAt).toLocaleDateString()}</span>
+          <span className="text-xs text-slate-400">{new Date(w.createdAt).toLocaleDateString()}</span>
         </div>
       ))}
     </div>
@@ -343,7 +343,7 @@ const DepositRequestsSection = () => {
           <PlusIcon className="size-4" /> Nueva recarga
         </Button>
       </div>
-      {requests.length === 0 && <p className="text-gray-400 text-sm">No tienes solicitudes de recarga aún.</p>}
+      {requests.length === 0 && <p className="text-slate-400 text-sm">No tienes solicitudes de recarga aún.</p>}
       {requests.map(r => (
         <div key={r.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
@@ -359,11 +359,11 @@ const DepositRequestsSection = () => {
             </div>
           </div>
           {r.appBankAccount && (
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-sm text-slate-500 dark:text-slate-400">
               {r.appBankAccount.bank_name} · {r.appBankAccount.account_number}
             </span>
           )}
-          <span className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString()}</span>
+          <span className="text-xs text-slate-400">{new Date(r.createdAt).toLocaleDateString()}</span>
         </div>
       ))}
     </div>
@@ -382,15 +382,15 @@ export const Requests = () => {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold dark:text-white">Solicitudes</h1>
-      <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-slate-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${tab === t.key
-                ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-neutral-700 text-slate-900 dark:text-white shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
           >
             {t.icon}

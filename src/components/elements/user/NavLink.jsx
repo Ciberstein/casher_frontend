@@ -8,7 +8,7 @@ export const NavLink = ({
 }) => {
   return (
     <As
-      className={`p-2 text-black hover:bg-gray-100 dark:hover:bg-slate-900/50 rounded-xl
+      className={`p-2 text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-900/50 rounded-xl
         transition-all ease-in duration-100 font-medium cursor-pointer ${className}`}
       {...props}
     >
