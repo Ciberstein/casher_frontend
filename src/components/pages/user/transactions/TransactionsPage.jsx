@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   ArrowUpRightIcon, ArrowDownLeftIcon, ArrowDownTrayIcon, BanknotesIcon,
-  ArrowUturnUpIcon, PlusIcon, LinkIcon,
+  ArrowUturnUpIcon, PlusIcon, LinkIcon, ArrowUpTrayIcon,
 } from '@heroicons/react/24/outline'
+import { ChargeModal } from '../home/partials/BalanceCard'
 import { Button } from '../../../elements/user/Button'
 import Modal from '../../../elements/user/Modal'
 import { LoanRequestModal, WithdrawalRequestModal } from '../requests/Requests'
@@ -18,11 +19,12 @@ import Swal from 'sweetalert2'
 import appError from '../../../../utils/appError'
 
 const KIND_CONFIG = {
-  transfer_sent:     { label: 'Transferencia enviada',   icon: <ArrowUpRightIcon className="size-4" />,   iconBg: 'bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400',       amountPrefix: '-', amountColor: 'text-red-500' },
-  transfer_received: { label: 'Transferencia recibida',  icon: <ArrowDownLeftIcon className="size-4" />,  iconBg: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400', amountPrefix: '+', amountColor: 'text-green-500' },
+  transfer_sent:     { label: 'Transferencia enviada',   icon: <ArrowUpRightIcon className="size-4" />,   iconBg: 'bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400',          amountPrefix: '-', amountColor: 'text-red-500' },
+  transfer_received: { label: 'Transferencia recibida',  icon: <ArrowDownLeftIcon className="size-4" />,  iconBg: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',  amountPrefix: '+', amountColor: 'text-green-500' },
   withdrawal:        { label: 'Retiro',                  icon: <ArrowDownTrayIcon className="size-4" />,  iconBg: 'bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400',          amountPrefix: '-', amountColor: 'text-red-500' },
-  loan:              { label: 'Préstamo',                icon: <BanknotesIcon className="size-4" />,      iconBg: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400', amountPrefix: '+', amountColor: 'text-green-500' },
-  payment:           { label: 'Abono a deuda',           icon: <ArrowUturnUpIcon className="size-4" />,   iconBg: 'bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400',      amountPrefix: '-', amountColor: 'text-blue-500' },
+  loan:              { label: 'Préstamo',                icon: <BanknotesIcon className="size-4" />,      iconBg: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',  amountPrefix: '+', amountColor: 'text-green-500' },
+  payment:           { label: 'Abono a deuda',           icon: <ArrowUturnUpIcon className="size-4" />,  iconBg: 'bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400',      amountPrefix: '-', amountColor: 'text-blue-500' },
+  deposit:           { label: 'Recarga de fondos',       icon: <ArrowUpTrayIcon className="size-4" />,   iconBg: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',  amountPrefix: '+', amountColor: 'text-green-500' },
 };
 
 const STATUS_STYLE = {
@@ -48,7 +50,14 @@ const fmt = (amount, currency) =>
 const subtitle = (item) => {
   if (item.kind === 'transfer_sent' || item.kind === 'transfer_received')
     return item.meta.counterparty ?? item.meta.hash;
-  if (item.kind === 'withdrawal') return item.meta.bankName ?? 'Cuenta bancaria';
+  if (item.kind === 'withdrawal') {
+    const parts = [item.meta.bankName, item.meta.accountNumber].filter(Boolean);
+    return parts.length ? parts.join(' · ') : 'Cuenta bancaria';
+  }
+  if (item.kind === 'deposit') {
+    const parts = [item.meta.bankName, item.meta.accountNumber].filter(Boolean);
+    return parts.length ? parts.join(' · ') : 'Cuenta de la app';
+  }
   return null;
 };
 
@@ -73,10 +82,11 @@ const dateLabel = (date) => {
   return date.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
-const ActivityRow = ({ item, onClick }) => {
+const ActivityRow = ({ item, onClick, onVoucher }) => {
   const cfg = KIND_CONFIG[item.kind];
   const sub = subtitle(item);
   const isTransfer = item.kind === 'transfer_sent' || item.kind === 'transfer_received';
+  const hasVoucher = (item.kind === 'deposit' || item.kind === 'withdrawal') && item.meta?.screenshot;
   return (
     <li
       onClick={isTransfer && onClick ? () => onClick(item) : undefined}
@@ -94,15 +104,23 @@ const ActivityRow = ({ item, onClick }) => {
         <span className={`text-sm font-semibold ${cfg.amountColor}`}>
           {cfg.amountPrefix}{fmt(item.amount, item.currency)}
         </span>
-        <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${STATUS_STYLE[item.status]}`}>
-          {STATUS_LABEL[item.status]}
-        </span>
+        <div className="flex items-center gap-2">
+          {hasVoucher && (
+            <button type="button" onClick={(e) => { e.stopPropagation(); onVoucher?.(item.meta.screenshot); }}
+              className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
+              <LinkIcon className="size-3" /> Comprobante
+            </button>
+          )}
+          <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${STATUS_STYLE[item.status]}`}>
+            {STATUS_LABEL[item.status]}
+          </span>
+        </div>
       </div>
     </li>
   );
 };
 
-const ActivityList = ({ items, loading, emptyText, onRowClick }) => {
+const ActivityList = ({ items, loading, emptyText, onRowClick, onVoucher }) => {
   if (loading)
     return (
       <div className="flex flex-col gap-3 p-5">
@@ -137,7 +155,7 @@ const ActivityList = ({ items, loading, emptyText, onRowClick }) => {
             {dateLabel(date)}
           </p>
           <ul className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 divide-y divide-gray-100 dark:divide-zinc-800 overflow-hidden">
-            {groupItems.map(item => <ActivityRow key={item.id} item={item} onClick={onRowClick} />)}
+            {groupItems.map(item => <ActivityRow key={item.id} item={item} onClick={onRowClick} onVoucher={onVoucher} />)}
           </ul>
         </div>
       ))}
@@ -368,11 +386,101 @@ const WithdrawalsTab = () => {
   );
 };
 
+const DepositsTab = () => {
+  const [deposits, setDeposits] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [voucherUrl, setVoucherUrl] = useState(null);
+  const dispatch = useDispatch();
+
+  const fetchDeposits = async () => {
+    setLoading(true);
+    try { const r = await api.get('/api/v1/deposit-requests'); setDeposits(r.data); }
+    catch (err) { appError(err); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { fetchDeposits(); }, []);
+
+  const onSuccess = () => { fetchDeposits(); dispatch(accountThunk()); dispatch(activityThunk()); };
+
+  const cancel = async (id) => {
+    const { isConfirmed } = await Swal.fire({
+      title: '¿Cancelar solicitud?', text: 'Esta acción no se puede deshacer.',
+      icon: 'warning', showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar', cancelButtonText: 'Volver', confirmButtonColor: '#ef4444',
+    });
+    if (!isConfirmed) return;
+    dispatch(setLoad(false));
+    try {
+      await api.patch(`/api/v1/deposit-requests/${id}/cancel`);
+      onSuccess();
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Solicitud cancelada', showConfirmButton: false, timer: 3000 });
+    } catch (err) {
+      appError(err);
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 });
+    } finally { dispatch(setLoad(true)); }
+  };
+
+  const cfg = KIND_CONFIG.deposit;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
+      <ChargeModal open={modal} setOpen={(v) => { setModal(v); if (!v) onSuccess(); }} />
+      <div className="flex justify-end">
+        <Button size="sm" onClick={() => setModal(true)} className="flex items-center gap-1.5">
+          <PlusIcon className="size-4" /> Nueva recarga
+        </Button>
+      </div>
+      {loading ? <TabSkeleton /> : deposits.length === 0 ? <TabEmpty text="No tienes recargas aún." /> : (
+        <GroupedList items={deposits} renderRow={(d) => (
+          <li key={d.id} className="flex items-center gap-3 px-4 py-3.5">
+            <div className={`size-9 rounded-full flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
+              {cfg.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{cfg.label}</p>
+              <p className="text-xs text-gray-400 truncate">
+                {d.appBankAccount?.bank_name ?? 'Cuenta de la app'}
+                {d.appBankAccount?.account_number ? ` · ${d.appBankAccount.account_number}` : ''}
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <span className={`text-sm font-semibold ${cfg.amountColor}`}>
+                {cfg.amountPrefix}{fmt(d.amount, d.currency)}
+              </span>
+              <div className="flex items-center gap-2">
+                {d.screenshot && (
+                  <button type="button" onClick={() => setVoucherUrl(d.screenshot)}
+                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
+                    <LinkIcon className="size-3" /> Comprobante
+                  </button>
+                )}
+                {d.status === 'pending' && (
+                  <button onClick={() => cancel(d.id)}
+                    className="text-xs text-red-400 hover:text-red-600 transition-colors">
+                    Cancelar
+                  </button>
+                )}
+                <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${STATUS_STYLE[d.status]}`}>
+                  {STATUS_LABEL[d.status]}
+                </span>
+              </div>
+            </div>
+          </li>
+        )} />
+      )}
+    </div>
+  );
+};
+
 const TABS = [
-  { key: 'all',       label: 'Todas' },
-  { key: 'transfers', label: 'Transferencias' },
-  { key: 'loans',     label: 'Préstamos' },
+  { key: 'all',        label: 'Todas' },
+  { key: 'transfers',  label: 'Transferencias' },
+  { key: 'loans',      label: 'Préstamos' },
   { key: 'withdrawals', label: 'Retiros' },
+  { key: 'deposits',   label: 'Recargas' },
 ];
 
 export const TransactionsPage = () => {
@@ -383,6 +491,7 @@ export const TransactionsPage = () => {
   const [txType, setTxType] = useState(true);
   const [selectedTx, setSelectedTx] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [voucherUrl, setVoucherUrl] = useState(null);
 
   const openDetail = async (item) => {
     try {
@@ -404,7 +513,7 @@ export const TransactionsPage = () => {
   return (
     <div className="h-full flex flex-col gap-4">
       <h1 className="text-2xl font-semibold dark:text-white shrink-0">Transacciones</h1>
-      <div className="shrink-0 grid grid-cols-1 sm:grid-cols-4 gap-1 bg-gray-100 dark:bg-zinc-900 rounded-xl w-full p-1">
+      <div className="shrink-0 grid grid-cols-2 sm:grid-cols-5 gap-1 bg-gray-100 dark:bg-zinc-900 rounded-xl w-full p-1">
         {TABS.map(t => (
           <button
             key={t.key}
@@ -421,10 +530,12 @@ export const TransactionsPage = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto pb-6 bg-white dark:bg-zinc-800">
+        <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
         <ManageTxModal open={detailOpen} setOpen={setDetailOpen} tx={selectedTx} />
 
         {tab === 'all' && (
-          <ActivityList items={activity} loading={loading} emptyText="Sin actividad aún" onRowClick={openDetail} />
+          <ActivityList items={activity} loading={loading} emptyText="Sin actividad aún"
+            onRowClick={openDetail} onVoucher={setVoucherUrl} />
         )}
 
         {tab === 'transfers' && (
@@ -444,6 +555,7 @@ export const TransactionsPage = () => {
 
         {tab === 'loans' && <LoansTab />}
         {tab === 'withdrawals' && <WithdrawalsTab />}
+        {tab === 'deposits' && <DepositsTab />}
       </div>
     </div>
   );

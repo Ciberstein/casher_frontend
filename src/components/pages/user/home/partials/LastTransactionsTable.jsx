@@ -8,6 +8,7 @@ import {
   ArrowDownTrayIcon,
   BanknotesIcon,
   ArrowUturnUpIcon,
+  ArrowUpTrayIcon,
 } from '@heroicons/react/24/outline';
 
 const KIND_CONFIG = {
@@ -45,6 +46,13 @@ const KIND_CONFIG = {
     iconBg: 'bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400',
     amountPrefix: '-',
     amountColor: 'text-blue-500',
+  },
+  deposit: {
+    label: 'Recarga de fondos',
+    icon: <ArrowUpTrayIcon className="size-4" />,
+    iconBg: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+    amountPrefix: '+',
+    amountColor: 'text-green-500',
   },
 };
 
@@ -91,8 +99,14 @@ const formatAmount = (amount, currency) =>
 const subtitle = (item) => {
   if (item.kind === 'transfer_sent' || item.kind === 'transfer_received')
     return item.meta.counterparty ?? item.meta.hash;
-  if (item.kind === 'withdrawal')
-    return item.meta.bankName ?? 'Cuenta bancaria';
+  if (item.kind === 'withdrawal') {
+    const parts = [item.meta.bankName, item.meta.accountNumber].filter(Boolean);
+    return parts.length ? parts.join(' · ') : 'Cuenta bancaria';
+  }
+  if (item.kind === 'deposit') {
+    const parts = [item.meta.bankName, item.meta.accountNumber].filter(Boolean);
+    return parts.length ? parts.join(' · ') : 'Cuenta de la app';
+  }
   return null;
 };
 
@@ -109,7 +123,7 @@ export const LastTransactionsTable = () => {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg dark:text-white">Transferencias recientes</h3>
+        <h3 className="font-semibold text-lg dark:text-white">Transacciones recientes</h3>
         <Link to="/transactions" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">Ver todas →</Link>
       </div>
 

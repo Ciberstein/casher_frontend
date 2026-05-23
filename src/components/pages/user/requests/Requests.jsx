@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
-import { BanknotesIcon, ArrowDownTrayIcon, CurrencyDollarIcon, LinkIcon } from '@heroicons/react/24/outline'
+import { BanknotesIcon, ArrowDownTrayIcon, CurrencyDollarIcon, LinkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
+import { ChargeModal } from '../home/partials/BalanceCard'
 import { Button } from '../../../elements/user/Button'
 import Modal from '../../../elements/user/Modal'
 import { Input } from '../../../elements/user/Input'
@@ -299,9 +300,80 @@ const WithdrawalsSection = () => {
   );
 };
 
+const DepositRequestsSection = () => {
+  const [requests, setRequests] = useState([]);
+  const [modal, setModal] = useState(false);
+  const dispatch = useDispatch();
+  const { format } = useCurrency();
+
+  const fetchRequests = async () => {
+    try { const r = await api.get('/api/v1/deposit-requests'); setRequests(r.data); }
+    catch (err) { appError(err); }
+  };
+
+  useEffect(() => { fetchRequests(); }, []);
+
+  const cancel = async (id) => {
+    const { isConfirmed } = await Swal.fire({
+      title: '¿Cancelar solicitud?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'Volver',
+      confirmButtonColor: '#ef4444',
+    });
+    if (!isConfirmed) return;
+    dispatch(setLoad(false));
+    try {
+      await api.patch(`/api/v1/deposit-requests/${id}/cancel`);
+      fetchRequests();
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Solicitud cancelada', showConfirmButton: false, timer: 3000 });
+    } catch (err) {
+      appError(err);
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 });
+    } finally { dispatch(setLoad(true)); }
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <ChargeModal open={modal} setOpen={setModal} />
+      <div className="flex justify-end">
+        <Button size="sm" onClick={() => setModal(true)} className="flex items-center gap-1">
+          <PlusIcon className="size-4" /> Nueva recarga
+        </Button>
+      </div>
+      {requests.length === 0 && <p className="text-gray-400 text-sm">No tienes solicitudes de recarga aún.</p>}
+      {requests.map(r => (
+        <div key={r.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+          <div className="flex justify-between items-center">
+            <span className="font-semibold dark:text-white">{r.amount.toLocaleString()} {r.currency}</span>
+            <div className="flex items-center gap-3">
+              {r.status === 'pending' && (
+                <button onClick={() => cancel(r.id)}
+                  className="flex items-center gap-1 text-xs text-red-400 hover:text-red-600 transition-colors">
+                  <XMarkIcon className="size-3.5" /> Cancelar
+                </button>
+              )}
+              <span className={`text-sm font-medium ${statusColor[r.status]}`}>{statusLabel[r.status]}</span>
+            </div>
+          </div>
+          {r.appBankAccount && (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {r.appBankAccount.bank_name} · {r.appBankAccount.account_number}
+            </span>
+          )}
+          <span className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString()}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const TABS = [
   { key: 'loans', label: 'Préstamos', icon: <BanknotesIcon className="size-4" /> },
   { key: 'withdrawals', label: 'Retiros', icon: <ArrowDownTrayIcon className="size-4" /> },
+  { key: 'deposits', label: 'Recargas', icon: <ArrowUpTrayIcon className="size-4" /> },
 ];
 
 export const Requests = () => {
@@ -326,7 +398,9 @@ export const Requests = () => {
           </button>
         ))}
       </div>
-      {tab === 'loans' ? <LoansSection /> : <WithdrawalsSection />}
+      {tab === 'loans' && <LoansSection />}
+      {tab === 'withdrawals' && <WithdrawalsSection />}
+      {tab === 'deposits' && <DepositRequestsSection />}
     </div>
   );
 };

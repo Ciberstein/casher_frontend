@@ -1,5 +1,6 @@
 import { ArrowTurnDownLeftIcon, ArrowTurnUpRightIcon, CheckIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid'
 import { ArrowRightIcon, CurrencyDollarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, TagIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import { FileUpload } from '../../../../elements/user/FileUpload'
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { useState, useEffect, useMemo } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
@@ -123,9 +124,105 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
   );
 };
 
-const ChargeModal = ({ open, setOpen }) => (
-  <Modal open={open} setOpen={setOpen} title="Cargar fondos" />
-);
+const ACCOUNT_TYPE_LABEL = { savings: 'Ahorros', checking: 'Corriente' };
+
+export const ChargeModal = ({ open, setOpen }) => {
+  const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const [accounts, setAccounts] = useState([]);
+  const [file, setFile] = useState(null);
+  const [fileError, setFileError] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (open) api.get('/api/v1/app-bank-accounts').then(r => setAccounts(r.data)).catch(() => {});
+  }, [open]);
+
+  const handleClose = (v) => {
+    setOpen(v);
+    if (!v) { reset(); setFile(null); setFileError(false); }
+  };
+
+  const submit = async (data) => {
+    if (!file) { setFileError(true); return; }
+    setFileError(false);
+    dispatch(setLoad(false));
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('amount', data.amount);
+      formData.append('currency', data.currency);
+      formData.append('appBankAccountId', data.appBankAccountId);
+      await api.post('/api/v1/deposit-requests', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      handleClose(false);
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Solicitud enviada', showConfirmButton: false, timer: 3000 });
+    } catch (err) {
+      appError(err);
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 });
+    } finally { dispatch(setLoad(true)); }
+  };
+
+  const accountOptions = accounts.map(acc => ({
+    value: String(acc.id),
+    label: acc.bank_name,
+    subtitle: acc.account_number,
+  }));
+
+  return (
+    <Modal open={open} setOpen={handleClose} title="Cargar fondos" className="flex flex-col gap-5">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Realiza una transferencia a una de las cuentas de la app y adjunta el comprobante. El saldo será acreditado tras la verificación.
+      </p>
+
+      {accounts.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {accounts.map(acc => (
+            <div key={acc.id} className="flex flex-col gap-1 p-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{acc.bank_name}</p>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium">
+                  {ACCOUNT_TYPE_LABEL[acc.account_type]}
+                </span>
+              </div>
+              <p className="text-sm font-mono text-gray-700 dark:text-gray-300">{acc.account_number}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{acc.owner_name}</p>
+              {acc.documentType && (
+                <p className="text-xs text-gray-400">{acc.documentType.abbreviation}: {acc.document_number}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(submit)} className="grid gap-4">
+        <Controller name="appBankAccountId" control={control} rules={{ required: 'Requerido' }}
+          render={({ field }) => (
+            <ComboSelect label="¿A cuál cuenta depositaste?" searchable={false}
+              options={accountOptions} value={field.value} onChange={field.onChange}
+              placeholder="Selecciona la cuenta" error={errors.appBankAccountId} />
+          )} />
+        <Controller name="currency" control={control} rules={{ required: 'Requerido' }}
+          render={({ field }) => (
+            <ComboSelect label="Moneda" searchable={false}
+              options={CURRENCY_OPTIONS} value={field.value} onChange={field.onChange}
+              placeholder="Selecciona moneda" error={errors.currency} />
+          )} />
+        <Input icon={<CurrencyDollarIcon className="size-5" />} id="c_amount" name="amount"
+          type="number" min="1" step="0.01" label="Monto depositado" placeholder="0.00"
+          register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', min: { value: 1, message: 'Mínimo 1' } } } }} />
+        <FileUpload
+          label="Comprobante de pago"
+          accept="image/*,application/pdf"
+          onUpload={setFile}
+          deferred
+          error={fileError && !file ? { message: 'Requerido' } : null}
+        />
+        <Button type="submit" color="green" disabled={!isValid}>Enviar solicitud</Button>
+      </form>
+    </Modal>
+  );
+};
 
 export const SendOrRequestModal = ({ open, setOpen, txType }) => {
   const { register, handleSubmit, reset, control, formState: { errors, isValid } } = useForm({

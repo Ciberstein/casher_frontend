@@ -53,16 +53,16 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
 
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>}
+      {label && <label className="text-sm text-gray-500">{label}</label>}
       <div
         onClick={() => !uploading && inputRef.current?.click()}
-        className={`relative flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition-colors
-          ${uploading ? 'cursor-not-allowed opacity-70' : 'hover:border-blue-400 dark:hover:border-blue-500'}
+        className={`relative flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed cursor-pointer transition-colors
+          ${uploading ? 'cursor-not-allowed opacity-70' : 'hover:border-blue-400 dark:hover:border-white'}
           ${error ? 'border-red-400' : 'border-gray-300 dark:border-zinc-600'}
           bg-gray-50 dark:bg-zinc-800`}
       >
         {done ? (
-          <DocumentCheckIcon className="size-5 text-green-500 shrink-0" />
+          <DocumentCheckIcon className="size-8 text-green-500 shrink-0" />
         ) : (
           <CloudArrowUpIcon className="size-5 text-gray-400 shrink-0" />
         )}

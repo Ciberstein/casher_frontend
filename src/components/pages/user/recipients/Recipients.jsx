@@ -123,7 +123,7 @@ export const Recipients = () => {
           placeholder="Buscar por nombre, usuario o correo..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="!bg-white dark:!bg-zinc-900 !border-gray-100 dark:!border-zinc-800 !rounded-2xl shadow-sm"
+          className="!bg-white dark:!bg-zinc-900 !border-gray-100 dark:!border-zinc-800 !rounded-xl shadow-sm"
         />
       )}
 
