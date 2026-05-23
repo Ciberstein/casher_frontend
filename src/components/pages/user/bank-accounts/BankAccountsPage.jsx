@@ -216,8 +216,8 @@ export const BankAccountsPage = () => {
         <button
           onClick={() => setModal(true)}
           className="flex flex-col gap-2 justify-center items-center min-h-36 rounded-2xl border-2 border-dashed
-            border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-zinc-500
-            hover:border-gray-400 dark:hover:border-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300
+            border-gray-200 dark:border-neutral-700 text-gray-400 dark:text-slate-500
+            hover:border-gray-400 dark:hover:border-slate-600 hover:text-gray-600 dark:hover:text-slate-300
             transition-colors"
         >
           <PlusIcon className="size-8" />
@@ -225,20 +225,20 @@ export const BankAccountsPage = () => {
         </button>
 
         {accounts.map(acc => (
-          <div key={acc.id} className="bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36">
+          <div key={acc.id} className="bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36">
             <div className="flex justify-between items-start">
               <span className="font-bold text-gray-900 dark:text-white text-base">{acc.bank_name}</span>
               <div className="flex gap-2">
                 <button
                   onClick={() => { setEditingAccount(acc); setEditModal(true); }}
-                  className="size-8 rounded-full bg-gray-200 dark:bg-zinc-800 flex items-center justify-center
-                    text-gray-500 dark:text-zinc-300 hover:bg-gray-300 dark:hover:bg-zinc-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="size-8 rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center
+                    text-gray-500 dark:text-slate-300 hover:bg-gray-300 dark:hover:bg-neutral-700 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   <PencilSquareIcon className="size-4" />
                 </button>
                 <button
                   onClick={() => remove(acc.id)}
-                  className="size-8 rounded-full bg-gray-200 dark:bg-zinc-800 flex items-center justify-center
+                  className="size-8 rounded-full bg-gray-200 dark:bg-neutral-800 flex items-center justify-center
                     text-red-400 hover:bg-red-500 hover:text-white transition-colors"
                 >
                   <TrashIcon className="size-4" />
@@ -246,12 +246,12 @@ export const BankAccountsPage = () => {
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm text-gray-600 dark:text-zinc-300">
+              <span className="text-sm text-gray-600 dark:text-slate-300">
                 {acc.account_number} · {accountTypeLabel[acc.account_type]}
               </span>
-              <span className="text-sm text-gray-500 dark:text-zinc-400">{acc.owner_name}</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400">{acc.owner_name}</span>
               {acc.documentType && (
-                <span className="text-sm text-gray-500 dark:text-zinc-400">
+                <span className="text-sm text-gray-500 dark:text-slate-400">
                   {acc.documentType.abbreviation} {acc.document_number}
                 </span>
               )}

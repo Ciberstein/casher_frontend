@@ -18,7 +18,7 @@ const fmt = (amount, currency) =>
   }).format(amount);
 
 const Row = ({ label, value, valueClass = '' }) => (
-  <div className="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-zinc-700 last:border-0">
+  <div className="flex justify-between items-center py-3 border-b border-dashed border-gray-200 dark:border-neutral-700 last:border-0">
     <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
     <span className={`text-sm font-medium text-gray-900 dark:text-white ${valueClass}`}>{value}</span>
   </div>
@@ -39,7 +39,7 @@ export const TransactionPublicPage = () => {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950">
         <div className="flex flex-col items-center gap-3 text-gray-400">
           <div className="size-10 rounded-full border-4 border-gray-200 border-t-gray-500 animate-spin" />
           <p className="text-sm">Cargando transacción...</p>
@@ -49,7 +49,7 @@ export const TransactionPublicPage = () => {
 
   if (error || !tx)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-zinc-900">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-neutral-950">
         <div className="flex flex-col items-center gap-3 text-gray-400">
           <XCircleIcon className="size-12 opacity-50" />
           <p className="text-sm">Transacción no encontrada</p>
@@ -61,15 +61,15 @@ export const TransactionPublicPage = () => {
   const StatusIcon = status.icon;
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-zinc-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white dark:bg-zinc-800 rounded-3xl shadow-xl overflow-hidden">
+    <div className="min-h-screen bg-gray-100 dark:bg-neutral-950 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-white dark:bg-neutral-800 rounded-3xl shadow-xl overflow-hidden">
 
         <div className="bg-gradient-to-br from-green-500 to-emerald-600 px-6 pt-8 pb-12 flex flex-col items-center gap-3">
           <img src="/img/logo_dark.svg" className="max-h-7 opacity-90" />
           <p className="text-white/70 text-xs tracking-widest uppercase mt-1">Comprobante de transferencia</p>
         </div>
 
-        <div className="-mt-6 mx-6 bg-white dark:bg-zinc-800 rounded-2xl shadow-md p-5 flex flex-col items-center gap-4 border border-gray-100 dark:border-zinc-700">
+        <div className="-mt-6 mx-6 bg-white dark:bg-neutral-800 rounded-2xl shadow-md p-5 flex flex-col items-center gap-4 border border-gray-100 dark:border-neutral-700">
           <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${status.color} ${status.bg} ${status.border}`}>
             <StatusIcon className="size-4" />
             {status.label}

@@ -76,38 +76,31 @@ export const AuthSplitLayout = ({ children, title, subtitle, footerText, footerL
   }, [auth]);
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-gray-50 dark:bg-zinc-900">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-white dark:bg-neutral-950">
       <BrandPanel darkMode={darkMode} />
 
       <div className="flex flex-col min-h-screen">
-        {/* Top bar (mobile only: logo + dark toggle) */}
-        <div className="flex items-center justify-between p-5 lg:justify-end">
+        <div className="flex items-center justify-between px-6 py-5 lg:justify-end">
           <Link to="/" className="lg:hidden">
-            <img
-              src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`}
-              className="max-h-7"
-            />
+            <img src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-7" />
           </Link>
           <SwitchDakMode />
         </div>
 
-        {/* Form area */}
         <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-12 md:px-20 lg:px-16 xl:px-24">
           <div className="w-full max-w-md mx-auto flex flex-col gap-7">
             <div className="flex flex-col gap-1.5">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
-              {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>}
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
+              {subtitle && <p className="text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>}
             </div>
-
             {children}
           </div>
         </div>
 
-        {/* Footer link */}
         {footerText && (
-          <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">
             {footerText}{' '}
-            <Link to={footerLink} className="text-green-600 dark:text-green-400 font-semibold hover:underline">
+            <Link to={footerLink} className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
               {footerLinkText}
             </Link>
           </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { Input } from '../../../../elements/user/Input'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
@@ -9,24 +9,29 @@ import { useDispatch } from 'react-redux'
 import api from '../../../../../api/axios'
 import Swal from 'sweetalert2'
 import appError from '../../../../../utils/appError'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 export const RecoveryForm = ({ setAccount }) => {
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
-  const dispatch = useDispatch();
+  const [captchaToken, setCaptchaToken] = useState(null)
+  const turnstileRef = useRef(null)
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' })
+  const dispatch = useDispatch()
 
   const submit = async (data) => {
-    dispatch(setLoad(false));
-    await api.post('/api/v1/auth/recovery', data)
+    dispatch(setLoad(false))
+    await api.post('/api/v1/auth/recovery', { ...data, captchaToken })
       .then(res => {
-        setAccount(res.data.account);
-        Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: res.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
+        setAccount(res.data.account)
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: res.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true })
       })
       .catch((err) => {
-        appError(err);
-        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
+        appError(err)
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true })
+        turnstileRef.current?.reset()
+        setCaptchaToken(null)
       })
-      .finally(() => dispatch(setLoad(true)));
-  };
+      .finally(() => dispatch(setLoad(true)))
+  }
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5">
@@ -43,9 +48,20 @@ export const RecoveryForm = ({ setAccount }) => {
         }}
       />
 
-      <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
+      <div className="flex justify-center">
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+          onSuccess={setCaptchaToken}
+          onExpire={() => setCaptchaToken(null)}
+          onError={() => setCaptchaToken(null)}
+          options={{ theme: 'auto', language: 'es' }}
+        />
+      </div>
+
+      <Button type="submit" size="lg" className="w-full" disabled={!isValid || !captchaToken}>
         Enviar código
       </Button>
     </form>
-  );
-};
+  )
+}

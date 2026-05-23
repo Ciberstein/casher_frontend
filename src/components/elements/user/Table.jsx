@@ -189,7 +189,7 @@ export const Table = ({
   }, [items, currentPage]);
 
   return (
-    <div className={`!p-0 overflow-auto rounded-xl dark:bg-zinc-900
+    <div className={`!p-0 overflow-auto rounded-xl dark:bg-neutral-900
       bg-slate-50 h-full flex flex-col justify-between ${className}`}
     >
       <table className={`w-full ${currentItems.length === 0 && 'h-full'}`}>
@@ -225,7 +225,7 @@ export const Table = ({
 							</div>
 						</th>
 					</tr>
-          <tr className="bg-gray-200 dark:bg-zinc-950">
+          <tr className="bg-gray-200 dark:bg-neutral-950">
             { check && (<th aria-label="check" />) }
             { header.map((th) => (
               <th className={`${variants[size].className} ${th.hidden && 'hidden'} p-4`} key={th.name}>

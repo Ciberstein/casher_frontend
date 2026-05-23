@@ -109,41 +109,41 @@ export const DebitCard = ({ balance = 0 }) => {
     <Fragment>
       <LoanRequestModal open={loanModal} setOpen={setLoanModal} onSuccess={onSuccess} />
       <PayModal open={payModal} setOpen={setPayModal} pendingBalance={balance} onSuccess={onSuccess} />
-      <div className="rounded-2xl p-4 flex flex-col gap-6 justify-between text-white bg-orange-500/80 bg-cover bg-center min-h-64"
-        style={{ backgroundImage: 'url(img/card-bg-2.svg)' }}
+      <div className="relative overflow-hidden rounded-3xl p-6 flex flex-col gap-8 justify-between text-white min-h-64"
+        style={{ background: 'linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)' }}
       >
-        <div className="flex flex-col gap-6">
+        <div className="absolute -right-8 -top-8 size-48 rounded-full bg-white/10 pointer-events-none" />
+        <div className="absolute right-12 bottom-0 size-32 rounded-full bg-black/10 pointer-events-none" />
+        <div className="absolute -left-6 bottom-8 size-28 rounded-full bg-white/10 pointer-events-none" />
+
+        <div className="relative flex flex-col gap-3">
           <div className="flex justify-between items-center gap-4">
-            <span className="font-medium text-xl">Saldo pendiente</span>
-            <button onClick={handleShow}>
-              {show ? <EyeSlashIcon className="size-6" /> : <EyeIcon className="size-6" />}
+            <span className="text-sm font-medium text-white/70 tracking-wide uppercase">Saldo pendiente</span>
+            <button onClick={handleShow} className="p-1 rounded-lg hover:bg-white/20 transition-colors">
+              {show ? <EyeSlashIcon className="size-5" /> : <EyeIcon className="size-5" />}
             </button>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">A pagar</span>
-            <div className="font-semibold flex flex-col">
-              <span className="text-3xl lg:text-5xl">
-                {show ? format(balance) : '******'}
-              </span>
-              {show && preference === 'COP' && formatRef(balance) && (
-                <span className="text-sm font-medium opacity-75 mt-1">≈ {formatRef(balance)}</span>
-              )}
-            </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-4xl lg:text-5xl font-bold tracking-tight">
+              {show ? format(balance) : '••••••'}
+            </span>
+            {show && preference === 'COP' && formatRef(balance) && (
+              <span className="text-sm text-white/60">≈ {formatRef(balance)}</span>
+            )}
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-medium text-sm">
-          <button className="flex flex-col items-center gap-1" onClick={() => setLoanModal(true)}>
-            <div className="bg-orange-600 hover:bg-orange-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
-              <ArrowTurnDownLeftIcon className="size-6" />
-            </div>
-            <span>Solicitar</span>
+
+        <div className="relative grid grid-cols-4 gap-2">
+          <button onClick={() => setLoanModal(true)}
+            className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white/15 hover:bg-white/25 active:bg-white/30 transition-colors">
+            <ArrowTurnDownLeftIcon className="size-5" />
+            <span className="text-xs font-medium text-white/90">Solicitar</span>
           </button>
           {balance > 0 && (
-            <button className="flex flex-col items-center gap-1" onClick={() => setPayModal(true)}>
-              <div className="bg-orange-600 hover:bg-orange-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
-                <PlusIcon className="size-6" />
-              </div>
-              <span>Abonar</span>
+            <button onClick={() => setPayModal(true)}
+              className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white/15 hover:bg-white/25 active:bg-white/30 transition-colors">
+              <PlusIcon className="size-5" />
+              <span className="text-xs font-medium text-white/90">Abonar</span>
             </button>
           )}
         </div>

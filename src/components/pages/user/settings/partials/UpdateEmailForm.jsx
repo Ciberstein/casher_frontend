@@ -71,11 +71,9 @@ export const UpdateEmailForm = ({ setEmail }) => {
 
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(submit)}>
-      <div className="bg-gradient-to-r dark:!from-zinc-950 dark:!via-zinc-900 
-      !from-gray-200 !via-gray-100 !to-transparent rounded-lg p-2 -ml-9">
-        <h1 className="text-2xl font-medium flex gap-4 items-center">
-          Correo electrónico
-        </h1>
+      <div>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Correo electrónico</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Cambia la dirección de correo asociada a tu cuenta</p>
       </div>
       <Input
         icon={<EnvelopeIcon className="size-6"/>}
@@ -143,9 +141,11 @@ export const UpdateEmailForm = ({ setEmail }) => {
           }}
         />
       </div>
-      <Button type="submit" disabled={!isValid}>
-        {"Actualizar"}
-      </Button>
+      <div className="flex justify-end">
+        <Button type="submit" color="green" disabled={!isValid}>
+          Guardar cambios
+        </Button>
+      </div>
     </form>
   )
 }

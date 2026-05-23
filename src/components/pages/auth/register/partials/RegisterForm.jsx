@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Input } from '../../../../elements/user/Input'
 import { CalendarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon, UserIcon } from '@heroicons/react/24/outline'
 import { useForm } from 'react-hook-form'
@@ -10,39 +10,44 @@ import { useDispatch } from 'react-redux'
 import { setLoad } from '../../../../../store/slices/loader.slice'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 export const RegisterForm = ({ setAccount, firebase }) => {
-  const [hide1, setHide1] = useState(true);
-  const [hide2, setHide2] = useState(true);
+  const [hide1, setHide1] = useState(true)
+  const [hide2, setHide2] = useState(true)
+  const [captchaToken, setCaptchaToken] = useState(null)
+  const turnstileRef = useRef(null)
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' })
 
   const submit = async (data) => {
-    dispatch(setLoad(false));
+    dispatch(setLoad(false))
 
-    let formData = data;
+    let formData = { ...data, captchaToken }
     if (firebase) {
-      formData.email = firebase.email;
-      formData.email_verified = firebase.email_verified;
-      formData.picture = firebase.picture;
+      formData.email = firebase.email
+      formData.email_verified = firebase.email_verified
+      formData.picture = firebase.picture
     }
 
     await api.post('/api/v1/auth/register', formData)
       .then((res) => {
-        if (res.status === 200) setAccount(res.data.account);
+        if (res.status === 200) setAccount(res.data.account)
         if (res.status === 201)
           Swal.fire({ icon: 'success', title: '¡Listo!', text: res.data.message, showConfirmButton: false, timer: 3000, timerProgressBar: true })
-            .then(() => navigate('/'));
+            .then(() => navigate('/'))
       })
       .catch((err) => {
-        appError(err);
-        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
+        appError(err)
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true })
+        turnstileRef.current?.reset()
+        setCaptchaToken(null)
       })
-      .finally(() => dispatch(setLoad(true)));
-  };
+      .finally(() => dispatch(setLoad(true)))
+  }
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4 text-black dark:text-white">
@@ -164,7 +169,18 @@ export const RegisterForm = ({ setAccount, firebase }) => {
         />
       </div>
 
-      <Button type="submit" size="lg" color="green" className="w-full mt-1" disabled={!isValid}>
+      <div className="flex justify-center">
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+          onSuccess={setCaptchaToken}
+          onExpire={() => setCaptchaToken(null)}
+          onError={() => setCaptchaToken(null)}
+          options={{ theme: 'auto', language: 'es' }}
+        />
+      </div>
+
+      <Button type="submit" size="lg" color="green" className="w-full mt-1" disabled={!isValid || !captchaToken}>
         Crear cuenta
       </Button>
     </form>

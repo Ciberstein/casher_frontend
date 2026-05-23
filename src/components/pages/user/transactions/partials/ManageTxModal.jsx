@@ -1,10 +1,8 @@
-import React from 'react'
 import Modal from '../../../../elements/user/Modal'
 import currencyFormat from '../../../../../utils/currency'
 import { useDispatch, useSelector } from 'react-redux'
 import convertDate from '../../../../../utils/convertDate'
 import { Button } from '../../../../elements/user/Button'
-import { XMarkIcon } from '@heroicons/react/24/outline'
 import api from '../../../../../api/axios'
 import appError from '../../../../../utils/appError'
 import { setLoad } from '../../../../../store/slices/loader.slice'
@@ -12,156 +10,102 @@ import { transfersThunk } from '../../../../../store/slices/transfers.slice'
 import { accountThunk } from '../../../../../store/slices/account.slice'
 import Swal from 'sweetalert2'
 import { QRCodeSVG } from 'qrcode.react'
+import { STATUS_STYLE, STATUS_LABEL } from '../TransactionsPage'
+
+const Row = ({ label, value, mono = false }) => (
+  <div className="flex justify-between gap-4 px-4 py-3">
+    <span className="text-sm text-slate-400 shrink-0">{label}</span>
+    <span className={`text-sm font-medium text-slate-800 dark:text-white text-right truncate ${mono ? 'font-mono text-xs' : ''}`}>
+      {value}
+    </span>
+  </div>
+)
 
 const ManageTxModal = ({ open, setOpen, tx }) => {
-
-	const account = useSelector(state => state.account);
-  const dispatch = useDispatch();
+  const account = useSelector(state => state.account)
+  const dispatch = useDispatch()
 
   const handleManageTx = async (status) => {
+    dispatch(setLoad(false))
+    try {
+      const res = await api.patch(`/api/v1/transfers/request/${tx.id}`, { status })
+      setOpen(false)
+      dispatch(accountThunk())
+      dispatch(transfersThunk())
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: res.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true })
+    } catch (err) {
+      appError(err)
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true })
+    } finally {
+      dispatch(setLoad(true))
+    }
+  }
 
-    dispatch(setLoad(false));
+  if (!tx) return null
 
-    const url =  `/api/v1/transfers/request/${tx.id}`;
-    const data = { status };
+  const isSender = account.id === tx.owner.id
+  const amountColor = isSender ? 'text-red-500' : 'text-emerald-500'
+  const amountPrefix = isSender ? '-' : '+'
 
-    await api.patch(url, data)
-      .then(res => {
-        setOpen(false)
-        dispatch(accountThunk());
-        dispatch(transfersThunk());
-        Swal.fire({
-          toast: true,
-          position: 'bottom-right',
-          icon: 'success',
-          text: res.data.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        }); 
-      })
-      .catch(err => {
-        appError(err);
-        Swal.fire({
-          toast: true,
-          position: 'bottom-right',
-          icon: 'error',
-          text: err.response.data.message,
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-        });
-      })
-      .finally(() => dispatch(setLoad(true)))
-  };
-
-  if(tx)
-    return (
-      <Modal open={open} setOpen={setOpen} screen>
-        <div className="px-6 py-10 flex flex-col gap-4 items-center"
-          style={{
-            backgroundImage: 'url(/img/ticket.png)',
-            backgroundSize: '100% 100%',
-            filter: 'drop-shadow'
-          }}
-        >
-          <header className="flex flex-col items-center sm:px-28 relative gap-4">
-            <img src="/img/logo.svg" className="max-h-16" />
-            <div className="rounded-xl overflow-hidden p-3 bg-white">
-              <QRCodeSVG
-                value={`${window.location.origin}/tx/${tx.hash}`}
-                size={160}
-                level="H"
-                imageSettings={{ src: '/img/favicon.svg', width: 32, height: 32, excavate: false }}
-              />
-            </div>
-            <h3 className={`text-xl font-medium uppercase
-              ${tx.status === 'completed' && 'text-green-400'}
-              ${tx.status === 'pending' && 'text-yellow-400'}
-              ${tx.status === 'cancelled' && 'text-red-400'}  
-            `}>
-              {tx.status}
-            </h3>
-            <button className="absolute z-10 right-0" onClick={() => setOpen(false)}>
-              <XMarkIcon className="size-10" />
-            </button>
-          </header>
-          <div className="flex flex-col gap-4 w-full">
-            <div className="flex flex-col gap-4">
-              <h4 className="text-lg font-medium border-b border-dashed border-gray-300 pb-2 text-left">
-                Emisor
-              </h4>
-              <div className="flex justify-between gap-6">
-                <span className="text-gray-400">Nombre</span>
-                <span className="font-medium">
-                  {`${tx.owner.data?.first_name} ${tx.owner.data?.surname_1}`}
-                </span>
-              </div>
-              <div className="flex justify-between gap-6">
-                <span className="text-gray-400">E-Mail</span>
-                <span className="font-medium">
-                  {tx.owner.email}
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="text-lg font-medium border-b border-dashed border-gray-300 pb-2 text-left">
-                Destinatario
-              </h4>
-              <div className="flex justify-between gap-6">
-                <span className="text-gray-400">Nombre</span>
-                <span className="font-medium">
-                  {`${tx.receiver.data?.first_name} ${tx.receiver.data?.surname_1}`}
-                </span>
-              </div>
-              <div className="flex justify-between gap-6">
-                <span className="text-gray-400">E-Mail</span>
-                <span className="font-medium">
-                  {tx.receiver.email}
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <h4 className="text-lg font-medium border-b border-dashed border-gray-300 pb-2 text-left">
-                Resumen
-              </h4>
-              <div className="flex justify-between gap-6">
-                <span className="text-gray-400">Fecha</span>
-                <span className="font-medium">
-                  {convertDate(tx.createdAt)}
-                </span>
-              </div>
-              <div className="flex justify-between gap-6">
-                <span className="text-gray-400">Importe</span>
-                <span className={`font-medium ${tx.owner.id === account.id ?
-                  'text-red-400' : 'text-green-400'}`}
-                >
-                  {tx.owner.id === account.id ? '-' : '+'}
-                  {currencyFormat(tx.data.amount)}
-                </span>
-              </div>
-            </div>
-          </div>
-          { tx.status === 'pending' && 
-            <footer className="flex flex-col gap-4 w-full">
-              <h4 className="text-lg font-medium border-b border-dashed border-gray-300 pb-2 text-left">
-                Administrar
-              </h4>
-              <div className="flex gap-4">
-                { account.id === tx.owner.id && 
-                  <Button color="green" className="w-full" onClick={() => handleManageTx(true)}>
-                    Confirmar
-                  </Button> 
-                }
-                <Button color="red" className="w-full" onClick={() => handleManageTx(false)}>
-                  Cancelar
-                </Button>
-              </div>
-            </footer>
-          }
+  return (
+    <Modal open={open} setOpen={setOpen} title="Detalle de transferencia">
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col items-center gap-3 py-5 bg-slate-50 dark:bg-neutral-800/50 rounded-2xl">
+          <span className={`text-3xl font-bold ${amountColor}`}>
+            {amountPrefix}{currencyFormat(tx.data.amount)}
+          </span>
+          <span className={`text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider
+            ${STATUS_STYLE[tx.status] ?? 'bg-slate-100 text-slate-500'}`}>
+            {STATUS_LABEL[tx.status] ?? tx.status}
+          </span>
         </div>
-      </Modal>
-    )
+
+        <div className="flex justify-center">
+          <div className="p-3 bg-white rounded-2xl border border-slate-200 dark:border-neutral-700 shadow-sm">
+            <QRCodeSVG
+              value={`${window.location.origin}/tx/${tx.hash}`}
+              size={120}
+              level="H"
+              imageSettings={{ src: '/img/favicon.svg', width: 24, height: 24, excavate: false }}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 dark:border-neutral-800 overflow-hidden divide-y divide-slate-100 dark:divide-neutral-800">
+          <div className="px-4 py-2.5 bg-slate-50 dark:bg-neutral-800/50">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Emisor</p>
+          </div>
+          <Row label="Nombre" value={`${tx.owner.data?.first_name} ${tx.owner.data?.surname_1}`} />
+          <Row label="E-mail" value={tx.owner.email} />
+
+          <div className="px-4 py-2.5 bg-slate-50 dark:bg-neutral-800/50">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Destinatario</p>
+          </div>
+          <Row label="Nombre" value={`${tx.receiver.data?.first_name} ${tx.receiver.data?.surname_1}`} />
+          <Row label="E-mail" value={tx.receiver.email} />
+
+          <div className="px-4 py-2.5 bg-slate-50 dark:bg-neutral-800/50">
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Resumen</p>
+          </div>
+          <Row label="Fecha" value={convertDate(tx.createdAt)} />
+          <Row label="Referencia" value={`#${tx.hash?.slice(0, 12)}`} mono />
+        </div>
+
+        {tx.status === 'pending' && (
+          <div className="flex gap-3">
+            {account.id === tx.owner.id && (
+              <Button color="green" className="flex-1" onClick={() => handleManageTx(true)}>
+                Confirmar
+              </Button>
+            )}
+            <Button color="red" className="flex-1" onClick={() => handleManageTx(false)}>
+              Cancelar
+            </Button>
+          </div>
+        )}
+      </div>
+    </Modal>
+  )
 }
 
 export default ManageTxModal

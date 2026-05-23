@@ -55,19 +55,16 @@ export const UpdatePasswordForm = ({ setPassword }) => {
 
     return (
         <form className="flex flex-col gap-6" onSubmit={handleSubmit(submit)}>
-            <div className="bg-gradient-to-r dark:!from-zinc-950 dark:!via-zinc-900 
-              !from-gray-200 !via-gray-100 !to-transparent rounded-lg p-2 -ml-9"
-            >
-                <h1 className="text-2xl font-medium flex gap-4 items-center">
-                    Contraseña
-                </h1>
+            <div>
+                <h2 className="text-base font-semibold text-slate-900 dark:text-white">Contraseña</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Actualiza tu contraseña de acceso</p>
             </div>
             <Input
                 icon={<LockClosedIcon className="size-6" />}
                 id="password"
                 name="password"
                 type={hide1 ? 'password' : 'text'}
-                label={"Actual Password"}
+                label="Contraseña actual"
                 placeholder="***********"
                 register={{
                     function: register,
@@ -101,7 +98,7 @@ export const UpdatePasswordForm = ({ setPassword }) => {
                     id="new_password"
                     name="new_password"
                     type={hide2 ? 'password' : 'text'}
-                    label={"New Password"}
+                    label="Contraseña nueva"
                     placeholder="***********"
                     register={{
                         function: register,
@@ -134,7 +131,7 @@ export const UpdatePasswordForm = ({ setPassword }) => {
                     id="new_password_repeat"
                     name="new_password_repeat"
                     type={hide3 ? 'password' : 'text'}
-                    label={"Repeat new password"}
+                    label="Repetir contraseña nueva"
                     placeholder="***********"
                     register={{
                         function: register,
@@ -163,9 +160,11 @@ export const UpdatePasswordForm = ({ setPassword }) => {
                     }
                 />
             </div>
-            <Button type="submit" disabled={!isValid}>
-                {"Actualizar"}
-            </Button>
+            <div className="flex justify-end">
+                <Button type="submit" color="green" disabled={!isValid}>
+                    Guardar cambios
+                </Button>
+            </div>
         </form>
     )
 }

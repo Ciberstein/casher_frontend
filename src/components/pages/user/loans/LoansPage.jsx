@@ -48,7 +48,7 @@ const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium dark:text-white">Moneda</label>
           <select {...register('currency', { required: true })}
-            className="border rounded-lg p-2 dark:bg-zinc-800 dark:text-white dark:border-gray-600">
+            className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-gray-600">
             <option value="COP">COP</option>
             <option value="USD">USD</option>
           </select>
@@ -88,7 +88,7 @@ export const LoansPage = () => {
       <div className="flex flex-col gap-3">
         {loans.length === 0 && <p className="text-gray-400 text-sm">No tienes préstamos aún.</p>}
         {loans.map(loan => (
-          <div key={loan.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+          <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <span className="font-semibold dark:text-white">{loan.amount.toLocaleString()} {loan.currency}</span>
               <span className={`text-sm font-medium ${statusColor[loan.status]}`}>{statusLabel[loan.status]}</span>

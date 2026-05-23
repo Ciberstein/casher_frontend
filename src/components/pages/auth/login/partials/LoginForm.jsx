@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Input } from '../../../../elements/user/Input'
 import { useForm } from 'react-hook-form'
 import { EnvelopeIcon, EyeIcon, EyeSlashIcon, LockClosedIcon } from '@heroicons/react/24/outline'
@@ -13,48 +13,53 @@ import Swal from 'sweetalert2'
 import { GoogleIcon } from '../../../../../assets/GoogleIcon'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../../../../../../firebase/config'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 export const LoginForm = ({ setAccount }) => {
-  const [hide, setHide] = useState(true);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [hide, setHide] = useState(true)
+  const [captchaToken, setCaptchaToken] = useState(null)
+  const turnstileRef = useRef(null)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({ mode: 'onChange' })
 
   const trigger = (res) => {
-    if (res.status === 200) location.reload();
-    else if (res.status === 201) navigate('/register', { state: { data: res.data } });
-    else if (res.status === 202) setAccount(res.data.account);
-  };
+    if (res.status === 200) location.reload()
+    else if (res.status === 201) navigate('/register', { state: { data: res.data } })
+    else if (res.status === 202) setAccount(res.data.account)
+  }
 
   const firebase = async (token) => {
-    dispatch(setLoad(false));
+    dispatch(setLoad(false))
     await api.post('/api/v1/auth/login/firebase', { token })
       .then((res) => trigger(res))
       .catch((err) => {
-        appError(err);
-        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
+        appError(err)
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true })
       })
-      .finally(() => dispatch(setLoad(true)));
-  };
+      .finally(() => dispatch(setLoad(true)))
+  }
 
   const google = async () => {
     try {
-      const res = await signInWithPopup(auth, googleProvider);
-      await firebase(await res.user.getIdToken());
-    } catch (err) { appError(err); }
-  };
+      const res = await signInWithPopup(auth, googleProvider)
+      await firebase(await res.user.getIdToken())
+    } catch (err) { appError(err) }
+  }
 
   const submit = async (data) => {
-    dispatch(setLoad(false));
-    await api.post('/api/v1/auth/login', data)
+    dispatch(setLoad(false))
+    await api.post('/api/v1/auth/login', { ...data, captchaToken })
       .then((res) => trigger(res))
       .catch((err) => {
-        appError(err);
-        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true });
+        appError(err)
+        Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response.data.message, showConfirmButton: false, timer: 5000, timerProgressBar: true })
+        turnstileRef.current?.reset()
+        setCaptchaToken(null)
       })
-      .finally(() => dispatch(setLoad(true)));
-  };
+      .finally(() => dispatch(setLoad(true)))
+  }
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5 text-black dark:text-white">
@@ -94,24 +99,35 @@ export const LoginForm = ({ setAccount }) => {
         }
       />
 
-      <Button type="submit" size="lg" className="w-full" disabled={!isValid}>
+      <div className="flex justify-center">
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+          onSuccess={setCaptchaToken}
+          onExpire={() => setCaptchaToken(null)}
+          onError={() => setCaptchaToken(null)}
+          options={{ theme: 'auto', language: 'es' }}
+        />
+      </div>
+
+      <Button type="submit" size="lg" className="w-full" disabled={!isValid || !captchaToken}>
         Ingresar
       </Button>
 
       <div className="flex items-center gap-3">
-        <hr className="flex-1 border-gray-200 dark:border-zinc-700" />
+        <hr className="flex-1 border-gray-200 dark:border-neutral-700" />
         <span className="text-xs text-gray-400 uppercase font-medium">o continúa con</span>
-        <hr className="flex-1 border-gray-200 dark:border-zinc-700" />
+        <hr className="flex-1 border-gray-200 dark:border-neutral-700" />
       </div>
 
       <button
         type="button"
         onClick={google}
-        className="w-full flex items-center justify-center gap-3 border border-gray-200 dark:border-zinc-700 rounded-xl py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+        className="w-full flex items-center justify-center gap-3 border border-gray-200 dark:border-neutral-700 rounded-xl py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800 transition-colors"
       >
         <GoogleIcon />
         Google
       </button>
     </form>
-  );
-};
+  )
+}

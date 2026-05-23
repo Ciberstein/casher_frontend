@@ -58,8 +58,8 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
         onClick={() => !uploading && inputRef.current?.click()}
         className={`relative flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed cursor-pointer transition-colors
           ${uploading ? 'cursor-not-allowed opacity-70' : 'hover:border-blue-400 dark:hover:border-white'}
-          ${error ? 'border-red-400' : 'border-gray-300 dark:border-zinc-600'}
-          bg-gray-50 dark:bg-zinc-800`}
+          ${error ? 'border-red-400' : 'border-gray-300 dark:border-neutral-700'}
+          bg-gray-50 dark:bg-neutral-800`}
       >
         {done ? (
           <DocumentCheckIcon className="size-8 text-green-500 shrink-0" />
@@ -74,7 +74,7 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
             <p className="text-sm text-gray-400">Haz clic para subir un archivo</p>
           )}
           {uploading && (
-            <div className="mt-1.5 h-1 bg-gray-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+            <div className="mt-1.5 h-1 bg-gray-200 dark:bg-neutral-700 rounded-full overflow-hidden">
               <div className="h-full bg-blue-500 rounded-full animate-pulse w-full" />
             </div>
           )}

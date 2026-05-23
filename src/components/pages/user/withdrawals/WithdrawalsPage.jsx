@@ -51,7 +51,7 @@ const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium dark:text-white">Cuenta bancaria</label>
               <select {...register('bankAccountId', { required: true })}
-                className="border rounded-lg p-2 dark:bg-zinc-800 dark:text-white dark:border-gray-600">
+                className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-gray-600">
                 {bankAccounts.map(acc => (
                   <option key={acc.id} value={acc.id}>{acc.bank_name} · {acc.account_number}</option>
                 ))}
@@ -63,7 +63,7 @@ const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium dark:text-white">Moneda</label>
               <select {...register('currency', { required: true })}
-                className="border rounded-lg p-2 dark:bg-zinc-800 dark:text-white dark:border-gray-600">
+                className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-gray-600">
                 <option value="COP">COP</option>
                 <option value="USD">USD</option>
               </select>
@@ -84,7 +84,7 @@ const VoucherModal = ({ open, setOpen, url }) => {
         {isPdf ? (
           <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
         ) : (
-          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-zinc-950" />
+          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
         )}
       </div>
     </Modal>
@@ -122,7 +122,7 @@ export const WithdrawalsPage = () => {
       <div className="flex flex-col gap-3">
         {withdrawals.length === 0 && <p className="text-gray-400 text-sm">No tienes retiros aún.</p>}
         {withdrawals.map(w => (
-          <div key={w.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+          <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <span className="font-semibold dark:text-white">{w.amount.toLocaleString()} {w.currency}</span>
               <span className={`text-sm font-medium ${statusColor[w.status]}`}>{statusLabel[w.status]}</span>

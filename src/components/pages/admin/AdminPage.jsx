@@ -59,7 +59,7 @@ const AcceptWithdrawalModal = ({ open, setOpen, withdrawal, onSuccess }) => {
   return (
     <Modal open={open} setOpen={handleClose} title="Confirmar retiro" className="grid gap-6">
       {withdrawal && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-neutral-800 border border-gray-100 dark:border-neutral-700">
           <div className="size-11 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
             <span className="text-sm font-bold text-green-700 dark:text-green-400">{initials}</span>
           </div>
@@ -98,14 +98,14 @@ const InfoRow = ({ icon, text }) => (
 );
 
 const ViewToggle = ({ value, onChange }) => (
-  <div className="flex gap-1 bg-gray-100 dark:bg-zinc-800 rounded-lg p-0.5 w-fit text-xs">
+  <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-lg p-0.5 w-fit text-xs">
     {['pending', 'history'].map(v => (
       <button
         key={v}
         onClick={() => onChange(v)}
         className={`px-3 py-1.5 rounded-md font-medium transition-colors
           ${value === v
-            ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+            ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
           }`}
       >
@@ -150,7 +150,7 @@ const LoansPanel = () => {
       ) : (
         <div className="flex flex-col gap-3">
           {loans.map(loan => (
-            <div key={loan.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-zinc-800">
+            <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col gap-2 min-w-0">
                   <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${loan.account?.username} · ${loan.account?.email}`} />
@@ -173,7 +173,7 @@ const LoansPanel = () => {
                       <CheckIcon className="size-4" /> Aceptar
                     </button>
                     <button onClick={() => action(loan.id, 'reject')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
@@ -195,7 +195,7 @@ const VoucherModal = ({ open, setOpen, url }) => {
         {isPdf ? (
           <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
         ) : (
-          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-zinc-950" />
+          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
         )}
       </div>
     </Modal>
@@ -242,7 +242,7 @@ const WithdrawalsPanel = () => {
       ) : (
         <div className="flex flex-col gap-3">
           {withdrawals.map(w => (
-            <div key={w.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-zinc-800">
+            <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col gap-2 min-w-0">
                   <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${w.account?.username} · ${w.account?.email}`} />
@@ -268,7 +268,7 @@ const WithdrawalsPanel = () => {
                       <CheckIcon className="size-4" /> Aceptar
                     </button>
                     <button onClick={() => reject(w.id)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
@@ -319,7 +319,7 @@ const DepositRequestsPanel = () => {
       ) : (
         <div className="flex flex-col gap-3">
           {requests.map(req => (
-            <div key={req.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-zinc-800">
+            <div key={req.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-neutral-800">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex flex-col gap-2 min-w-0">
                   <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${req.account?.username} · ${req.account?.email}`} />
@@ -346,7 +346,7 @@ const DepositRequestsPanel = () => {
                       <CheckIcon className="size-4" /> Aprobar
                     </button>
                     <button onClick={() => action(req.id, 'reject')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-zinc-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
@@ -528,28 +528,28 @@ const AppBankAccountsPanel = () => {
         <button
           onClick={() => setAddModal(true)}
           className="flex flex-col gap-2 justify-center items-center min-h-36 rounded-2xl border-2 border-dashed
-            border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-zinc-500
-            hover:border-gray-400 dark:hover:border-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300
+            border-gray-200 dark:border-neutral-700 text-gray-400 dark:text-slate-500
+            hover:border-gray-400 dark:hover:border-slate-600 hover:text-gray-600 dark:hover:text-slate-300
             transition-colors"
         >
           <PlusIcon className="size-8" />
           <span className="text-sm font-medium">Agregar nueva cuenta</span>
         </button>
         {accounts.map(acc => (
-          <div key={acc.id} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36 shadow-sm">
+          <div key={acc.id} className="bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36 shadow-sm">
             <div className="flex justify-between items-start">
               <span className="font-bold text-gray-900 dark:text-white text-base">{acc.bank_name}</span>
               <div className="flex gap-2">
                 <button
                   onClick={() => { setEditing(acc); setEditModal(true); }}
-                  className="size-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center
-                    text-gray-500 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  className="size-8 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center
+                    text-gray-500 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-neutral-700 hover:text-gray-900 dark:hover:text-white transition-colors"
                 >
                   <PencilSquareIcon className="size-4" />
                 </button>
                 <button
                   onClick={() => remove(acc.id)}
-                  className="size-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center
+                  className="size-8 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center
                     text-red-400 hover:bg-red-500 hover:text-white transition-colors"
                 >
                   <TrashIcon className="size-4" />
@@ -557,15 +557,15 @@ const AppBankAccountsPanel = () => {
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm text-gray-600 dark:text-zinc-300">
+              <span className="text-sm text-gray-600 dark:text-slate-300">
                 {acc.account_number}
                 <span className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${acc.account_type === 'savings' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'}`}>
                   {accountTypeLabel[acc.account_type]}
                 </span>
               </span>
-              <span className="text-sm text-gray-500 dark:text-zinc-400">{acc.owner_name}</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400">{acc.owner_name}</span>
               {acc.documentType && (
-                <span className="text-sm text-gray-500 dark:text-zinc-400">
+                <span className="text-sm text-gray-500 dark:text-slate-400">
                   {acc.documentType.abbreviation} {acc.document_number}
                 </span>
               )}
@@ -621,14 +621,14 @@ export const AdminPage = () => {
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona las solicitudes pendientes</p>
       </div>
 
-      <div className="flex gap-1 bg-gray-100 dark:bg-zinc-800 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${tab === t.key
-                ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
           >

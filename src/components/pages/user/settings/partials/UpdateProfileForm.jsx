@@ -49,7 +49,7 @@ const CropModal = ({ open, imageSrc, onConfirm, onCancel }) => {
   return (
     <Modal open={open} setOpen={onCancel} title="Recortar foto">
       <div className="flex flex-col gap-4">
-        <div className="relative w-full h-72 rounded-xl overflow-hidden bg-zinc-950">
+        <div className="relative w-full h-72 rounded-xl overflow-hidden bg-slate-950">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -77,7 +77,7 @@ const CropModal = ({ open, imageSrc, onConfirm, onCancel }) => {
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-zinc-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
           >
             <XMarkIcon className="size-4" /> Cancelar
           </button>
@@ -171,48 +171,56 @@ export const UpdateProfileForm = () => {
       />
 
       <form onSubmit={submit} className="flex flex-col gap-6">
-        <div className="bg-gradient-to-r dark:!from-zinc-950 dark:!via-zinc-900 !from-gray-200 !via-gray-100 !to-transparent rounded-lg p-2 -ml-9">
-          <h1 className="text-2xl font-medium flex gap-4 items-center">
-            Perfil
-          </h1>
+        <div>
+          <h2 className="text-base font-semibold text-slate-900 dark:text-white">Perfil</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Actualiza tu foto de perfil y nombre de usuario</p>
         </div>
 
-        <div className="flex justify-center">
-          <div className="relative">
+        <div className="flex items-center gap-5">
+          <div className="relative shrink-0">
             <div
               onClick={() => inputRef.current?.click()}
-              className="group size-24 rounded-full overflow-hidden cursor-pointer ring-2 ring-gray-200 dark:ring-zinc-700 hover:ring-blue-400 dark:hover:ring-blue-500 transition-all relative"
+              className="group size-20 rounded-full overflow-hidden cursor-pointer ring-2 ring-slate-200 dark:ring-neutral-700 hover:ring-emerald-400 dark:hover:ring-emerald-500 transition-all relative"
             >
               {!pendingDelete && (avatarPreview || currentPicture) ? (
-                <img
-                  src={avatarPreview ?? currentPicture}
-                  alt="Avatar"
-                  className="size-full object-cover"
-                />
+                <img src={avatarPreview ?? currentPicture} alt="Avatar" className="size-full object-cover" />
               ) : (
-                <div className="size-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-green-700 dark:text-green-400">{initials}</span>
+                <div className="size-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <span className="text-xl font-bold text-emerald-700 dark:text-emerald-400">{initials}</span>
                 </div>
               )}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <CameraIcon className="size-6 text-white" />
+                <CameraIcon className="size-5 text-white" />
               </div>
             </div>
             {!pendingDelete && (currentPicture || avatarPreview) && (
               <button
                 type="button"
                 onClick={markDeleteAvatar}
-                className="absolute -top-1 -right-1 size-7 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow-md transition-colors"
+                className="absolute -top-1 -right-1 size-6 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow-md transition-colors"
               >
-                <TrashIcon className="size-3.5 text-white" />
+                <TrashIcon className="size-3 text-white" />
               </button>
             )}
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
           </div>
+
+          <div className="flex flex-col gap-1">
+            <p className="text-sm font-medium text-slate-900 dark:text-white">
+              {!pendingDelete && (avatarPreview || currentPicture) ? 'Foto personalizada' : 'Sin foto de perfil'}
+            </p>
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline text-left"
+            >
+              Cambiar foto
+            </button>
+          </div>
         </div>
 
         <Input
-          icon={<UserIcon className="size-6" />}
+          icon={<UserIcon className="size-5" />}
           id="username"
           name="username"
           label="Nombre de usuario"
@@ -221,9 +229,11 @@ export const UpdateProfileForm = () => {
           onChange={e => setUsername(e.target.value)}
         />
 
-        <Button type="submit" disabled={!hasChanges}>
-          Actualizar
-        </Button>
+        <div className="flex justify-end">
+          <Button type="submit" color="green" disabled={!hasChanges}>
+            Guardar cambios
+          </Button>
+        </div>
       </form>
     </>
   )

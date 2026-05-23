@@ -56,8 +56,8 @@ export const Landing = () => {
   const darkMode = useSelector((state) => state.darkMode);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-zinc-900 dark:text-white">
-      <div className="sticky top-0 z-30">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-950 dark:text-white">
+      <div className="sticky top-0 z-30 border-b border-slate-200 dark:border-neutral-800">
         <PreAuthNavbar />
       </div>
 
@@ -138,7 +138,7 @@ export const Landing = () => {
           {FEATURES.map((f) => (
             <div
               key={f.title}
-              className="bg-white dark:bg-zinc-800 rounded-2xl border border-gray-100 dark:border-zinc-700 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-neutral-800 rounded-2xl border border-gray-100 dark:border-neutral-700 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className={`size-12 rounded-xl flex items-center justify-center ${f.color}`}>
                 {f.icon}
@@ -174,7 +174,7 @@ export const Landing = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 dark:border-zinc-800 mt-auto">
+      <footer className="border-t border-slate-200 dark:border-neutral-800 mt-auto">
         <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <img
             src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`}

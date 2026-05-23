@@ -123,7 +123,7 @@ export const Recipients = () => {
           placeholder="Buscar por nombre, usuario o correo..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="!bg-white dark:!bg-zinc-900 !border-gray-100 dark:!border-zinc-800 !rounded-xl shadow-sm"
+          className="!bg-white dark:!bg-neutral-800/60 !border-slate-200 dark:!border-neutral-700 !rounded-xl shadow-sm"
         />
       )}
 
@@ -141,14 +141,14 @@ export const Recipients = () => {
           <p className="text-sm">Sin resultados para "{search}"</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-800 overflow-hidden shadow-sm">
           {filtered.map((r, i) => {
             const rec = r.recipient
             const name = `${rec.data?.first_name ?? ''} ${rec.data?.surname_1 ?? ''}`.trim() || rec.username
             return (
               <div
                 key={r.id}
-                className={`flex items-center gap-4 px-4 py-3.5 ${i < filtered.length - 1 ? 'border-b border-gray-100 dark:border-zinc-800' : ''}`}
+                className={`flex items-center gap-4 px-4 py-3.5 ${i < filtered.length - 1 ? 'border-b border-gray-100 dark:border-neutral-800' : ''}`}
               >
                 <div className="size-10 rounded-full shrink-0 overflow-hidden bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
                   {rec.picture

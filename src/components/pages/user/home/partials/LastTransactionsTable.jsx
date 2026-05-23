@@ -57,10 +57,10 @@ const KIND_CONFIG = {
 };
 
 const STATUS_STYLE = {
-  completed: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   cancelled: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  accepted: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  accepted: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
   rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
   paid: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
 };
@@ -123,47 +123,49 @@ export const LastTransactionsTable = () => {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg dark:text-white">Transacciones recientes</h3>
-        <Link to="/transactions" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">Ver todas →</Link>
+        <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Actividad reciente</h3>
+        <Link to="/transactions" className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
+          Ver todas →
+        </Link>
       </div>
 
       {loading ? (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 divide-y divide-gray-100 dark:divide-zinc-800 overflow-hidden animate-pulse">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-slate-200 dark:border-neutral-800 divide-y divide-slate-100 dark:divide-neutral-800 overflow-hidden animate-pulse">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="flex items-center gap-3 px-4 py-3.5">
-              <div className="size-9 rounded-full bg-gray-200 dark:bg-zinc-700 shrink-0" />
+              <div className="size-9 rounded-full bg-slate-200 dark:bg-neutral-700 shrink-0" />
               <div className="flex-1 flex flex-col gap-1.5">
-                <div className="h-3 bg-gray-200 dark:bg-zinc-700 rounded w-1/3" />
-                <div className="h-2.5 bg-gray-100 dark:bg-zinc-800 rounded w-1/4" />
+                <div className="h-3 bg-slate-200 dark:bg-neutral-700 rounded w-1/3" />
+                <div className="h-2.5 bg-slate-100 dark:bg-neutral-800 rounded w-1/4" />
               </div>
-              <div className="h-3 bg-gray-200 dark:bg-zinc-700 rounded w-16" />
+              <div className="h-3 bg-slate-200 dark:bg-neutral-700 rounded w-16" />
             </div>
           ))}
         </div>
       ) : activity.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-2 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-16 gap-2 text-slate-400">
           <BanknotesIcon className="size-10 opacity-40" />
           <p className="text-sm">Sin actividad reciente</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {groupByDate(activity).map(({ date, items }) => (
             <div key={date.toISOString()} className="flex flex-col gap-2">
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 px-1">
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 px-1 uppercase tracking-wider">
                 {dateLabel(date)}
               </p>
-              <ul className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 divide-y divide-gray-100 dark:divide-zinc-800 overflow-hidden">
+              <ul className="bg-white dark:bg-neutral-900 rounded-2xl border border-slate-200 dark:border-neutral-800 divide-y divide-slate-100 dark:divide-neutral-800 overflow-hidden shadow-sm">
                 {items.map((item) => {
                   const cfg = KIND_CONFIG[item.kind];
                   const sub = subtitle(item);
                   return (
-                    <li key={item.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-zinc-800/60 transition-colors">
+                    <li key={item.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-neutral-800/40 transition-colors">
                       <div className={`size-9 rounded-full flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
                         {cfg.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 dark:text-white truncate">{cfg.label}</p>
-                        {sub && <p className="text-xs text-gray-400 truncate">{sub}</p>}
+                        <p className="text-sm font-medium text-slate-800 dark:text-white truncate">{cfg.label}</p>
+                        {sub && <p className="text-xs text-slate-400 truncate">{sub}</p>}
                       </div>
                       <div className="flex flex-col items-end gap-1 shrink-0">
                         <span className={`text-sm font-semibold ${cfg.amountColor}`}>

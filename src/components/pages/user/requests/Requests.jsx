@@ -182,7 +182,7 @@ const LoansSection = () => {
       <LoanRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       {loans.length === 0 && <p className="text-gray-400 text-sm">No tienes préstamos aún.</p>}
       {loans.map(loan => (
-        <div key={loan.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+        <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <span className="font-semibold dark:text-white">{loan.amount.toLocaleString()} {loan.currency}</span>
             <div className="flex items-center gap-3">
@@ -216,7 +216,7 @@ const VoucherModal = ({ open, setOpen, url }) => {
         {isPdf ? (
           <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
         ) : (
-          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-zinc-950" />
+          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
         )}
       </div>
     </Modal>
@@ -271,7 +271,7 @@ const WithdrawalsSection = () => {
       <WithdrawalRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       {withdrawals.length === 0 && <p className="text-gray-400 text-sm">No tienes retiros aún.</p>}
       {withdrawals.map(w => (
-        <div key={w.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+        <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <span className="font-semibold dark:text-white">{w.amount.toLocaleString()} {w.currency}</span>
             <div className="flex items-center gap-3">
@@ -345,7 +345,7 @@ const DepositRequestsSection = () => {
       </div>
       {requests.length === 0 && <p className="text-gray-400 text-sm">No tienes solicitudes de recarga aún.</p>}
       {requests.map(r => (
-        <div key={r.id} className="bg-white dark:bg-zinc-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+        <div key={r.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
             <span className="font-semibold dark:text-white">{r.amount.toLocaleString()} {r.currency}</span>
             <div className="flex items-center gap-3">
@@ -382,14 +382,14 @@ export const Requests = () => {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold dark:text-white">Solicitudes</h1>
-      <div className="flex gap-1 bg-gray-100 dark:bg-zinc-800 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-gray-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
         {TABS.map(t => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
               ${tab === t.key
-                ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
           >

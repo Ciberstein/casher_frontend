@@ -34,7 +34,7 @@ const StepIndicator = ({ current }) => (
       <div key={label} className="flex items-center flex-1 last:flex-none">
         <div className="flex flex-col items-center gap-1.5">
           <div className={`size-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-            ${current > i + 1 ? 'bg-green-500 text-white' : current === i + 1 ? 'bg-green-500 text-white ring-4 ring-green-100 dark:ring-green-900/40' : 'bg-gray-100 dark:bg-zinc-700 text-gray-400'}`}>
+            ${current > i + 1 ? 'bg-green-500 text-white' : current === i + 1 ? 'bg-green-500 text-white ring-4 ring-green-100 dark:ring-green-900/40' : 'bg-gray-100 dark:bg-neutral-700 text-gray-400'}`}>
             {current > i + 1 ? <CheckIcon className="size-4" /> : i + 1}
           </div>
           <span className={`text-xs font-medium whitespace-nowrap ${current >= i + 1 ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400'}`}>
@@ -42,7 +42,7 @@ const StepIndicator = ({ current }) => (
           </span>
         </div>
         {i < STEPS.length - 1 && (
-          <div className={`flex-1 h-0.5 mx-2 mb-5 transition-colors ${current > i + 1 ? 'bg-green-500' : 'bg-gray-100 dark:bg-zinc-700'}`} />
+          <div className={`flex-1 h-0.5 mx-2 mb-5 transition-colors ${current > i + 1 ? 'bg-green-500' : 'bg-gray-100 dark:bg-neutral-700'}`} />
         )}
       </div>
     ))}
@@ -78,7 +78,7 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
         onChange={(val) => { onChange(val); setQuery(''); }}
         onClose={() => setQuery('')}
       >
-        <div className="flex gap-2 items-center border-transparent border rounded-xl bg-gray-200 dark:bg-zinc-800 p-2">
+        <div className="flex gap-2 items-center border-transparent border rounded-xl bg-gray-200 dark:bg-neutral-800 p-2">
           <span className="text-gray-500 dark:text-gray-400 shrink-0">{icon}</span>
           <ComboboxInput
             className="bg-transparent w-full placeholder:text-gray-500 focus-visible:outline-none text-black dark:text-white text-md"
@@ -93,7 +93,7 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
           )}
         </div>
         {filtered.length > 0 && (
-          <ComboboxOptions className="absolute z-50 w-full mt-1 max-h-52 overflow-y-auto rounded-xl bg-white dark:bg-zinc-800 shadow-xl border border-gray-100 dark:border-zinc-700 p-1">
+          <ComboboxOptions className="absolute z-50 w-full mt-1 max-h-52 overflow-y-auto rounded-xl bg-white dark:bg-neutral-800 shadow-xl border border-gray-100 dark:border-neutral-700 p-1">
             {filtered.map(r => {
               const rec = r.recipient;
               const name = `${rec.data?.first_name ?? ''} ${rec.data?.surname_1 ?? ''}`.trim() || rec.username;
@@ -102,7 +102,7 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
                 <ComboboxOption
                   key={r.id}
                   value={rec.email}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-gray-100 dark:data-[focus]:bg-zinc-700 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-gray-100 dark:data-[focus]:bg-slate-700 transition-colors"
                 >
                   <div className="size-8 rounded-full shrink-0 overflow-hidden bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
                     {rec.picture
@@ -171,37 +171,56 @@ export const ChargeModal = ({ open, setOpen }) => {
 
   return (
     <Modal open={open} setOpen={handleClose} title="Cargar fondos" className="flex flex-col gap-5">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-sm text-slate-500 dark:text-slate-400">
         Realiza una transferencia a una de las cuentas de la app y adjunta el comprobante. El saldo será acreditado tras la verificación.
       </p>
 
-      {accounts.length > 0 && (
-        <div className="flex flex-col gap-2">
-          {accounts.map(acc => (
-            <div key={acc.id} className="flex flex-col gap-1 p-3 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-gray-900 dark:text-white">{acc.bank_name}</p>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-medium">
-                  {ACCOUNT_TYPE_LABEL[acc.account_type]}
-                </span>
-              </div>
-              <p className="text-sm font-mono text-gray-700 dark:text-gray-300">{acc.account_number}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{acc.owner_name}</p>
-              {acc.documentType && (
-                <p className="text-xs text-gray-400">{acc.documentType.abbreviation}: {acc.document_number}</p>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit(submit)} className="grid gap-4">
+      <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4">
         <Controller name="appBankAccountId" control={control} rules={{ required: 'Requerido' }}
           render={({ field }) => (
-            <ComboSelect label="¿A cuál cuenta depositaste?" searchable={false}
-              options={accountOptions} value={field.value} onChange={field.onChange}
-              placeholder="Selecciona la cuenta" error={errors.appBankAccountId} />
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">¿A cuál cuenta depositaste?</label>
+              <div className="flex flex-col gap-2">
+                {accounts.map(acc => {
+                  const selected = field.value === String(acc.id)
+                  return (
+                    <button
+                      key={acc.id}
+                      type="button"
+                      onClick={() => field.onChange(String(acc.id))}
+                      className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all
+                        ${selected
+                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10'
+                          : 'border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800/60 hover:border-slate-300 dark:hover:border-neutral-600'
+                        }`}
+                    >
+                      <div className={`size-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all
+                        ${selected ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300 dark:border-neutral-600'}`}>
+                        {selected && <CheckIcon className="size-3 text-white" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white">{acc.bank_name}</p>
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium shrink-0">
+                            {ACCOUNT_TYPE_LABEL[acc.account_type]}
+                          </span>
+                        </div>
+                        <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-0.5">{acc.account_number}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{acc.owner_name}</p>
+                        {acc.documentType && (
+                          <p className="text-xs text-slate-400">{acc.documentType.abbreviation}: {acc.document_number}</p>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+              {errors.appBankAccountId && (
+                <p className="text-xs text-red-500">{errors.appBankAccountId.message}</p>
+              )}
+            </div>
           )} />
+
         <Controller name="currency" control={control} rules={{ required: 'Requerido' }}
           render={({ field }) => (
             <ComboSelect label="Moneda" searchable={false}
@@ -364,7 +383,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
           {section === 3 && (
             <>
               {/* Receipt preview */}
-              <div className="bg-gray-50 dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-700 overflow-hidden">
+              <div className="bg-gray-50 dark:bg-neutral-900 rounded-2xl border border-gray-100 dark:border-neutral-700 overflow-hidden">
                 <div className="flex items-center gap-3 p-4">
                   <div className="size-11 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
                     <span className="text-sm font-bold text-green-600 dark:text-green-400 uppercase">
@@ -380,7 +399,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
                   <ArrowRightIcon className={`size-5 shrink-0 ${txType ? 'text-red-400' : 'text-green-400 rotate-180'}`} />
                 </div>
 
-                <div className="border-t border-gray-100 dark:border-zinc-700 px-4 py-3 flex items-center justify-between">
+                <div className="border-t border-gray-100 dark:border-neutral-700 px-4 py-3 flex items-center justify-between">
                   <span className="text-xs text-gray-500">{txType ? 'El beneficiario recibe' : 'Usted recibirá'}</span>
                   <span className={`text-lg font-bold ${txType ? 'text-red-500' : 'text-green-500'}`}>
                     {fmt(params?.amount, params?.currency)}
@@ -489,61 +508,52 @@ export const BalanceCard = ({ balance = 0 }) => {
   };
 
   return (
-    <div className="rounded-2xl p-4 flex flex-col gap-6 justify-between text-white bg-green-500/80 bg-cover bg-center min-h-64"
-      style={{ backgroundImage: 'url(img/card-bg-1.svg)' }}
+    <div className="relative overflow-hidden rounded-3xl p-6 flex flex-col gap-8 justify-between text-white min-h-64"
+      style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)' }}
     >
+      <div className="absolute -right-8 -top-8 size-48 rounded-full bg-white/10 pointer-events-none" />
+      <div className="absolute right-12 bottom-0 size-32 rounded-full bg-black/10 pointer-events-none" />
+      <div className="absolute -left-6 bottom-8 size-28 rounded-full bg-white/10 pointer-events-none" />
+
       <ChargeModal open={chargeModal} setOpen={setChargeModal} />
       <SendOrRequestModal open={sendOrRequestModal} setOpen={setSendOrRequestModal} txType={txType} />
       <WithdrawModal open={withdrawModal} setOpen={setWithdrawModal} onSuccess={() => { dispatch(accountThunk()); dispatch(activityThunk()); }} />
 
-      <div className="flex flex-col gap-6">
+      <div className="relative flex flex-col gap-3">
         <div className="flex justify-between items-center gap-4">
-          <span className="font-medium text-xl">Saldo disponible</span>
-          <div className="flex items-center gap-3">
-            <button onClick={toggle} className="text-xs font-semibold bg-white/20 hover:bg-white/30 transition-colors px-2 py-1 rounded-full">
-              {preference === 'COP' ? 'Ver en USD' : 'Ver en COP'}
+          <span className="text-sm font-medium text-white/70 tracking-wide uppercase">Saldo disponible</span>
+          <div className="flex items-center gap-2">
+            <button onClick={toggle} className="text-xs font-semibold bg-white/20 hover:bg-white/30 transition-colors px-3 py-1 rounded-full">
+              {preference === 'COP' ? 'USD' : 'COP'}
             </button>
-            <button onClick={handleShow}>
-              {show ? <EyeSlashIcon className="size-6" /> : <EyeIcon className="size-6" />}
+            <button onClick={handleShow} className="p-1 rounded-lg hover:bg-white/20 transition-colors">
+              {show ? <EyeSlashIcon className="size-5" /> : <EyeIcon className="size-5" />}
             </button>
           </div>
         </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-medium">Balance</span>
-          <div className="font-semibold flex flex-col">
-            <span className="text-3xl lg:text-5xl">{show ? format(balance) : '******'}</span>
-            {show && preference === 'COP' && formatRef(balance) && (
-              <span className="text-sm font-medium opacity-75 mt-1">≈ {formatRef(balance)}</span>
-            )}
-          </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-4xl lg:text-5xl font-bold tracking-tight">
+            {show ? format(balance) : '••••••'}
+          </span>
+          {show && preference === 'COP' && formatRef(balance) && (
+            <span className="text-sm text-white/60">≈ {formatRef(balance)}</span>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-medium text-sm">
-        <button className="flex flex-col items-center gap-1" onClick={() => setChargeModal(!chargeModal)}>
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
-            <PlusIcon className="size-6" />
-          </div>
-          <span>Cargar</span>
-        </button>
-        <button className="flex flex-col items-center gap-1" onClick={() => { setSendOrRequestModal(true); setTxType(true); }}>
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
-            <ArrowTurnUpRightIcon className="size-6" />
-          </div>
-          <span>Enviar</span>
-        </button>
-        <button className="flex flex-col items-center gap-1" onClick={() => { setSendOrRequestModal(true); setTxType(false); }}>
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
-            <ArrowTurnDownLeftIcon className="size-6" />
-          </div>
-          <span>Solicitar</span>
-        </button>
-        <button className="flex flex-col items-center gap-1" onClick={() => setWithdrawModal(!withdrawModal)}>
-          <div className="bg-green-600 hover:bg-green-600/70 transition-colors ease-in-out rounded-xl flex justify-center p-1 w-full shadow-lg brightness-90">
-            <MinusIcon className="size-6" />
-          </div>
-          <span>Retirar</span>
-        </button>
+      <div className="relative grid grid-cols-4 gap-2">
+        {[
+          { icon: <PlusIcon className="size-5" />, label: 'Cargar', onClick: () => setChargeModal(true) },
+          { icon: <ArrowTurnUpRightIcon className="size-5" />, label: 'Enviar', onClick: () => { setSendOrRequestModal(true); setTxType(true); } },
+          { icon: <ArrowTurnDownLeftIcon className="size-5" />, label: 'Solicitar', onClick: () => { setSendOrRequestModal(true); setTxType(false); } },
+          { icon: <MinusIcon className="size-5" />, label: 'Retirar', onClick: () => setWithdrawModal(true) },
+        ].map(({ icon, label, onClick }) => (
+          <button key={label} onClick={onClick}
+            className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white/15 hover:bg-white/25 active:bg-white/30 transition-colors">
+            {icon}
+            <span className="text-xs font-medium text-white/90">{label}</span>
+          </button>
+        ))}
       </div>
     </div>
   );
