@@ -150,15 +150,15 @@ const ActivityRow = ({ item, onClick, onVoucher }) => {
         </span>
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400">{time}</span>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[item.status]}`}>
+            {STATUS_LABEL[item.status]}
+          </span>
           {hasVoucher && (
             <button type="button" onClick={(e) => { e.stopPropagation(); onVoucher?.(item.meta.screenshot) }}
               className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
               <LinkIcon className="size-3" /> Comprobante
             </button>
           )}
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[item.status]}`}>
-            {STATUS_LABEL[item.status]}
-          </span>
         </div>
       </div>
     </li>
@@ -335,12 +335,6 @@ const WithdrawalsTab = () => {
                 {cfg.amountPrefix}{fmt(w.amount, w.currency)}
               </span>
               <div className="flex items-center gap-2">
-                {w.screenshot && (
-                  <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
-                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
-                    <LinkIcon className="size-3" /> Comprobante
-                  </button>
-                )}
                 {w.status === 'pending' && (
                   <button onClick={() => cancel(w.id)}
                     className="text-xs text-red-400 hover:text-red-600 transition-colors">
@@ -350,6 +344,12 @@ const WithdrawalsTab = () => {
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[w.status]}`}>
                   {STATUS_LABEL[w.status]}
                 </span>
+                {w.screenshot && (
+                  <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
+                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
+                    <LinkIcon className="size-3" /> Comprobante
+                  </button>
+                )}
               </div>
             </div>
           </li>
@@ -424,12 +424,6 @@ const DepositsTab = () => {
                 {cfg.amountPrefix}{fmt(d.amount, d.currency)}
               </span>
               <div className="flex items-center gap-2">
-                {d.screenshot && (
-                  <button type="button" onClick={() => setVoucherUrl(d.screenshot)}
-                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
-                    <LinkIcon className="size-3" /> Comprobante
-                  </button>
-                )}
                 {d.status === 'pending' && (
                   <button onClick={() => cancel(d.id)}
                     className="text-xs text-red-400 hover:text-red-600 transition-colors">
@@ -439,6 +433,12 @@ const DepositsTab = () => {
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[d.status]}`}>
                   {STATUS_LABEL[d.status]}
                 </span>
+                {d.screenshot && (
+                  <button type="button" onClick={() => setVoucherUrl(d.screenshot)}
+                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
+                    <LinkIcon className="size-3" /> Comprobante
+                  </button>
+                )}
               </div>
             </div>
           </li>
