@@ -123,7 +123,7 @@ export const LastTransactionsTable = () => {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Actividad reciente</h3>
+        <h3 className="font-semibold text-lg text-slate-900 dark:text-white">Últimas transacciones</h3>
         <Link to="/transactions" className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
           Ver todas →
         </Link>
@@ -145,7 +145,7 @@ export const LastTransactionsTable = () => {
       ) : activity.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-2 text-slate-400">
           <BanknotesIcon className="size-10 opacity-40" />
-          <p className="text-sm">Sin actividad reciente</p>
+          <p className="text-sm">Sin transacciones</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
