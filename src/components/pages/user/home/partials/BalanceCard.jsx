@@ -1,7 +1,9 @@
 import { ArrowTurnDownLeftIcon, ArrowTurnUpRightIcon, CheckIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid'
-import { ArrowRightIcon, CurrencyDollarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, TagIcon } from '@heroicons/react/24/outline'
-import { useState, useEffect } from 'react'
+import { ArrowRightIcon, CurrencyDollarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, TagIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { useState, useEffect, useMemo } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
+import { Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from '@headlessui/react'
 import { ComboSelect } from '../../../../elements/user/ComboSelect'
 import useCurrency from '../../../../../hooks/useCurrency'
 import Modal from '../../../../elements/user/Modal'
@@ -51,6 +53,76 @@ const fmt = (amount, currency) =>
     style: 'currency', currency: currency || 'COP', maximumFractionDigits: 2,
   }).format(amount);
 
+const RecipientCombo = ({ value, onChange, recipients }) => {
+  const [query, setQuery] = useState('');
+
+  const filtered = useMemo(() => {
+    if (!query) return recipients;
+    const q = query.toLowerCase();
+    return recipients.filter(r =>
+      r.recipient.username?.toLowerCase().includes(q) ||
+      r.recipient.email?.toLowerCase().includes(q) ||
+      r.recipient.data?.first_name?.toLowerCase().includes(q) ||
+      r.recipient.data?.surname_1?.toLowerCase().includes(q)
+    );
+  }, [query, recipients]);
+
+  const icon = value?.includes('@') ? <EnvelopeIcon className="size-5" /> : <TagIcon className="size-5" />;
+
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="text-sm text-gray-500">Destinatario</label>
+      <Combobox
+        value={value}
+        onChange={(val) => { onChange(val); setQuery(''); }}
+        onClose={() => setQuery('')}
+      >
+        <div className="flex gap-2 items-center border-transparent border rounded-xl bg-gray-200 dark:bg-zinc-800 p-2">
+          <span className="text-gray-500 dark:text-gray-400 shrink-0">{icon}</span>
+          <ComboboxInput
+            className="bg-transparent w-full placeholder:text-gray-500 focus-visible:outline-none text-black dark:text-white text-md"
+            placeholder="usuario@dominio.com o @apodo"
+            displayValue={(v) => v ?? ''}
+            onChange={(e) => { setQuery(e.target.value); onChange(e.target.value); }}
+          />
+          {recipients.length > 0 && (
+            <ComboboxButton className="shrink-0">
+              <ChevronUpDownIcon className="size-5 text-gray-400" />
+            </ComboboxButton>
+          )}
+        </div>
+        {filtered.length > 0 && (
+          <ComboboxOptions className="absolute z-50 w-full mt-1 max-h-52 overflow-y-auto rounded-xl bg-white dark:bg-zinc-800 shadow-xl border border-gray-100 dark:border-zinc-700 p-1">
+            {filtered.map(r => {
+              const rec = r.recipient;
+              const name = `${rec.data?.first_name ?? ''} ${rec.data?.surname_1 ?? ''}`.trim() || rec.username;
+              const initials = [rec.data?.first_name, rec.data?.surname_1].filter(Boolean).map(s => s[0]).join('').toUpperCase() || rec.username?.[0]?.toUpperCase();
+              return (
+                <ComboboxOption
+                  key={r.id}
+                  value={rec.email}
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-gray-100 dark:data-[focus]:bg-zinc-700 transition-colors"
+                >
+                  <div className="size-8 rounded-full shrink-0 overflow-hidden bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                    {rec.picture
+                      ? <img src={rec.picture} className="size-full object-cover" />
+                      : <span className="text-xs font-bold text-green-700 dark:text-green-400">{initials}</span>
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 truncate">{name}</p>
+                    <p className="text-xs text-gray-400 truncate">@{rec.username} · {rec.email}</p>
+                  </div>
+                </ComboboxOption>
+              );
+            })}
+          </ComboboxOptions>
+        )}
+      </Combobox>
+    </div>
+  );
+};
+
 const ChargeModal = ({ open, setOpen }) => (
   <Modal open={open} setOpen={setOpen} title="Cargar fondos" />
 );
@@ -61,9 +133,9 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
   });
   const [section, setSection] = useState(1);
   const [params, setParams] = useState({});
-  const [type, setType] = useState(1);
   const [completedTx, setCompletedTx] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [recipients, setRecipients] = useState([]);
 
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
@@ -78,16 +150,20 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
     style: 'currency', currency: selectedCurrency, maximumFractionDigits: 2,
   }).format(available);
 
+  useEffect(() => {
+    if (open) api.get('/api/v1/recipients').then(r => setRecipients(r.data)).catch(() => {});
+  }, [open]);
+
   const handleClose = () => {
     setOpen(false);
     setSection(1);
-    setType(1);
     reset();
   };
 
   const submit = async (data) => {
     dispatch(setLoad(false));
     const url = `/api/v1/transfers/${txType ? 'send' : 'request'}`;
+    const type = data.user?.includes('@') ? 1 : 2;
     const formData = { ...data, type, confirmation: section === 3 };
 
     await api.post(url, formData)
@@ -131,42 +207,21 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(submit)}>
           {section === 1 && (
             <>
-              <div className="flex rounded-xl border border-gray-200 dark:border-zinc-700 overflow-hidden">
-                {[{ label: 'Correo', val: 1 }, { label: 'Apodo', val: 2 }].map(({ label, val }) => (
-                  <button
-                    key={val}
-                    type="button"
-                    onClick={() => setType(val)}
-                    className={`flex-1 py-2.5 text-sm font-medium transition-colors
-                      ${type === val
-                        ? 'bg-green-500 text-white'
-                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-zinc-800'
-                      }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+              <div className="relative">
+                <Controller
+                  name="user"
+                  control={control}
+                  rules={{ required: 'Requerido', minLength: { value: 2, message: 'Mínimo 2 caracteres' } }}
+                  render={({ field }) => (
+                    <RecipientCombo
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      recipients={recipients}
+                    />
+                  )}
+                />
+                {errors.user && <p className="text-xs text-red-400 mt-1">{errors.user.message}</p>}
               </div>
-
-              <Input
-                icon={type === 1 ? <EnvelopeIcon className="size-5" /> : <TagIcon className="size-5" />}
-                id="user" name="user"
-                type={type === 1 ? 'email' : 'text'}
-                label={type === 1 ? 'Correo electrónico' : 'Nombre de usuario'}
-                placeholder={type === 1 ? 'usuario@dominio.com' : 'apodo'}
-                register={{
-                  function: register,
-                  errors: {
-                    function: errors,
-                    rules: {
-                      required: 'Requerido',
-                      validate: {
-                        isEmailValid: (v) => type !== 1 || isEmailValid(v) || 'Correo inválido',
-                      },
-                    },
-                  },
-                }}
-              />
 
               <Button type="submit" disabled={!isValid} className="w-full">
                 Continuar

@@ -207,9 +207,25 @@ const LoansSection = () => {
   );
 };
 
+const VoucherModal = ({ open, setOpen, url }) => {
+  const isPdf = url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('/raw/');
+  return (
+    <Modal open={open} setOpen={setOpen} title="Comprobante" className="p-0">
+      <div className="w-full overflow-hidden rounded-b-2xl">
+        {isPdf ? (
+          <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
+        ) : (
+          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-zinc-950" />
+        )}
+      </div>
+    </Modal>
+  );
+};
+
 const WithdrawalsSection = () => {
   const [withdrawals, setWithdrawals] = useState([]);
   const [modal, setModal] = useState(false);
+  const [voucherUrl, setVoucherUrl] = useState(null);
   const dispatch = useDispatch();
 
   const fetchWithdrawals = async () => {
@@ -250,6 +266,7 @@ const WithdrawalsSection = () => {
           <PlusIcon className="size-4" /> Solicitar retiro
         </Button>
       </div>
+      <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <WithdrawalRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       {withdrawals.length === 0 && <p className="text-gray-400 text-sm">No tienes retiros aún.</p>}
       {withdrawals.map(w => (
@@ -270,10 +287,10 @@ const WithdrawalsSection = () => {
             {w.bankAccount?.bank_name} · {w.bankAccount?.account_number}
           </span>
           {w.screenshot && (
-            <a href={w.screenshot} target="_blank" rel="noreferrer"
-              className="text-xs text-blue-500 underline flex items-center gap-1">
+            <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
+              className="text-xs text-blue-500 hover:underline flex items-center gap-1 w-fit">
               <LinkIcon className="size-3" /> Ver comprobante
-            </a>
+            </button>
           )}
           <span className="text-xs text-gray-400">{new Date(w.createdAt).toLocaleDateString()}</span>
         </div>

@@ -5,6 +5,7 @@ import {
   ArrowUturnUpIcon, PlusIcon, LinkIcon,
 } from '@heroicons/react/24/outline'
 import { Button } from '../../../elements/user/Button'
+import Modal from '../../../elements/user/Modal'
 import { LoanRequestModal, WithdrawalRequestModal } from '../requests/Requests'
 import { SendOrRequestModal } from '../home/partials/BalanceCard'
 import ManageTxModal from './partials/ManageTxModal'
@@ -263,10 +264,26 @@ const LoansTab = () => {
   );
 };
 
+const VoucherModal = ({ open, setOpen, url }) => {
+  const isPdf = url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('/raw/');
+  return (
+    <Modal open={open} setOpen={setOpen} title="Comprobante" className="p-0">
+      <div className="w-full overflow-hidden rounded-b-2xl">
+        {isPdf ? (
+          <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
+        ) : (
+          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-zinc-950" />
+        )}
+      </div>
+    </Modal>
+  );
+};
+
 const WithdrawalsTab = () => {
   const [withdrawals, setWithdrawals] = useState([]);
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [voucherUrl, setVoucherUrl] = useState(null);
   const dispatch = useDispatch();
 
   const fetchWithdrawals = async () => {
@@ -302,6 +319,7 @@ const WithdrawalsTab = () => {
 
   return (
     <div className="flex flex-col gap-4">
+      <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <WithdrawalRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       <div className="flex justify-end">
         <Button size="sm" onClick={() => setModal(true)} className="flex items-center gap-1.5">
@@ -327,10 +345,10 @@ const WithdrawalsTab = () => {
               </span>
               <div className="flex items-center gap-2">
                 {w.screenshot && (
-                  <a href={w.screenshot} target="_blank" rel="noreferrer"
+                  <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
                     className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
                     <LinkIcon className="size-3" /> Comprobante
-                  </a>
+                  </button>
                 )}
                 {w.status === 'pending' && (
                   <button onClick={() => cancel(w.id)}

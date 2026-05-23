@@ -18,24 +18,28 @@ const statusColor = {
   paid: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
 };
 
-const AcceptWithdrawalModal = ({ open, setOpen, withdrawalId, onSuccess }) => {
-  const [screenshotUrl, setScreenshotUrl] = useState(null);
+const AcceptWithdrawalModal = ({ open, setOpen, withdrawal, onSuccess }) => {
+  const [file, setFile] = useState(null);
   const [submitError, setSubmitError] = useState(false);
   const dispatch = useDispatch();
 
   const handleClose = (v) => {
     setOpen(v);
-    if (!v) { setScreenshotUrl(null); setSubmitError(false); }
+    if (!v) { setFile(null); setSubmitError(false); }
   };
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!screenshotUrl) { setSubmitError(true); return; }
+    if (!file) { setSubmitError(true); return; }
     setSubmitError(false);
     dispatch(setLoad(false));
     try {
-      await api.patch(`/api/v1/withdrawals/${withdrawalId}/accept`, { screenshot: screenshotUrl });
-      setScreenshotUrl(null);
+      const formData = new FormData();
+      formData.append('file', file);
+      await api.patch(`/api/v1/withdrawals/${withdrawal?.id}/accept`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setFile(null);
       handleClose(false);
       onSuccess();
       Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Retiro aceptado', showConfirmButton: false, timer: 3000 });
@@ -45,15 +49,35 @@ const AcceptWithdrawalModal = ({ open, setOpen, withdrawalId, onSuccess }) => {
     } finally { dispatch(setLoad(true)); }
   };
 
+  const initials = withdrawal?.account?.username?.slice(0, 2).toUpperCase() ?? '??';
+
   return (
     <Modal open={open} setOpen={handleClose} title="Confirmar retiro" className="grid gap-6">
+      {withdrawal && (
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700">
+          <div className="size-11 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
+            <span className="text-sm font-bold text-green-700 dark:text-green-400">{initials}</span>
+          </div>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{withdrawal.account?.username}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{withdrawal.account?.email}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              {withdrawal.bankAccount?.bank_name} · {withdrawal.bankAccount?.account_number}
+            </p>
+          </div>
+          <div className="ml-auto shrink-0 text-right">
+            <p className="text-lg font-bold text-gray-900 dark:text-white">{withdrawal.amount?.toLocaleString()}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{withdrawal.currency}</p>
+          </div>
+        </div>
+      )}
       <form onSubmit={submit} className="grid gap-4">
         <FileUpload
           label="Comprobante de pago"
-          storagePath="withdrawals"
           accept="image/*,application/pdf"
-          onUpload={setScreenshotUrl}
-          error={submitError && !screenshotUrl ? { message: 'Requerido' } : null}
+          onUpload={setFile}
+          deferred
+          error={submitError && !file ? { message: 'Requerido' } : null}
         />
         <Button type="submit" color="green">Confirmar retiro</Button>
       </form>
@@ -158,11 +182,27 @@ const LoansPanel = () => {
   );
 };
 
+const VoucherModal = ({ open, setOpen, url }) => {
+  const isPdf = url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('/raw/');
+  return (
+    <Modal open={open} setOpen={setOpen} title="Comprobante" className="p-0">
+      <div className="w-full overflow-hidden rounded-b-2xl">
+        {isPdf ? (
+          <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
+        ) : (
+          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-zinc-950" />
+        )}
+      </div>
+    </Modal>
+  );
+};
+
 const WithdrawalsPanel = () => {
   const [withdrawals, setWithdrawals] = useState([]);
   const [view, setView] = useState('pending');
   const [modal, setModal] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(null); // full withdrawal object
+  const [voucherUrl, setVoucherUrl] = useState(null);
   const dispatch = useDispatch();
 
   const fetchWithdrawals = async (v = view) => {
@@ -186,7 +226,8 @@ const WithdrawalsPanel = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <AcceptWithdrawalModal open={modal} setOpen={setModal} withdrawalId={selected} onSuccess={() => fetchWithdrawals()} />
+      <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
+      <AcceptWithdrawalModal open={modal} setOpen={setModal} withdrawal={selected} onSuccess={() => fetchWithdrawals()} />
       <ViewToggle value={view} onChange={setView} />
       {withdrawals.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
@@ -208,16 +249,16 @@ const WithdrawalsPanel = () => {
                   </div>
                   <InfoRow icon={<BuildingLibraryIcon className="size-4 shrink-0" />} text={`${w.bankAccount?.bank_name} · ${w.bankAccount?.account_number}`} />
                   {w.screenshot && (
-                    <a href={w.screenshot} target="_blank" rel="noreferrer"
-                      className="flex items-center gap-1 text-xs text-blue-500 hover:underline">
+                    <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
+                      className="flex items-center gap-1 text-xs text-blue-500 hover:underline w-fit">
                       <LinkIcon className="size-3" /> Ver comprobante
-                    </a>
+                    </button>
                   )}
                   <InfoRow icon={<CalendarIcon className="size-4 shrink-0" />} text={new Date(w.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })} />
                 </div>
                 {view === 'pending' && (
                   <div className="flex gap-2 shrink-0">
-                    <button onClick={() => { setSelected(w.id); setModal(true); }}
+                    <button onClick={() => { setSelected(w); setModal(true); }}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors">
                       <CheckIcon className="size-4" /> Aceptar
                     </button>

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { CloudArrowUpIcon, DocumentCheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import api from '../../../api/axios';
 
-export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 'image/*,application/pdf', error }) => {
+export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 'image/*,application/pdf', error, deferred = false }) => {
   const inputRef = useRef(null);
   const [fileName, setFileName] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -12,9 +12,16 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
   const handleFile = async (file) => {
     if (!file) return;
     setFileName(file.name);
+    setUploadError(null);
+
+    if (deferred) {
+      onUpload(file);
+      setDone(true);
+      return;
+    }
+
     setUploading(true);
     setDone(false);
-    setUploadError(null);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -72,7 +79,7 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
             </div>
           )}
           {done && !uploading && (
-            <p className="text-xs text-green-500 mt-0.5">Subido correctamente</p>
+            <p className="text-xs text-green-500 mt-0.5">{deferred ? 'Listo para enviar' : 'Subido correctamente'}</p>
           )}
         </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PlusIcon } from '@heroicons/react/20/solid'
+import { LinkIcon } from '@heroicons/react/24/outline'
 import { Button } from '../../../elements/user/Button'
 import Modal from '../../../elements/user/Modal'
 import { useForm } from 'react-hook-form'
@@ -75,9 +76,25 @@ const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
   );
 };
 
+const VoucherModal = ({ open, setOpen, url }) => {
+  const isPdf = url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('/raw/');
+  return (
+    <Modal open={open} setOpen={setOpen} title="Comprobante" className="p-0">
+      <div className="w-full overflow-hidden rounded-b-2xl">
+        {isPdf ? (
+          <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
+        ) : (
+          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-zinc-950" />
+        )}
+      </div>
+    </Modal>
+  );
+};
+
 export const WithdrawalsPage = () => {
   const [withdrawals, setWithdrawals] = useState([]);
   const [modal, setModal] = useState(false);
+  const [voucherUrl, setVoucherUrl] = useState(null);
   const dispatch = useDispatch();
   const { format } = useCurrency();
 
@@ -100,6 +117,7 @@ export const WithdrawalsPage = () => {
           <PlusIcon className="size-4" /> Solicitar
         </Button>
       </div>
+      <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <WithdrawalModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       <div className="flex flex-col gap-3">
         {withdrawals.length === 0 && <p className="text-gray-400 text-sm">No tienes retiros aún.</p>}
@@ -113,8 +131,10 @@ export const WithdrawalsPage = () => {
               {w.bankAccount?.bank_name} — {w.bankAccount?.account_number}
             </span>
             {w.screenshot && (
-              <a href={w.screenshot} target="_blank" rel="noreferrer"
-                className="text-xs text-blue-500 underline">Ver comprobante</a>
+              <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
+                className="flex items-center gap-1 text-xs text-blue-500 hover:underline w-fit">
+                <LinkIcon className="size-3" /> Ver comprobante
+              </button>
             )}
             <span className="text-xs text-gray-400">{new Date(w.createdAt).toLocaleDateString()}</span>
           </div>
