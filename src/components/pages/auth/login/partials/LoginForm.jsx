@@ -57,7 +57,7 @@ export const LoginForm = ({ setAccount }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5">
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5 text-black dark:text-white">
       <Input
         icon={<EnvelopeIcon className="size-5" />}
         id="email" name="email" type="email"

@@ -131,7 +131,6 @@ export const AdminNavbar = () => {
       <div className="flex items-center gap-3">
         <Link to="/admin" className="flex items-center gap-2">
           <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-10 -my-6 hidden sm:block" />
-          <span className="hidden sm:block text-xs text-gray-400 dark:text-gray-500 font-medium -mb-1">by Cyberstein</span>
         </Link>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-semibold">
           <ShieldCheckIcon className="size-3.5" />

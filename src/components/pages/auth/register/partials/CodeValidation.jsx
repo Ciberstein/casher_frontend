@@ -37,7 +37,7 @@ export const CodeValidation = ({ account }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5">
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5 text-black dark:text-white">
       <div className="flex flex-col items-center gap-3 py-2">
         <div className="size-14 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
           <EnvelopeIcon className="size-7 text-green-600 dark:text-green-400" />
