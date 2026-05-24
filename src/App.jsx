@@ -21,7 +21,12 @@ import { BankAccountsPage } from "./components/pages/user/bank-accounts/BankAcco
 
 {/* Admin Imports */}
 import { AdminProtectedRoutes } from "./components/pages/session/admin/AdminProtectedRoutes";
-import { AdminPage } from "./components/pages/admin/AdminPage";
+import { AdminDashboard } from "./components/pages/admin/AdminDashboard";
+import { AdminLoansPage } from "./components/pages/admin/AdminLoansPage";
+import { AdminWithdrawalsPage } from "./components/pages/admin/AdminWithdrawalsPage";
+import { AdminDepositsPage } from "./components/pages/admin/AdminDepositsPage";
+import { AdminAppAccountsPage } from "./components/pages/admin/AdminAppAccountsPage";
+import { AdminUsersPage } from "./components/pages/admin/AdminUsersPage";
 {/* End Admin Imports */}
 
 {/* Public Imports */}
@@ -51,7 +56,12 @@ function App() {
         <Route path="/settings" element={<UserSettingsPage />}/>
       </Route>
       <Route path="/admin" element={<AdminProtectedRoutes />}>
-        <Route index element={<AdminPage />}/>
+        <Route index element={<AdminDashboard />}/>
+        <Route path="loans" element={<AdminLoansPage />}/>
+        <Route path="withdrawals" element={<AdminWithdrawalsPage />}/>
+        <Route path="deposits" element={<AdminDepositsPage />}/>
+        <Route path="app-accounts" element={<AdminAppAccountsPage />}/>
+        <Route path="users" element={<AdminUsersPage />}/>
       </Route>
       <Route path="/tx/:hash" element={<TransactionPublicPage />}/>
     </Routes>

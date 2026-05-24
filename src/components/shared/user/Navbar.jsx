@@ -142,21 +142,21 @@ export const PosAuthNavbar = ({ className = '', openSidebar, setOpenSidebar }) =
   )
 }
 
-export const AdminNavbar = () => {
+export const AdminNavbar = ({ openSidebar, setOpenSidebar }) => {
   const darkMode = useSelector((state) => state.darkMode)
   const account = useSelector((state) => state.account)
   const navigate = useNavigate()
 
   return (
-    <header className="h-16 flex items-center justify-between px-6 bg-white dark:bg-neutral-900 border-b border-slate-200 dark:border-neutral-800 sticky top-0 z-20">
+    <header className="h-16 flex items-center justify-between px-4 sm:px-6 bg-white dark:bg-neutral-900 border-b border-slate-200 dark:border-neutral-800 sticky top-0 z-20">
       <div className="flex items-center gap-3">
-        <Link to="/admin" className="flex items-center gap-2">
+        <button onClick={() => setOpenSidebar(!openSidebar)}
+          className="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors">
+          <Bars3Icon className="size-5" />
+        </button>
+        <Link to="/admin" className="hidden lg:block">
           <img src={`img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-8" />
         </Link>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold border border-red-200 dark:border-red-800">
-          <ShieldCheckIcon className="size-3.5" />
-          Admin
-        </div>
       </div>
 
       <div className="flex items-center gap-3">

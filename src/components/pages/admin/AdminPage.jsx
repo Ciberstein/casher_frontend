@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import { BanknotesIcon, ArrowDownTrayIcon, LinkIcon, UserIcon, CalendarIcon, BuildingLibraryIcon, IdentificationIcon } from '@heroicons/react/24/outline'
+import {
+  BanknotesIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, LinkIcon, CalendarIcon,
+  BuildingLibraryIcon, IdentificationIcon, ShieldCheckIcon,
+} from '@heroicons/react/24/outline'
 import { CheckIcon, XMarkIcon, PlusIcon, TrashIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
 import { useForm, Controller } from 'react-hook-form'
 import Modal from '../../elements/user/Modal'
@@ -15,383 +18,402 @@ import { setLoad } from '../../../store/slices/loader.slice'
 import { banksThunk } from '../../../store/slices/banks.slice'
 import { documentTypesThunk } from '../../../store/slices/documentTypes.slice'
 
-const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rechazado', paid: 'Pagado' };
-const statusColor = {
-  pending: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  accepted: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  paid: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-};
+const fmt = (amount, currency) =>
+  new Intl.NumberFormat(currency === 'USD' ? 'en-US' : 'es-CO', {
+    style: 'currency', currency: currency || 'COP', currencyDisplay: 'code', maximumFractionDigits: 2,
+  }).format(amount)
 
-const AcceptWithdrawalModal = ({ open, setOpen, withdrawal, onSuccess }) => {
-  const [file, setFile] = useState(null);
-  const [submitError, setSubmitError] = useState(false);
-  const dispatch = useDispatch();
+const fmtDate = (d) => new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
 
-  const handleClose = (v) => {
-    setOpen(v);
-    if (!v) { setFile(null); setSubmitError(false); }
-  };
+const STATUS_CONFIG = {
+  pending:   { label: 'Pendiente',  cls: 'bg-amber-100   text-amber-700   dark:bg-amber-900/30   dark:text-amber-400' },
+  accepted:  { label: 'Aceptado',   cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
+  rejected:  { label: 'Rechazado',  cls: 'bg-red-100     text-red-700     dark:bg-red-900/30     dark:text-red-400' },
+  paid:      { label: 'Pagado',     cls: 'bg-blue-100    text-blue-700    dark:bg-blue-900/30    dark:text-blue-400' },
+  cancelled: { label: 'Cancelado',  cls: 'bg-slate-100   text-slate-500   dark:bg-neutral-800   dark:text-slate-400' },
+}
 
-  const submit = async (e) => {
-    e.preventDefault();
-    if (!file) { setSubmitError(true); return; }
-    setSubmitError(false);
-    dispatch(setLoad(false));
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      await api.patch(`/api/v1/withdrawals/${withdrawal?.id}/accept`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setFile(null);
-      handleClose(false);
-      onSuccess();
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Retiro aceptado', showConfirmButton: false, timer: 3000 });
-    } catch (err) {
-      appError(err);
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 });
-    } finally { dispatch(setLoad(true)); }
-  };
+const StatusBadge = ({ status }) => {
+  const { label, cls } = STATUS_CONFIG[status] ?? { label: status, cls: 'bg-slate-100 text-slate-500' }
+  return <span className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${cls}`}>{label}</span>
+}
 
-  const initials = withdrawal?.account?.username?.slice(0, 2).toUpperCase() ?? '??';
-
-  return (
-    <Modal open={open} setOpen={handleClose} title="Confirmar retiro" className="grid gap-6">
-      {withdrawal && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700">
-          <div className="size-11 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
-            <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">{initials}</span>
-          </div>
-          <div className="flex flex-col gap-0.5 min-w-0">
-            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{withdrawal.account?.username}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{withdrawal.account?.email}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-              {withdrawal.bankAccount?.bank_name} · {withdrawal.bankAccount?.account_number}
-            </p>
-          </div>
-          <div className="ml-auto shrink-0 text-right">
-            <p className="text-lg font-bold text-slate-900 dark:text-white">{withdrawal.amount?.toLocaleString()}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">{withdrawal.currency}</p>
-          </div>
-        </div>
-      )}
-      <form onSubmit={submit} className="grid gap-4">
-        <FileUpload
-          label="Comprobante de pago"
-          accept="image/*,application/pdf"
-          onUpload={setFile}
-          deferred
-          error={submitError && !file ? { message: 'Requerido' } : null}
-        />
-        <Button type="submit" color="green">Confirmar retiro</Button>
-      </form>
-    </Modal>
-  );
-};
-
-const InfoRow = ({ icon, text }) => (
-  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-    {icon}
-    <span>{text}</span>
+const UserAvatar = ({ username }) => (
+  <div className="size-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shrink-0">
+    <span className="text-xs font-bold text-white">{username?.slice(0, 2).toUpperCase() ?? '??'}</span>
   </div>
-);
+)
+
+const StatCard = ({ label, count, icon, gradient }) => (
+  <div className={`rounded-2xl p-5 bg-gradient-to-br ${gradient} text-white flex items-center gap-4`}>
+    <div className="p-3 bg-white/20 rounded-xl shrink-0">{icon}</div>
+    <div>
+      <p className="text-3xl font-bold leading-none">{count}</p>
+      <p className="text-sm text-white/75 mt-1">{label}</p>
+    </div>
+  </div>
+)
+
+const EmptyState = ({ icon, text }) => (
+  <div className="flex flex-col items-center justify-center py-20 gap-3 text-slate-400 dark:text-slate-600">
+    <div className="size-14 flex items-center justify-center opacity-40">{icon}</div>
+    <p className="text-sm">{text}</p>
+  </div>
+)
 
 const ViewToggle = ({ value, onChange }) => (
   <div className="flex gap-1 bg-slate-100 dark:bg-neutral-800 rounded-lg p-0.5 w-fit text-xs">
     {['pending', 'history'].map(v => (
-      <button
-        key={v}
-        onClick={() => onChange(v)}
+      <button key={v} onClick={() => onChange(v)}
         className={`px-3 py-1.5 rounded-md font-medium transition-colors
           ${value === v
             ? 'bg-white dark:bg-neutral-700 text-slate-900 dark:text-white shadow-sm'
             : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-          }`}
-      >
+          }`}>
         {v === 'pending' ? 'Pendientes' : 'Historial'}
       </button>
     ))}
   </div>
-);
+)
+
+const ItemRow = ({ children, last }) => (
+  <div className={`flex items-center gap-4 px-5 py-4 ${!last ? 'border-b border-slate-50 dark:border-neutral-800' : ''}`}>
+    {children}
+  </div>
+)
+
+const ItemList = ({ children }) => (
+  <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-slate-100 dark:border-neutral-800 overflow-hidden shadow-sm">
+    {children}
+  </div>
+)
+
+/* ─── Modals ─────────────────────────────────────────────────────── */
+
+const VoucherModal = ({ open, setOpen, url }) => {
+  const isPdf = url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('/raw/')
+  return (
+    <Modal open={open} setOpen={setOpen} title="Comprobante" className="p-0">
+      <div className="w-full overflow-hidden rounded-b-2xl">
+        {isPdf
+          ? <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
+          : <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
+        }
+      </div>
+    </Modal>
+  )
+}
+
+const AcceptWithdrawalModal = ({ open, setOpen, withdrawal, onSuccess }) => {
+  const [file, setFile] = useState(null)
+  const [submitError, setSubmitError] = useState(false)
+  const dispatch = useDispatch()
+
+  const handleClose = (v) => { setOpen(v); if (!v) { setFile(null); setSubmitError(false) } }
+
+  const submit = async (e) => {
+    e.preventDefault()
+    if (!file) { setSubmitError(true); return }
+    setSubmitError(false)
+    dispatch(setLoad(false))
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      await api.patch(`/api/v1/withdrawals/${withdrawal?.id}/accept`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+      setFile(null)
+      handleClose(false)
+      onSuccess()
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Retiro aceptado', showConfirmButton: false, timer: 3000 })
+    } catch (err) {
+      appError(err)
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 })
+    } finally { dispatch(setLoad(true)) }
+  }
+
+  return (
+    <Modal open={open} setOpen={handleClose} title="Confirmar retiro" className="grid gap-6">
+      {withdrawal && (
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700">
+          <UserAvatar username={withdrawal.account?.username} />
+          <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{withdrawal.account?.username}</p>
+            <p className="text-xs text-slate-400 truncate">{withdrawal.account?.email}</p>
+            <p className="text-xs text-slate-400 truncate">{withdrawal.bankAccount?.bank_name} · {withdrawal.bankAccount?.account_number}</p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-lg font-bold text-slate-900 dark:text-white">{fmt(withdrawal.amount, withdrawal.currency)}</p>
+          </div>
+        </div>
+      )}
+      <form onSubmit={submit} className="grid gap-4">
+        <FileUpload label="Comprobante de pago" accept="image/*,application/pdf" onUpload={setFile} deferred
+          error={submitError && !file ? { message: 'Requerido' } : null} />
+        <Button type="submit" color="green">Confirmar retiro</Button>
+      </form>
+    </Modal>
+  )
+}
+
+/* ─── Panels ─────────────────────────────────────────────────────── */
 
 const LoansPanel = () => {
-  const [loans, setLoans] = useState([]);
-  const [view, setView] = useState('pending');
-  const dispatch = useDispatch();
+  const [loans, setLoans] = useState([])
+  const [view, setView] = useState('pending')
+  const dispatch = useDispatch()
 
   const fetchLoans = async (v = view) => {
     try {
-      const r = await api.get(`/api/v1/loans/admin${v === 'history' ? '?history=true' : ''}`);
-      setLoans(r.data);
-    } catch (err) { appError(err); }
-  };
+      const r = await api.get(`/api/v1/loans/admin${v === 'history' ? '?history=true' : ''}`)
+      setLoans(r.data)
+    } catch (err) { appError(err) }
+  }
 
-  useEffect(() => { fetchLoans(view); }, [view]);
+  useEffect(() => { fetchLoans(view) }, [view])
 
   const action = async (id, type) => {
-    dispatch(setLoad(false));
+    dispatch(setLoad(false))
     try {
-      await api.patch(`/api/v1/loans/${id}/${type}`);
-      fetchLoans();
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: `Préstamo ${type === 'accept' ? 'aceptado' : 'rechazado'}`, showConfirmButton: false, timer: 3000 });
-    } catch (err) { appError(err); }
-    finally { dispatch(setLoad(true)); }
-  };
+      await api.patch(`/api/v1/loans/${id}/${type}`)
+      fetchLoans()
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: `Préstamo ${type === 'accept' ? 'aceptado' : 'rechazado'}`, showConfirmButton: false, timer: 3000 })
+    } catch (err) { appError(err) }
+    finally { dispatch(setLoad(true)) }
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <ViewToggle value={view} onChange={setView} />
-      {loans.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
-          <BanknotesIcon className="size-10 opacity-40" />
-          <p className="text-sm">{view === 'pending' ? 'No hay préstamos pendientes' : 'Sin historial'}</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {loans.map(loan => (
-            <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-neutral-800">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex flex-col gap-2 min-w-0">
-                  <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${loan.account?.username} · ${loan.account?.email}`} />
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-xl font-bold dark:text-white">{loan.amount.toLocaleString()} {loan.currency}</span>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor[loan.status]}`}>
-                      {statusLabel[loan.status]}
-                    </span>
+      {loans.length === 0
+        ? <EmptyState icon={<BanknotesIcon className="size-14" />} text={view === 'pending' ? 'No hay préstamos pendientes' : 'Sin historial de préstamos'} />
+        : (
+          <ItemList>
+            {loans.map((loan, i) => (
+              <ItemRow key={loan.id} last={i === loans.length - 1}>
+                <UserAvatar username={loan.account?.username} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white">{loan.account?.username}</span>
+                    <span className="text-xs text-slate-400 truncate hidden sm:block">{loan.account?.email}</span>
                   </div>
-                  <span className="text-sm text-slate-500 dark:text-slate-400">Tasa {loan.interest_rate}% diario</span>
-                  {loan.outstanding != null && (
-                    <span className="text-sm text-slate-500 dark:text-slate-400">
-                      Saldo actual: {new Intl.NumberFormat(loan.currency === 'USD' ? 'en-US' : 'es-CO', { style: 'currency', currency: loan.currency, currencyDisplay: 'code', maximumFractionDigits: 2 }).format(loan.outstanding)}
-                    </span>
-                  )}
-                  <InfoRow icon={<CalendarIcon className="size-4 shrink-0" />} text={new Date(loan.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })} />
+                  <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                    <span className="text-base font-bold text-slate-900 dark:text-white">{fmt(loan.amount, loan.currency)}</span>
+                    <span className="text-xs text-slate-400">{loan.interest_rate}% diario</span>
+                    {loan.outstanding != null && (
+                      <span className="text-xs font-medium text-orange-500">Pendiente: {fmt(loan.outstanding, loan.currency)}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <StatusBadge status={loan.status} />
+                    <span className="text-xs text-slate-400">{fmtDate(loan.createdAt)}</span>
+                  </div>
                 </div>
                 {view === 'pending' && (
                   <div className="flex gap-2 shrink-0">
                     <button onClick={() => action(loan.id, 'accept')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors">
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors">
                       <CheckIcon className="size-4" /> Aceptar
                     </button>
                     <button onClick={() => action(loan.id, 'reject')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-neutral-800 hover:bg-slate-200 dark:hover:bg-neutral-700 text-slate-600 dark:text-slate-300 text-sm font-semibold transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
                 )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              </ItemRow>
+            ))}
+          </ItemList>
+        )
+      }
     </div>
-  );
-};
-
-const VoucherModal = ({ open, setOpen, url }) => {
-  const isPdf = url?.toLowerCase().includes('.pdf') || url?.toLowerCase().includes('/raw/');
-  return (
-    <Modal open={open} setOpen={setOpen} title="Comprobante" className="p-0">
-      <div className="w-full overflow-hidden rounded-b-2xl">
-        {isPdf ? (
-          <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
-        ) : (
-          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
-        )}
-      </div>
-    </Modal>
-  );
-};
+  )
+}
 
 const WithdrawalsPanel = () => {
-  const [withdrawals, setWithdrawals] = useState([]);
-  const [view, setView] = useState('pending');
-  const [modal, setModal] = useState(false);
-  const [selected, setSelected] = useState(null); // full withdrawal object
-  const [voucherUrl, setVoucherUrl] = useState(null);
-  const dispatch = useDispatch();
+  const [withdrawals, setWithdrawals] = useState([])
+  const [view, setView] = useState('pending')
+  const [modal, setModal] = useState(false)
+  const [selected, setSelected] = useState(null)
+  const [voucherUrl, setVoucherUrl] = useState(null)
+  const dispatch = useDispatch()
 
   const fetchWithdrawals = async (v = view) => {
     try {
-      const r = await api.get(`/api/v1/withdrawals/admin${v === 'history' ? '?history=true' : ''}`);
-      setWithdrawals(r.data);
-    } catch (err) { appError(err); }
-  };
+      const r = await api.get(`/api/v1/withdrawals/admin${v === 'history' ? '?history=true' : ''}`)
+      setWithdrawals(r.data)
+    } catch (err) { appError(err) }
+  }
 
-  useEffect(() => { fetchWithdrawals(view); }, [view]);
+  useEffect(() => { fetchWithdrawals(view) }, [view])
 
   const reject = async (id) => {
-    dispatch(setLoad(false));
+    dispatch(setLoad(false))
     try {
-      await api.patch(`/api/v1/withdrawals/${id}/reject`);
-      fetchWithdrawals();
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Retiro rechazado', showConfirmButton: false, timer: 3000 });
-    } catch (err) { appError(err); }
-    finally { dispatch(setLoad(true)); }
-  };
+      await api.patch(`/api/v1/withdrawals/${id}/reject`)
+      fetchWithdrawals()
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Retiro rechazado', showConfirmButton: false, timer: 3000 })
+    } catch (err) { appError(err) }
+    finally { dispatch(setLoad(true)) }
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <AcceptWithdrawalModal open={modal} setOpen={setModal} withdrawal={selected} onSuccess={() => fetchWithdrawals()} />
       <ViewToggle value={view} onChange={setView} />
-      {withdrawals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
-          <ArrowDownTrayIcon className="size-10 opacity-40" />
-          <p className="text-sm">{view === 'pending' ? 'No hay retiros pendientes' : 'Sin historial'}</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {withdrawals.map(w => (
-            <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-neutral-800">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex flex-col gap-2 min-w-0">
-                  <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${w.account?.username} · ${w.account?.email}`} />
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-xl font-bold dark:text-white">{w.amount.toLocaleString()} {w.currency}</span>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor[w.status]}`}>
-                      {statusLabel[w.status]}
-                    </span>
+      {withdrawals.length === 0
+        ? <EmptyState icon={<ArrowDownTrayIcon className="size-14" />} text={view === 'pending' ? 'No hay retiros pendientes' : 'Sin historial de retiros'} />
+        : (
+          <ItemList>
+            {withdrawals.map((w, i) => (
+              <ItemRow key={w.id} last={i === withdrawals.length - 1}>
+                <UserAvatar username={w.account?.username} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white">{w.account?.username}</span>
+                    <span className="text-xs text-slate-400 truncate hidden sm:block">{w.account?.email}</span>
                   </div>
-                  <InfoRow icon={<BuildingLibraryIcon className="size-4 shrink-0" />} text={`${w.bankAccount?.bank_name} · ${w.bankAccount?.account_number}`} />
-                  {w.screenshot && (
-                    <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
-                      className="flex items-center gap-1 text-xs text-blue-500 hover:underline w-fit">
-                      <LinkIcon className="size-3" /> Ver comprobante
-                    </button>
-                  )}
-                  <InfoRow icon={<CalendarIcon className="size-4 shrink-0" />} text={new Date(w.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })} />
+                  <div className="flex items-center gap-3 mt-0.5">
+                    <span className="text-base font-bold text-slate-900 dark:text-white">{fmt(w.amount, w.currency)}</span>
+                    <span className="text-xs text-slate-400 truncate">{w.bankAccount?.bank_name} · {w.bankAccount?.account_number}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <StatusBadge status={w.status} />
+                    <span className="text-xs text-slate-400">{fmtDate(w.createdAt)}</span>
+                    {w.screenshot && (
+                      <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
+                        className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                        <LinkIcon className="size-3" /> Ver comprobante
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {view === 'pending' && (
                   <div className="flex gap-2 shrink-0">
-                    <button onClick={() => { setSelected(w); setModal(true); }}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors">
+                    <button onClick={() => { setSelected(w); setModal(true) }}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors">
                       <CheckIcon className="size-4" /> Aceptar
                     </button>
                     <button onClick={() => reject(w.id)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-neutral-800 hover:bg-slate-200 dark:hover:bg-neutral-700 text-slate-600 dark:text-slate-300 text-sm font-semibold transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
                 )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              </ItemRow>
+            ))}
+          </ItemList>
+        )
+      }
     </div>
-  );
-};
+  )
+}
 
 const DepositRequestsPanel = () => {
-  const [requests, setRequests] = useState([]);
-  const [view, setView] = useState('pending');
-  const [voucherUrl, setVoucherUrl] = useState(null);
-  const dispatch = useDispatch();
+  const [requests, setRequests] = useState([])
+  const [view, setView] = useState('pending')
+  const [voucherUrl, setVoucherUrl] = useState(null)
+  const dispatch = useDispatch()
 
   const fetchRequests = async (v = view) => {
     try {
-      const r = await api.get(`/api/v1/deposit-requests/admin${v === 'history' ? '?history=true' : ''}`);
-      setRequests(r.data);
-    } catch (err) { appError(err); }
-  };
+      const r = await api.get(`/api/v1/deposit-requests/admin${v === 'history' ? '?history=true' : ''}`)
+      setRequests(r.data)
+    } catch (err) { appError(err) }
+  }
 
-  useEffect(() => { fetchRequests(view); }, [view]);
+  useEffect(() => { fetchRequests(view) }, [view])
 
   const action = async (id, type) => {
-    dispatch(setLoad(false));
+    dispatch(setLoad(false))
     try {
-      await api.patch(`/api/v1/deposit-requests/${id}/${type}`);
-      fetchRequests();
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: type === 'accept' ? 'Recarga aprobada' : 'Recarga rechazada', showConfirmButton: false, timer: 3000 });
-    } catch (err) { appError(err); }
-    finally { dispatch(setLoad(true)); }
-  };
+      await api.patch(`/api/v1/deposit-requests/${id}/${type}`)
+      fetchRequests()
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: type === 'accept' ? 'Recarga aprobada' : 'Recarga rechazada', showConfirmButton: false, timer: 3000 })
+    } catch (err) { appError(err) }
+    finally { dispatch(setLoad(true)) }
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <ViewToggle value={view} onChange={setView} />
-      {requests.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
-          <ArrowDownTrayIcon className="size-10 opacity-40 rotate-180" />
-          <p className="text-sm">{view === 'pending' ? 'No hay solicitudes pendientes' : 'Sin historial'}</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {requests.map(req => (
-            <div key={req.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow-sm border border-slate-100 dark:border-neutral-800">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex flex-col gap-2 min-w-0">
-                  <InfoRow icon={<UserIcon className="size-4 shrink-0" />} text={`${req.account?.username} · ${req.account?.email}`} />
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-xl font-bold dark:text-white">{req.amount.toLocaleString()} {req.currency}</span>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColor[req.status]}`}>
-                      {statusLabel[req.status]}
-                    </span>
+      {requests.length === 0
+        ? <EmptyState icon={<ArrowUpTrayIcon className="size-14" />} text={view === 'pending' ? 'No hay recargas pendientes' : 'Sin historial de recargas'} />
+        : (
+          <ItemList>
+            {requests.map((req, i) => (
+              <ItemRow key={req.id} last={i === requests.length - 1}>
+                <UserAvatar username={req.account?.username} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold text-slate-900 dark:text-white">{req.account?.username}</span>
+                    <span className="text-xs text-slate-400 truncate hidden sm:block">{req.account?.email}</span>
                   </div>
-                  {req.appBankAccount && (
-                    <InfoRow icon={<BuildingLibraryIcon className="size-4 shrink-0" />}
-                      text={`${req.appBankAccount.bank_name} · ${req.appBankAccount.account_number}`} />
-                  )}
-                  <button type="button" onClick={() => setVoucherUrl(req.screenshot)}
-                    className="flex items-center gap-1 text-xs text-blue-500 hover:underline w-fit">
-                    <LinkIcon className="size-3" /> Ver comprobante
-                  </button>
-                  <InfoRow icon={<CalendarIcon className="size-4 shrink-0" />} text={new Date(req.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })} />
+                  <div className="flex items-center gap-3 mt-0.5">
+                    <span className="text-base font-bold text-slate-900 dark:text-white">{fmt(req.amount, req.currency)}</span>
+                    {req.appBankAccount && (
+                      <span className="text-xs text-slate-400 truncate">{req.appBankAccount.bank_name} · {req.appBankAccount.account_number}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <StatusBadge status={req.status} />
+                    <span className="text-xs text-slate-400">{fmtDate(req.createdAt)}</span>
+                    <button type="button" onClick={() => setVoucherUrl(req.screenshot)}
+                      className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                      <LinkIcon className="size-3" /> Ver comprobante
+                    </button>
+                  </div>
                 </div>
                 {view === 'pending' && (
                   <div className="flex gap-2 shrink-0">
                     <button onClick={() => action(req.id, 'accept')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors">
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors">
                       <CheckIcon className="size-4" /> Aprobar
                     </button>
                     <button onClick={() => action(req.id, 'reject')}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-neutral-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-700 text-sm font-medium transition-colors">
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-neutral-800 hover:bg-slate-200 dark:hover:bg-neutral-700 text-slate-600 dark:text-slate-300 text-sm font-semibold transition-colors">
                       <XMarkIcon className="size-4" /> Rechazar
                     </button>
                   </div>
                 )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              </ItemRow>
+            ))}
+          </ItemList>
+        )
+      }
     </div>
-  );
-};
+  )
+}
+
+/* ─── App Bank Accounts ──────────────────────────────────────────── */
 
 const ACCOUNT_TYPE_OPTIONS = [
   { value: 'savings', label: 'Ahorros' },
   { value: 'checking', label: 'Corriente' },
-];
-const accountTypeLabel = { savings: 'Ahorros', checking: 'Corriente' };
+]
+const ACCOUNT_TYPE_LABEL = { savings: 'Ahorros', checking: 'Corriente' }
+const ACCOUNT_TYPE_COLOR = {
+  savings:  'bg-blue-100   text-blue-700   dark:bg-blue-900/30   dark:text-blue-400',
+  checking: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+}
 
 const AppBankAccountForm = ({ onSubmit, defaultValues, submitLabel }) => {
-  const { register, handleSubmit, reset, control, trigger, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
-  const dispatch = useDispatch();
-  const banks = useSelector((state) => state.banks);
-  const documentTypes = useSelector((state) => state.documentTypes);
+  const { register, handleSubmit, reset, control, trigger, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' })
+  const dispatch = useDispatch()
+  const banks = useSelector((state) => state.banks)
+  const documentTypes = useSelector((state) => state.documentTypes)
 
   useEffect(() => {
-    if (banks.length === 0) dispatch(banksThunk());
-    if (documentTypes.length === 0) dispatch(documentTypesThunk());
-  }, []);
+    if (banks.length === 0) dispatch(banksThunk())
+    if (documentTypes.length === 0) dispatch(documentTypesThunk())
+  }, [])
 
   useEffect(() => {
-    if (defaultValues) {
-      reset(defaultValues);
-      trigger();
-    }
-  }, [defaultValues]);
+    if (defaultValues) { reset(defaultValues); trigger() }
+  }, [defaultValues])
 
-  const bankOptions = banks.map(b => ({ value: b.name, label: b.name, icon: b.logo }));
-  const docTypeOptions = documentTypes.map(dt => ({
-    value: String(dt.id),
-    label: dt.abbreviation,
-    subtitle: dt.name,
-  }));
+  const bankOptions = banks.map(b => ({ value: b.name, label: b.name, icon: b.logo }))
+  const docTypeOptions = documentTypes.map(dt => ({ value: String(dt.id), label: dt.abbreviation, subtitle: dt.name }))
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
@@ -427,35 +449,32 @@ const AppBankAccountForm = ({ onSubmit, defaultValues, submitLabel }) => {
       </div>
       <Button type="submit" disabled={!isValid || isSubmitting}>{submitLabel}</Button>
     </form>
-  );
-};
+  )
+}
 
 const AddAppBankAccountModal = ({ open, setOpen, onSuccess }) => {
-  const dispatch = useDispatch();
-
+  const dispatch = useDispatch()
   const submit = async (data) => {
-    dispatch(setLoad(false));
+    dispatch(setLoad(false))
     try {
-      await api.post('/api/v1/app-bank-accounts', { ...data, documentTypeId: Number(data.documentTypeId) });
-      setOpen(false);
-      onSuccess();
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Cuenta agregada', showConfirmButton: false, timer: 3000 });
+      await api.post('/api/v1/app-bank-accounts', { ...data, documentTypeId: Number(data.documentTypeId) })
+      setOpen(false)
+      onSuccess()
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Cuenta agregada', showConfirmButton: false, timer: 3000 })
     } catch (err) {
-      appError(err);
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 });
-    } finally { dispatch(setLoad(true)); }
-  };
-
+      appError(err)
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 })
+    } finally { dispatch(setLoad(true)) }
+  }
   return (
     <Modal open={open} setOpen={setOpen} title="Agregar cuenta de la app" className="grid gap-6">
       {open && <AppBankAccountForm onSubmit={submit} submitLabel="Agregar" />}
     </Modal>
-  );
-};
+  )
+}
 
 const EditAppBankAccountModal = ({ open, setOpen, account, onSuccess }) => {
-  const dispatch = useDispatch();
-
+  const dispatch = useDispatch()
   const defaultValues = account ? {
     bank_name: account.bank_name,
     account_number: account.account_number,
@@ -463,147 +482,140 @@ const EditAppBankAccountModal = ({ open, setOpen, account, onSuccess }) => {
     account_type: account.account_type,
     documentTypeId: account.documentTypeId ? String(account.documentTypeId) : '',
     document_number: account.document_number,
-  } : null;
+  } : null
 
   const submit = async (data) => {
-    dispatch(setLoad(false));
+    dispatch(setLoad(false))
     try {
-      await api.patch(`/api/v1/app-bank-accounts/${account.id}`, { ...data, documentTypeId: Number(data.documentTypeId) });
-      setOpen(false);
-      onSuccess();
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Cuenta actualizada', showConfirmButton: false, timer: 3000 });
+      await api.patch(`/api/v1/app-bank-accounts/${account.id}`, { ...data, documentTypeId: Number(data.documentTypeId) })
+      setOpen(false)
+      onSuccess()
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Cuenta actualizada', showConfirmButton: false, timer: 3000 })
     } catch (err) {
-      appError(err);
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 });
-    } finally { dispatch(setLoad(true)); }
-  };
-
+      appError(err)
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 })
+    } finally { dispatch(setLoad(true)) }
+  }
   return (
     <Modal open={open} setOpen={setOpen} title="Editar cuenta de la app" className="grid gap-6">
       {open && account && <AppBankAccountForm onSubmit={submit} defaultValues={defaultValues} submitLabel="Guardar cambios" />}
     </Modal>
-  );
-};
+  )
+}
 
 const AppBankAccountsPanel = () => {
-  const [accounts, setAccounts] = useState([]);
-  const [addModal, setAddModal] = useState(false);
-  const [editModal, setEditModal] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const dispatch = useDispatch();
+  const [accounts, setAccounts] = useState([])
+  const [addModal, setAddModal] = useState(false)
+  const [editModal, setEditModal] = useState(false)
+  const [editing, setEditing] = useState(null)
+  const dispatch = useDispatch()
 
   const fetchAccounts = async () => {
     try {
-      const r = await api.get('/api/v1/app-bank-accounts');
-      setAccounts(r.data);
-    } catch (err) { appError(err); }
-  };
+      const r = await api.get('/api/v1/app-bank-accounts')
+      setAccounts(r.data)
+    } catch (err) { appError(err) }
+  }
 
-  useEffect(() => { fetchAccounts(); }, []);
+  useEffect(() => { fetchAccounts() }, [])
 
   const remove = async (id) => {
     const { isConfirmed } = await Swal.fire({
-      title: '¿Eliminar cuenta?',
-      text: 'Esta acción no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Eliminar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#ef4444',
-    });
-    if (!isConfirmed) return;
-    dispatch(setLoad(false));
+      title: '¿Eliminar cuenta?', text: 'Esta acción no se puede deshacer', icon: 'warning',
+      showCancelButton: true, confirmButtonText: 'Eliminar', cancelButtonText: 'Cancelar', confirmButtonColor: '#ef4444',
+    })
+    if (!isConfirmed) return
+    dispatch(setLoad(false))
     try {
-      await api.delete(`/api/v1/app-bank-accounts/${id}`);
-      fetchAccounts();
+      await api.delete(`/api/v1/app-bank-accounts/${id}`)
+      fetchAccounts()
     } catch (err) {
-      appError(err);
-      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 });
-    } finally { dispatch(setLoad(true)); }
-  };
+      appError(err)
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 })
+    } finally { dispatch(setLoad(true)) }
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <AddAppBankAccountModal open={addModal} setOpen={setAddModal} onSuccess={fetchAccounts} />
       <EditAppBankAccountModal open={editModal} setOpen={setEditModal} account={editing} onSuccess={fetchAccounts} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
-          onClick={() => setAddModal(true)}
-          className="flex flex-col gap-2 justify-center items-center min-h-36 rounded-2xl border-2 border-dashed
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <button onClick={() => setAddModal(true)}
+          className="flex flex-col gap-2 justify-center items-center min-h-40 rounded-2xl border-2 border-dashed
             border-slate-200 dark:border-neutral-700 text-slate-400 dark:text-slate-500
-            hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-600 dark:hover:text-slate-300
-            transition-colors"
-        >
-          <PlusIcon className="size-8" />
-          <span className="text-sm font-medium">Agregar nueva cuenta</span>
+            hover:border-emerald-400 dark:hover:border-emerald-600 hover:text-emerald-500 dark:hover:text-emerald-400
+            transition-colors group">
+          <div className="size-10 rounded-full bg-slate-100 dark:bg-neutral-800 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 flex items-center justify-center transition-colors">
+            <PlusIcon className="size-5" />
+          </div>
+          <span className="text-sm font-medium">Nueva cuenta</span>
         </button>
+
         {accounts.map(acc => (
-          <div key={acc.id} className="bg-white dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36 shadow-sm">
-            <div className="flex justify-between items-start">
-              <span className="font-bold text-slate-900 dark:text-white text-base">{acc.bank_name}</span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => { setEditing(acc); setEditModal(true); }}
-                  className="size-8 rounded-full bg-slate-100 dark:bg-neutral-800 flex items-center justify-center
-                    text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-neutral-700 hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
+          <div key={acc.id} className="bg-white dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
+            <div className="flex justify-between items-start gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="size-9 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center shrink-0">
+                  <BuildingLibraryIcon className="size-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <span className="font-bold text-slate-900 dark:text-white truncate">{acc.bank_name}</span>
+              </div>
+              <div className="flex gap-1 shrink-0">
+                <button onClick={() => { setEditing(acc); setEditModal(true) }}
+                  className="size-8 rounded-xl bg-slate-100 dark:bg-neutral-800 flex items-center justify-center
+                    text-slate-500 hover:bg-slate-200 dark:hover:bg-neutral-700 hover:text-slate-900 dark:hover:text-white transition-colors">
                   <PencilSquareIcon className="size-4" />
                 </button>
-                <button
-                  onClick={() => remove(acc.id)}
-                  className="size-8 rounded-full bg-slate-100 dark:bg-neutral-800 flex items-center justify-center
-                    text-red-400 hover:bg-red-500 hover:text-white transition-colors"
-                >
+                <button onClick={() => remove(acc.id)}
+                  className="size-8 rounded-xl bg-slate-100 dark:bg-neutral-800 flex items-center justify-center
+                    text-red-400 hover:bg-red-500 hover:text-white transition-colors">
                   <TrashIcon className="size-4" />
                 </button>
               </div>
             </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-sm text-slate-600 dark:text-slate-300">
-                {acc.account_number}
-                <span className={`ml-2 text-xs font-medium px-2 py-0.5 rounded-full ${acc.account_type === 'savings' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'}`}>
-                  {accountTypeLabel[acc.account_type]}
+
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-mono text-slate-600 dark:text-slate-300 truncate">{acc.account_number}</span>
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${ACCOUNT_TYPE_COLOR[acc.account_type]}`}>
+                  {ACCOUNT_TYPE_LABEL[acc.account_type]}
                 </span>
-              </span>
+              </div>
               <span className="text-sm text-slate-500 dark:text-slate-400">{acc.owner_name}</span>
               {acc.documentType && (
-                <span className="text-sm text-slate-500 dark:text-slate-400">
-                  {acc.documentType.abbreviation} {acc.document_number}
-                </span>
+                <span className="text-xs text-slate-400">{acc.documentType.abbreviation} {acc.document_number}</span>
               )}
             </div>
           </div>
         ))}
       </div>
+
       {accounts.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-10 gap-3 text-slate-400">
-          <BuildingLibraryIcon className="size-10 opacity-40" />
-          <p className="text-sm">No hay cuentas registradas</p>
-        </div>
+        <EmptyState icon={<BuildingLibraryIcon className="size-14" />} text="No hay cuentas registradas" />
       )}
     </div>
-  );
-};
+  )
+}
 
-const Badge = ({ count }) => {
-  if (!count) return null;
-  return (
-    <span className="ml-1.5 inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-xs font-bold">
-      {count}
-    </span>
-  );
-};
+/* ─── Main ───────────────────────────────────────────────────────── */
 
 const TABS = [
-  { key: 'loans', label: 'Préstamos', icon: <BanknotesIcon className="size-4" />, Panel: LoansPanel },
-  { key: 'withdrawals', label: 'Retiros', icon: <ArrowDownTrayIcon className="size-4" />, Panel: WithdrawalsPanel },
-  { key: 'deposits', label: 'Recargas', icon: <ArrowDownTrayIcon className="size-4 rotate-180" />, Panel: DepositRequestsPanel },
-  { key: 'app-accounts', label: 'Cuentas App', icon: <BuildingLibraryIcon className="size-4" />, Panel: AppBankAccountsPanel },
-];
+  { key: 'loans',        label: 'Préstamos',   Icon: BanknotesIcon,      countKey: 'loans' },
+  { key: 'withdrawals',  label: 'Retiros',      Icon: ArrowDownTrayIcon,  countKey: 'withdrawals' },
+  { key: 'deposits',     label: 'Recargas',     Icon: ArrowUpTrayIcon,    countKey: 'deposits' },
+  { key: 'app-accounts', label: 'Cuentas App',  Icon: BuildingLibraryIcon, countKey: null },
+]
+
+const STATS = [
+  { countKey: 'loans',       label: 'Préstamos pendientes', Icon: BanknotesIcon,     gradient: 'from-orange-400 to-orange-600' },
+  { countKey: 'withdrawals', label: 'Retiros pendientes',   Icon: ArrowDownTrayIcon, gradient: 'from-red-400 to-red-600' },
+  { countKey: 'deposits',    label: 'Recargas pendientes',  Icon: ArrowUpTrayIcon,   gradient: 'from-emerald-400 to-emerald-600' },
+]
 
 export const AdminPage = () => {
-  const [tab, setTab] = useState('loans');
-  const [counts, setCounts] = useState({ loans: 0, withdrawals: 0, deposits: 0 });
+  const [tab, setTab] = useState('loans')
+  const [counts, setCounts] = useState({ loans: 0, withdrawals: 0, deposits: 0 })
 
   useEffect(() => {
     Promise.all([
@@ -611,37 +623,56 @@ export const AdminPage = () => {
       api.get('/api/v1/withdrawals/admin'),
       api.get('/api/v1/deposit-requests/admin'),
     ]).then(([l, w, d]) => setCounts({ loans: l.data.length, withdrawals: w.data.length, deposits: d.data.length }))
-      .catch(() => {});
-  }, []);
-
-  const ActivePanel = TABS.find(t => t.key === tab).Panel;
+      .catch(() => {})
+  }, [])
 
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold dark:text-white">Panel de administración</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Gestiona las solicitudes pendientes</p>
+    <div className="flex flex-col gap-7">
+
+      {/* Header */}
+      <div className="flex items-start gap-4">
+        <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 shrink-0">
+          <ShieldCheckIcon className="size-7 text-emerald-600 dark:text-emerald-400" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Panel de administración</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Gestiona las solicitudes y cuentas de la plataforma</p>
+        </div>
       </div>
 
-      <div className="flex gap-1 bg-slate-100 dark:bg-neutral-800 rounded-xl p-1 w-fit">
-        {TABS.map(t => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors
-              ${tab === t.key
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {STATS.map(({ countKey, label, Icon, gradient }) => (
+          <StatCard key={countKey} label={label} count={counts[countKey]} gradient={gradient}
+            icon={<Icon className="size-6" />} />
+        ))}
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 bg-slate-100 dark:bg-neutral-800 rounded-xl p-1 w-fit flex-wrap">
+        {TABS.map(({ key, label, Icon, countKey }) => (
+          <button key={key} onClick={() => setTab(key)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all
+              ${tab === key
                 ? 'bg-white dark:bg-neutral-700 text-slate-900 dark:text-white shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-              }`}
-          >
-            {t.icon}
-            {t.label}
-            <Badge count={counts[t.key]} />
+              }`}>
+            <Icon className="size-4" />
+            {label}
+            {countKey && counts[countKey] > 0 && (
+              <span className="inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-xs font-bold">
+                {counts[countKey]}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      <ActivePanel />
+      {/* Panel */}
+      {tab === 'loans'        && <LoansPanel />}
+      {tab === 'withdrawals'  && <WithdrawalsPanel />}
+      {tab === 'deposits'     && <DepositRequestsPanel />}
+      {tab === 'app-accounts' && <AppBankAccountsPanel />}
     </div>
-  );
-};
+  )
+}
