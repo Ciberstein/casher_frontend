@@ -124,7 +124,7 @@ export const WithdrawalsPage = () => {
         {withdrawals.map(w => (
           <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="font-semibold dark:text-white">{w.amount.toLocaleString()} {w.currency}</span>
+              <span className="font-semibold dark:text-white">{format(w.amount, w.currency)}</span>
               <span className={`text-sm font-medium ${statusColor[w.status]}`}>{statusLabel[w.status]}</span>
             </div>
             <span className="text-sm text-slate-500 dark:text-slate-400">

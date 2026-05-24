@@ -3,32 +3,13 @@ import { setPreference } from '../store/slices/currency.slice';
 import api from '../api/axios';
 
 const useCurrency = () => {
-  const { rate, preference } = useSelector((state) => state.currency);
+  const { preference } = useSelector((state) => state.currency);
   const dispatch = useDispatch();
 
-  const convert = (amountCOP) => {
-    if (preference === 'USD' && rate) return amountCOP / rate;
-    return amountCOP;
-  };
-
-  const format = (amountCOP) => {
-    const value = convert(amountCOP);
-    return new Intl.NumberFormat(preference === 'USD' ? 'en-US' : 'es-CO', {
-      style: 'currency',
-      currency: preference,
-      currencyDisplay: 'code',
-    }).format(value);
-  };
-
-  const formatRef = (amountCOP) => {
-    if (preference === 'USD') return null;
-    if (!rate) return null;
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      currencyDisplay: 'code',
-    }).format(amountCOP / rate);
-  };
+  const format = (amount, currency) => new Intl.NumberFormat(
+    currency === 'USD' ? 'en-US' : 'es-CO',
+    { style: 'currency', currency, currencyDisplay: 'code', maximumFractionDigits: 2 }
+  ).format(amount);
 
   const toggle = async () => {
     const next = preference === 'COP' ? 'USD' : 'COP';
@@ -40,7 +21,7 @@ const useCurrency = () => {
     }
   };
 
-  return { format, formatRef, toggle, preference, rate };
+  return { format, toggle, preference };
 };
 
 export default useCurrency;

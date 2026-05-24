@@ -3,14 +3,13 @@ import { ArrowRightIcon, CurrencyDollarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon
 import { FileUpload } from '../../../../elements/user/FileUpload'
 import { useState, useEffect, useMemo } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption } from '@headlessui/react'
+import { Combobox, ComboboxInput, ComboboxButton, ComboboxOptions, ComboboxOption, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ComboSelect } from '../../../../elements/user/ComboSelect'
 import useCurrency from '../../../../../hooks/useCurrency'
 import Modal from '../../../../elements/user/Modal'
 import ManageTxModal from '../../transactions/partials/ManageTxModal'
 import { Button } from '../../../../elements/user/Button'
 import { Input } from '../../../../elements/user/Input'
-import isEmailValid from '../../../../../utils/isEmailValid'
 import { useDispatch, useSelector } from 'react-redux'
 import { setLoad } from '../../../../../store/slices/loader.slice'
 import api from '../../../../../api/axios'
@@ -162,12 +161,6 @@ export const ChargeModal = ({ open, setOpen }) => {
     } finally { dispatch(setLoad(true)); }
   };
 
-  const accountOptions = accounts.map(acc => ({
-    value: String(acc.id),
-    label: acc.bank_name,
-    subtitle: acc.account_number,
-  }));
-
   return (
     <Modal open={open} setOpen={handleClose} title="Cargar fondos" className="flex flex-col gap-5">
       <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -254,16 +247,10 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
-  const { rate } = useSelector((state) => state.currency);
+  const { format } = useCurrency();
   const selectedCurrency = useWatch({ control, name: 'currency', defaultValue: 'COP' });
 
-  const available = selectedCurrency === 'USD' && rate
-    ? account.balance_available / rate
-    : account.balance_available ?? 0;
-
-  const availableFormatted = new Intl.NumberFormat(selectedCurrency === 'USD' ? 'en-US' : 'es-CO', {
-    style: 'currency', currency: selectedCurrency, maximumFractionDigits: 2,
-  }).format(available);
+  const available = account.balances?.[selectedCurrency] ?? 0;
 
   useEffect(() => {
     if (open) api.get('/api/v1/recipients').then(r => setRecipients(r.data)).catch(() => {});
@@ -368,7 +355,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
                   }}
                 />
                 <p className="text-xs text-slate-400 text-right">
-                  Disponible: <span className="font-semibold text-slate-600 dark:text-slate-300">{availableFormatted}</span>
+                  Disponible: <span className="font-semibold text-slate-600 dark:text-slate-300">{format(available, selectedCurrency)}</span>
                 </p>
               </div>
 
@@ -381,7 +368,6 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
           {section === 3 && (
             <>
-              {/* Receipt preview */}
               <div className="bg-slate-50 dark:bg-neutral-900 rounded-2xl border border-slate-100 dark:border-neutral-700 overflow-hidden">
                 <div className="flex items-center gap-3 p-4">
                   <div className="size-11 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
@@ -425,17 +411,10 @@ const WithdrawModal = ({ open, setOpen, onSuccess }) => {
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
-  const { rate } = useSelector((state) => state.currency);
+  const { format } = useCurrency();
 
   const selectedCurrency = useWatch({ control, name: 'currency', defaultValue: 'COP' });
-
-  const available = selectedCurrency === 'USD' && rate
-    ? account.balance_available / rate
-    : account.balance_available ?? 0;
-
-  const availableFormatted = new Intl.NumberFormat(selectedCurrency === 'USD' ? 'en-US' : 'es-CO', {
-    style: 'currency', currency: selectedCurrency, maximumFractionDigits: 2,
-  }).format(available);
+  const available = account.balances?.[selectedCurrency] ?? 0;
 
   useEffect(() => {
     if (open) api.get('/api/v1/bank-accounts').then(r => setBankAccounts(r.data)).catch(appError);
@@ -479,7 +458,7 @@ const WithdrawModal = ({ open, setOpen, onSuccess }) => {
                 type="number" min="1" step="0.01" label="Monto" placeholder="0.00"
                 register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', min: { value: 1, message: 'Mínimo 1' }, max: { value: available, message: 'Saldo insuficiente' } } } }} />
               <span className="text-xs text-slate-400 text-right">
-                Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{availableFormatted}</span>
+                Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{format(available, selectedCurrency)}</span>
               </span>
             </div>
             <Button type="submit" disabled={!isValid || isSubmitting}>Solicitar retiro</Button>
@@ -490,7 +469,25 @@ const WithdrawModal = ({ open, setOpen, onSuccess }) => {
   );
 };
 
-export const BalanceCard = ({ balance = 0 }) => {
+const CardCurrencySelect = ({ currencies, value, onChange }) => (
+  <Listbox value={value} onChange={onChange}>
+    <ListboxButton className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-2.5 py-1 rounded-full transition-colors">
+      {value}
+      <ChevronUpDownIcon className="size-3.5 opacity-70" />
+    </ListboxButton>
+    <ListboxOptions anchor="bottom end" className="z-50 mt-1 min-w-[72px] rounded-xl bg-white dark:bg-neutral-900 shadow-xl border border-slate-200 dark:border-neutral-700 p-1 focus:outline-none">
+      {currencies.map(c => (
+        <ListboxOption key={c} value={c}
+          className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-slate-100 dark:data-[focus]:bg-neutral-800 transition-colors">
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{c}</span>
+          {value === c && <CheckIcon className="size-3.5 text-emerald-500" />}
+        </ListboxOption>
+      ))}
+    </ListboxOptions>
+  </Listbox>
+)
+
+export const BalanceCard = ({ balances = {} }) => {
   const [show, setShow] = useState(() => localStorage.getItem('balanceVisible') !== 'false');
   const [chargeModal, setChargeModal] = useState(false);
   const [txType, setTxType] = useState(false);
@@ -498,7 +495,14 @@ export const BalanceCard = ({ balance = 0 }) => {
   const [withdrawModal, setWithdrawModal] = useState(false);
   const dispatch = useDispatch();
 
-  const { format, formatRef, toggle, preference } = useCurrency();
+  const { format } = useCurrency();
+  const currencies = Object.keys(balances);
+  const [selectedCurrency, setSelectedCurrency] = useState(() => currencies[0] || 'COP');
+
+  useEffect(() => {
+    const keys = Object.keys(balances);
+    if (keys.length > 0 && !balances[selectedCurrency]) setSelectedCurrency(keys[0]);
+  }, [balances]);
 
   const handleShow = () => {
     const next = !show;
@@ -522,9 +526,9 @@ export const BalanceCard = ({ balance = 0 }) => {
         <div className="flex justify-between items-center gap-4">
           <span className="text-sm font-medium text-white/70 tracking-wide uppercase">Saldo disponible</span>
           <div className="flex items-center gap-2">
-            <button onClick={toggle} className="text-xs font-semibold bg-white/20 hover:bg-white/30 transition-colors px-3 py-1 rounded-full">
-              {preference === 'COP' ? 'USD' : 'COP'}
-            </button>
+            {currencies.length > 1 && (
+              <CardCurrencySelect currencies={currencies} value={selectedCurrency} onChange={setSelectedCurrency} />
+            )}
             <button onClick={handleShow} className="p-1 rounded-lg hover:bg-white/20 transition-colors">
               {show ? <EyeSlashIcon className="size-5" /> : <EyeIcon className="size-5" />}
             </button>
@@ -532,11 +536,8 @@ export const BalanceCard = ({ balance = 0 }) => {
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-4xl lg:text-5xl font-bold tracking-tight">
-            {show ? format(balance) : '••••••'}
+            {show ? format(balances[selectedCurrency] ?? 0, selectedCurrency) : '••••••'}
           </span>
-          {show && preference === 'COP' && formatRef(balance) && (
-            <span className="text-sm text-white/60">≈ {formatRef(balance)}</span>
-          )}
         </div>
       </div>
 

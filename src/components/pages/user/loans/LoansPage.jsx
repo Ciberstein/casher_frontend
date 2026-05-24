@@ -90,13 +90,13 @@ export const LoansPage = () => {
         {loans.map(loan => (
           <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="font-semibold dark:text-white">{loan.amount.toLocaleString()} {loan.currency}</span>
+              <span className="font-semibold dark:text-white">{format(loan.amount, loan.currency)}</span>
               <span className={`text-sm font-medium ${statusColor[loan.status]}`}>{statusLabel[loan.status]}</span>
             </div>
             <div className="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
               <span>Tasa: {loan.interest_rate}% diario</span>
               {loan.status === 'accepted' && loan.outstanding != null && (
-                <span>Saldo actual: {format(loan.outstanding)}</span>
+                <span>Saldo actual: {format(loan.outstanding, loan.currency)}</span>
               )}
             </div>
             <span className="text-xs text-slate-400">{new Date(loan.createdAt).toLocaleDateString()}</span>

@@ -65,13 +65,9 @@ export const WithdrawalRequestModal = ({ open, setOpen, onSuccess }) => {
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
-  const { rate } = useSelector((state) => state.currency);
-
   const selectedCurrency = useWatch({ control, name: 'currency', defaultValue: 'COP' });
 
-  const available = selectedCurrency === 'USD' && rate
-    ? (account.balance_available / rate)
-    : account.balance_available ?? 0;
+  const available = account.balances?.[selectedCurrency] ?? 0;
 
   const availableFormatted = new Intl.NumberFormat(selectedCurrency === 'USD' ? 'en-US' : 'es-CO', {
     style: 'currency', currency: selectedCurrency, maximumFractionDigits: 2,
@@ -184,7 +180,7 @@ const LoansSection = () => {
       {loans.map(loan => (
         <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <span className="font-semibold dark:text-white">{loan.amount.toLocaleString()} {loan.currency}</span>
+            <span className="font-semibold dark:text-white">{format(loan.amount, loan.currency)}</span>
             <div className="flex items-center gap-3">
               {loan.status === 'pending' && (
                 <button onClick={() => cancel(loan.id)}
@@ -198,7 +194,7 @@ const LoansSection = () => {
           <div className="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
             <span>Tasa: {loan.interest_rate}% diario</span>
             {loan.status === 'accepted' && loan.outstanding != null && (
-              <span>Saldo actual: {format(loan.outstanding)}</span>
+              <span>Saldo actual: {format(loan.outstanding, loan.currency)}</span>
             )}
           </div>
           <span className="text-xs text-slate-400">{new Date(loan.createdAt).toLocaleDateString()}</span>
@@ -228,6 +224,7 @@ const WithdrawalsSection = () => {
   const [modal, setModal] = useState(false);
   const [voucherUrl, setVoucherUrl] = useState(null);
   const dispatch = useDispatch();
+  const { format } = useCurrency();
 
   const fetchWithdrawals = async () => {
     try { const r = await api.get('/api/v1/withdrawals'); setWithdrawals(r.data); }
@@ -273,7 +270,7 @@ const WithdrawalsSection = () => {
       {withdrawals.map(w => (
         <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <span className="font-semibold dark:text-white">{w.amount.toLocaleString()} {w.currency}</span>
+            <span className="font-semibold dark:text-white">{format(w.amount, w.currency)}</span>
             <div className="flex items-center gap-3">
               {w.status === 'pending' && (
                 <button onClick={() => cancel(w.id)}
@@ -347,7 +344,7 @@ const DepositRequestsSection = () => {
       {requests.map(r => (
         <div key={r.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
           <div className="flex justify-between items-center">
-            <span className="font-semibold dark:text-white">{r.amount.toLocaleString()} {r.currency}</span>
+            <span className="font-semibold dark:text-white">{format(r.amount, r.currency)}</span>
             <div className="flex items-center gap-3">
               {r.status === 'pending' && (
                 <button onClick={() => cancel(r.id)}

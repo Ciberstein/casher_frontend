@@ -162,7 +162,9 @@ const LoansPanel = () => {
                   </div>
                   <span className="text-sm text-slate-500 dark:text-slate-400">Tasa {loan.interest_rate}% diario</span>
                   {loan.outstanding != null && (
-                    <span className="text-sm text-slate-500 dark:text-slate-400">Saldo actual: {loan.outstanding.toLocaleString()} COP</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                      Saldo actual: {new Intl.NumberFormat(loan.currency === 'USD' ? 'en-US' : 'es-CO', { style: 'currency', currency: loan.currency, currencyDisplay: 'code', maximumFractionDigits: 2 }).format(loan.outstanding)}
+                    </span>
                   )}
                   <InfoRow icon={<CalendarIcon className="size-4 shrink-0" />} text={new Date(loan.createdAt).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })} />
                 </div>

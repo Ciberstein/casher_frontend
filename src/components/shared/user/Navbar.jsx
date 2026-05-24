@@ -4,20 +4,26 @@ import { ShieldCheckIcon, ArrowLeftIcon, Cog6ToothIcon, ArrowRightStartOnRectang
 import { SwitchDakMode } from '../../SwitchDakMode'
 import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import AuthContext from '../../../context/AuthContext'
 import auth from '../../../services/auth.services'
 
 const UserAvatar = ({ account, size = 'md' }) => {
+  const [imgFailed, setImgFailed] = useState(false)
   const cls = size === 'sm' ? 'size-8 text-xs' : 'size-9 text-sm'
-  return account.picture
-    ? <div className={`${cls} rounded-full bg-center bg-cover shrink-0 ring-2 ring-slate-200 dark:ring-neutral-700`}
-        style={{ backgroundImage: `url(${account.picture})` }} />
-    : <div className={`${cls} rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600 shrink-0`}>
-        <span className="text-white uppercase font-bold">
-          {account.data?.first_name?.[0]}{account.data?.surname_1?.[0]}
-        </span>
-      </div>
+  if (account.picture && !imgFailed) {
+    return (
+      <img src={account.picture} onError={() => setImgFailed(true)} alt=""
+        className={`${cls} rounded-full object-cover shrink-0 ring-2 ring-slate-200 dark:ring-neutral-700`} />
+    )
+  }
+  return (
+    <div className={`${cls} rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600 shrink-0`}>
+      <span className="text-white uppercase font-bold">
+        {account.data?.first_name?.[0]}{account.data?.surname_1?.[0]}
+      </span>
+    </div>
+  )
 }
 
 const UserMenu = ({ account, navigate, extraItems }) => (

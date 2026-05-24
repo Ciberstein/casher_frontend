@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { Link, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useState } from 'react'
 
 const NAV_ITEMS = [
   { label: 'Inicio',            route: '/',               icon: HomeIcon },
@@ -48,25 +49,28 @@ const ContentSidebar = ({ onClose }) => {
   )
 }
 
-const UserProfile = ({ account }) => (
-  <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
-    {account.picture
-      ? <div className="size-9 rounded-full bg-center bg-cover shrink-0 ring-2 ring-slate-200 dark:ring-neutral-700"
-          style={{ backgroundImage: `url(${account.picture})` }} />
-      : <div className="size-9 rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600 shrink-0 ring-2 ring-emerald-200 dark:ring-emerald-900/50">
-          <span className="text-xs text-white uppercase font-bold">
-            {account.data?.first_name?.[0]}{account.data?.surname_1?.[0]}
-          </span>
-        </div>
-    }
-    <div className="flex-1 min-w-0">
-      <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-        {account.data?.first_name} {account.data?.surname_1}
-      </p>
-      <p className="text-xs text-slate-400 truncate">{account.email}</p>
+const UserProfile = ({ account }) => {
+  const [imgFailed, setImgFailed] = useState(false)
+  return (
+    <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
+      {account.picture && !imgFailed
+        ? <img src={account.picture} onError={() => setImgFailed(true)} alt=""
+            className="size-9 rounded-full object-cover shrink-0 ring-2 ring-slate-200 dark:ring-neutral-700" />
+        : <div className="size-9 rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-400 to-emerald-600 shrink-0 ring-2 ring-emerald-200 dark:ring-emerald-900/50">
+            <span className="text-xs text-white uppercase font-bold">
+              {account.data?.first_name?.[0]}{account.data?.surname_1?.[0]}
+            </span>
+          </div>
+      }
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+          {account.data?.first_name} {account.data?.surname_1}
+        </p>
+        <p className="text-xs text-slate-400 truncate">{account.email}</p>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const SidebarShell = ({ account, onClose, showClose = false, setOpen }) => {
   const darkMode = useSelector((state) => state.darkMode)
