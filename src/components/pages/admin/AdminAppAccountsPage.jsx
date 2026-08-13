@@ -21,7 +21,7 @@ const ACCOUNT_TYPE_OPTIONS = [
 ]
 const ACCOUNT_TYPE_LABEL = { savings: 'Ahorros', checking: 'Corriente' }
 const ACCOUNT_TYPE_COLOR = {
-  savings:  'bg-blue-100   text-blue-700   dark:bg-blue-900/30   dark:text-blue-400',
+  savings:  'border-line bg-sunken text-muted',
   checking: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
 }
 
@@ -169,7 +169,7 @@ export const AdminAppAccountsPage = () => {
         subtitle="Cuentas bancarias donde los usuarios realizan sus depósitos"
         action={
           <button onClick={() => setAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors">
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-salida hover:opacity-90 text-white text-sm font-semibold transition-colors">
             <PlusIcon className="size-4" /> Nueva cuenta
           </button>
         }
@@ -177,35 +177,35 @@ export const AdminAppAccountsPage = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {accounts.map(acc => (
-          <div key={acc.id} className="bg-white dark:bg-neutral-900 border border-slate-100 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
+          <div key={acc.id} className="bg-surface border border-line rounded-2xl p-5 flex flex-col gap-4 shadow-sm">
             <div className="flex justify-between items-start gap-2">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="size-10 rounded-xl bg-slate-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
-                  <BuildingLibraryIcon className="size-5 text-slate-500 dark:text-slate-400" />
+                <div className="size-10 rounded-xl bg-sunken flex items-center justify-center shrink-0">
+                  <BuildingLibraryIcon className="size-5 text-muted" />
                 </div>
-                <span className="font-bold text-slate-900 dark:text-white truncate">{acc.bank_name}</span>
+                <span className="font-bold text-ink truncate">{acc.bank_name}</span>
               </div>
               <div className="flex gap-1 shrink-0">
                 <button onClick={() => { setEditing(acc); setEditModal(true) }}
-                  className="size-8 rounded-xl bg-slate-100 dark:bg-neutral-800 flex items-center justify-center text-slate-500 hover:bg-slate-200 dark:hover:bg-neutral-700 hover:text-slate-900 dark:hover:text-white transition-colors">
+                  className="size-8 rounded-xl bg-sunken flex items-center justify-center text-muted hover:bg-sunken hover:text-ink transition-colors">
                   <PencilSquareIcon className="size-4" />
                 </button>
                 <button onClick={() => remove(acc.id)}
-                  className="size-8 rounded-xl bg-slate-100 dark:bg-neutral-800 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-colors">
+                  className="size-8 rounded-xl bg-sunken flex items-center justify-center text-salida hover:bg-salida hover:text-white transition-colors">
                   <TrashIcon className="size-4" />
                 </button>
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-mono text-slate-600 dark:text-slate-300 truncate">{acc.account_number}</span>
+                <span className="text-sm font-mono text-muted truncate">{acc.account_number}</span>
                 <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${ACCOUNT_TYPE_COLOR[acc.account_type]}`}>
                   {ACCOUNT_TYPE_LABEL[acc.account_type]}
                 </span>
               </div>
-              <span className="text-sm text-slate-500 dark:text-slate-400">{acc.owner_name}</span>
+              <span className="text-sm text-muted">{acc.owner_name}</span>
               {acc.documentType && (
-                <span className="text-xs text-slate-400">{acc.documentType.abbreviation} {acc.document_number}</span>
+                <span className="text-xs text-faint">{acc.documentType.abbreviation} {acc.document_number}</span>
               )}
             </div>
           </div>

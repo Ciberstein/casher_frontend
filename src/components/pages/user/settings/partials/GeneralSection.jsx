@@ -8,7 +8,7 @@ export const GeneralSection = () => {
   const [email, setEmail] = useState(false)
 
   return (
-    <div className="flex flex-col bg-white dark:bg-neutral-900 rounded-2xl border border-slate-200 dark:border-neutral-800 divide-y divide-slate-100 dark:divide-neutral-800 overflow-hidden">
+    <div className="flex flex-col bg-surface rounded-2xl border border-line divide-y divide-line overflow-hidden">
       <div className="p-6">
         <UpdateProfileForm />
       </div>

@@ -9,10 +9,10 @@ export const LoginPage = () => {
   return (
     <AuthSplitLayout
       title={account ? 'Verifica tu identidad' : 'Bienvenido de vuelta'}
-      subtitle={account ? `Ingresa el código enviado a ${account.email}` : 'Ingresa tu correo y contraseña para continuar'}
+      subtitle={account ? `Escribe el código que enviamos a ${account.email}` : 'Entra con tu correo y contraseña'}
       footerText="¿No tienes una cuenta?"
       footerLink="/register"
-      footerLinkText="Regístrate gratis"
+      footerLinkText="Abre tu cuenta"
     >
       {account
         ? <CodeValidation account={account} />

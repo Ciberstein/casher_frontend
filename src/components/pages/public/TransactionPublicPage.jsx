@@ -1,113 +1,134 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
-import {
-  CheckCircleIcon, ClockIcon, XCircleIcon,
-} from '@heroicons/react/24/outline'
+import { PrinterIcon } from '@heroicons/react/24/outline'
+import { LedgerRow, Stamp } from '../../shared/Receipt'
 import api from '../../../api/axios'
 
-const STATUS_CONFIG = {
-  completed: { label: 'Completada',  icon: CheckCircleIcon, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800' },
-  pending:   { label: 'Pendiente',   icon: ClockIcon,        color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-200 dark:border-yellow-800' },
-  cancelled: { label: 'Cancelada',   icon: XCircleIcon,      color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-800' },
-};
+const STATUS = {
+  completed: { label: 'Verificado', tone: 'entrada' },
+  pending:   { label: 'En trámite', tone: 'espera' },
+  cancelled: { label: 'Anulado',    tone: 'salida' },
+}
 
 const fmt = (amount, currency) =>
   new Intl.NumberFormat(currency === 'USD' ? 'en-US' : 'es-CO', {
     style: 'currency', currency, maximumFractionDigits: 2, currencyDisplay: 'code',
-  }).format(amount);
+  }).format(amount)
 
-const Row = ({ label, value, valueClass = '' }) => (
-  <div className="flex justify-between items-center py-3 border-b border-dashed border-slate-200 dark:border-neutral-700 last:border-0">
-    <span className="text-sm text-slate-500 dark:text-slate-400">{label}</span>
-    <span className={`text-sm font-medium text-slate-900 dark:text-white ${valueClass}`}>{value}</span>
+const Centered = ({ children }) => (
+  <div className="flex min-h-screen items-center justify-center bg-canvas px-4 text-ink">
+    <div className="flex flex-col items-center gap-3 text-center">{children}</div>
   </div>
-);
+)
 
+/**
+ * El comprobante público. Es la única pantalla que alguien ajeno a Casher
+ * llega a ver, así que es literalmente el recibo: papel, sello y código.
+ */
 export const TransactionPublicPage = () => {
-  const { hash } = useParams();
-  const [tx, setTx] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const { hash } = useParams()
+  const [tx, setTx] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     api.get(`/api/v1/public/tx/${hash}`)
       .then(r => setTx(r.data))
       .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [hash]);
+      .finally(() => setLoading(false))
+  }, [hash])
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-neutral-950">
-        <div className="flex flex-col items-center gap-3 text-slate-400">
-          <div className="size-10 rounded-full border-4 border-slate-200 border-t-gray-500 animate-spin" />
-          <p className="text-sm">Cargando transacción...</p>
+      <Centered>
+        <div className="h-1 w-24 overflow-hidden rounded-full bg-sunken">
+          <div className="h-full w-1/3 animate-bar rounded-full bg-sello" />
         </div>
-      </div>
-    );
+        <p className="eyebrow">Buscando comprobante</p>
+      </Centered>
+    )
 
   if (error || !tx)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-neutral-950">
-        <div className="flex flex-col items-center gap-3 text-slate-400">
-          <XCircleIcon className="size-12 opacity-50" />
-          <p className="text-sm">Transacción no encontrada</p>
-        </div>
-      </div>
-    );
+      <Centered>
+        <p className="eyebrow">Comprobante {hash?.slice(0, 12)}</p>
+        <h1 className="font-wide text-xl font-bold">No existe este comprobante</h1>
+        <p className="max-w-xs text-sm leading-relaxed text-muted">
+          Revisa el enlace: puede estar incompleto o la transacción pudo ser anulada.
+        </p>
+      </Centered>
+    )
 
-  const status = STATUS_CONFIG[tx.status] ?? STATUS_CONFIG.pending;
-  const StatusIcon = status.icon;
+  const status = STATUS[tx.status] ?? STATUS.pending
+  const shortRef = tx.hash?.slice(0, 8).toUpperCase()
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-neutral-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white dark:bg-neutral-800 rounded-3xl shadow-xl overflow-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-canvas px-4 py-10 text-ink">
+      <article className="print-sheet w-full max-w-sm animate-feed-in bg-surface tear-y pb-6 pt-6 shadow-xl">
+        <header className="flex items-center justify-between px-6">
+          <img src="/img/logo.svg" alt="Casher" className="max-h-4 dark:hidden" />
+          <img src="/img/logo_dark.svg" alt="Casher" className="hidden max-h-4 dark:block" />
+          <span className="figure text-[0.625rem] text-faint">REF {shortRef}</span>
+        </header>
 
-        <div className="bg-gradient-to-br from-green-500 to-emerald-600 px-6 pt-8 pb-12 flex flex-col items-center gap-3">
-          <img src="/img/logo_dark.svg" className="max-h-7 opacity-90" />
-          <p className="text-white/70 text-xs tracking-widest uppercase mt-1">Comprobante de transferencia</p>
+        <p className="eyebrow px-6 pt-5">Comprobante de transferencia</p>
+
+        <div className="flex items-end justify-between gap-4 px-6 pt-1">
+          <p className="figure text-[1.875rem] font-semibold leading-tight tracking-tight">
+            {fmt(tx.amount, tx.currency)}
+          </p>
+          <Stamp tone={status.tone} className="mb-1.5">{status.label}</Stamp>
         </div>
 
-        <div className="-mt-6 mx-6 bg-white dark:bg-neutral-800 rounded-2xl shadow-md p-5 flex flex-col items-center gap-4 border border-slate-100 dark:border-neutral-700">
-          <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${status.color} ${status.bg} ${status.border}`}>
-            <StatusIcon className="size-4" />
-            {status.label}
-          </div>
+        <div className="perf mx-6 my-4" />
 
-          <div className="p-3 bg-white rounded-xl border border-slate-100">
-            <QRCodeSVG
-              value={`${window.location.origin}/tx/${tx.hash}`}
-              size={140}
-              level="H"
-              imageSettings={{ src: '/img/favicon.svg', width: 28, height: 28, excavate: false }}
-            />
-          </div>
-
-          <p className="text-xs text-slate-400 font-mono break-all text-center">{tx.hash}</p>
-        </div>
-
-        <div className="px-6 py-5 flex flex-col">
-          <Row label="Emisor"       value={tx.sender} />
-          <Row label="Destinatario" value={tx.receiver} />
-          <Row
-            label="Monto"
-            value={fmt(tx.amount, tx.currency)}
-            valueClass={tx.status === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : ''}
-          />
-          <Row
+        <div className="px-6">
+          <LedgerRow label="Emisor" value={tx.sender} />
+          <LedgerRow label="Destinatario" value={tx.receiver} />
+          <LedgerRow
             label="Fecha"
             value={new Date(tx.createdAt).toLocaleDateString('es-CO', {
-              day: '2-digit', month: 'long', year: 'numeric',
+              day: '2-digit', month: '2-digit', year: 'numeric',
+            })}
+          />
+          <LedgerRow
+            label="Hora"
+            value={new Date(tx.createdAt).toLocaleTimeString('es-CO', {
               hour: '2-digit', minute: '2-digit',
             })}
           />
         </div>
 
-        <div className="px-6 pb-6 text-center">
-          <p className="text-xs text-slate-400">Verificado por <span className="font-semibold text-slate-600 dark:text-slate-300">Casher</span></p>
+        <div className="perf mx-6 my-4" />
+
+        <div className="flex flex-col items-center gap-3 px-6">
+          <div className="rounded border border-line bg-white p-2.5">
+            <QRCodeSVG
+              value={`${window.location.origin}/tx/${tx.hash}`}
+              size={124}
+              level="H"
+              bgColor="#FFFFFF"
+              fgColor="#17181B"
+            />
+          </div>
+          <p className="figure break-all text-center text-[0.625rem] leading-relaxed text-faint">
+            {tx.hash}
+          </p>
+          <p className="text-center text-[0.6875rem] leading-relaxed text-muted">
+            Escanea el código para volver a verificar esta operación en cualquier momento.
+          </p>
         </div>
-      </div>
+      </article>
+
+      <button
+        onClick={() => window.print()}
+        className="no-print flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-muted
+          transition-colors hover:bg-sunken hover:text-ink"
+      >
+        <PrinterIcon className="size-4" />
+        Imprimir comprobante
+      </button>
     </div>
-  );
-};
+  )
+}

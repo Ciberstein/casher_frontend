@@ -38,7 +38,7 @@ const AddRecipientModal = ({ open, setOpen, onSuccess }) => {
 
   return (
     <Modal open={open} setOpen={handleClose} title="Agregar destinatario" className="flex flex-col gap-4">
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+      <p className="text-sm text-muted">
         Ingresa el correo electrónico o nombre de usuario de la persona que quieres agregar.
       </p>
       <form onSubmit={submit} className="flex flex-col gap-4">
@@ -107,8 +107,8 @@ export const Recipients = () => {
 
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-semibold dark:text-white">Destinatarios</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <h1 className="font-wide text-2xl font-bold tracking-tight text-ink">Destinatarios</h1>
+          <p className="text-sm text-muted mt-1">
             Usuarios frecuentes para agilizar transferencias y solicitudes
           </p>
         </div>
@@ -123,12 +123,12 @@ export const Recipients = () => {
           placeholder="Buscar por nombre, usuario o correo..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="!bg-white dark:!bg-neutral-800/60 !border-slate-200 dark:!border-neutral-700 !rounded-xl shadow-sm"
+          className="!bg-sunken !border-line !rounded-lg"
         />
       )}
 
       {recipients.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-4 text-slate-400">
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-faint">
           <UserPlusIcon className="size-12 opacity-40" />
           <div className="text-center">
             <p className="text-sm font-medium">Sin destinatarios</p>
@@ -136,34 +136,34 @@ export const Recipients = () => {
           </div>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 gap-3 text-slate-400">
+        <div className="flex flex-col items-center justify-center py-12 gap-3 text-faint">
           <MagnifyingGlassIcon className="size-8 opacity-40" />
           <p className="text-sm">Sin resultados para "{search}"</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-slate-100 dark:border-neutral-800 overflow-hidden shadow-sm">
+        <div className="bg-surface rounded-2xl border border-line overflow-hidden shadow-sm">
           {filtered.map((r, i) => {
             const rec = r.recipient
             const name = `${rec.data?.first_name ?? ''} ${rec.data?.surname_1 ?? ''}`.trim() || rec.username
             return (
               <div
                 key={r.id}
-                className={`flex items-center gap-4 px-4 py-3.5 ${i < filtered.length - 1 ? 'border-b border-slate-100 dark:border-neutral-800' : ''}`}
+                className={`flex items-center gap-4 px-4 py-3.5 ${i < filtered.length - 1 ? 'border-b border-line' : ''}`}
               >
-                <div className="size-10 rounded-full shrink-0 overflow-hidden bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
+                <div className="size-10 rounded-full shrink-0 overflow-hidden bg-sello-soft flex items-center justify-center">
                   {rec.picture
                     ? <img src={rec.picture} alt={rec.username} className="size-full object-cover" />
-                    : <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">{initials(rec)}</span>
+                    : <span className="text-sm font-bold text-sello-ink">{initials(rec)}</span>
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 dark:text-white truncate">{name}</p>
-                  <p className="text-xs text-slate-400 truncate">@{rec.username} · {rec.email}</p>
+                  <p className="text-sm font-medium text-ink truncate">{name}</p>
+                  <p className="text-xs text-faint truncate">@{rec.username} · {rec.email}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => remove(r.id, name)}
-                  className="shrink-0 p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="shrink-0 p-2 rounded-lg text-faint hover:text-salida hover:bg-salida-soft transition-colors"
                 >
                   <TrashIcon className="size-4" />
                 </button>

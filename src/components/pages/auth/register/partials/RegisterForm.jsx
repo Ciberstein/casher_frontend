@@ -50,7 +50,7 @@ export const RegisterForm = ({ setAccount, firebase }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4 text-black dark:text-white">
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4 text-ink">
       <div className="grid grid-cols-2 gap-4">
         <Input
           icon={<UserIcon className="size-5" />}

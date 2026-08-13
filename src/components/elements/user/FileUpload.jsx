@@ -53,50 +53,50 @@ export const FileUpload = ({ label, onUpload, storagePath = 'uploads', accept = 
 
   return (
     <div className="flex flex-col gap-1">
-      {label && <label className="text-sm text-slate-500">{label}</label>}
+      {label && <label className="text-sm text-muted">{label}</label>}
       <div
         onClick={() => !uploading && inputRef.current?.click()}
         className={`relative flex items-center gap-3 px-4 py-3 rounded-xl border border-dashed cursor-pointer transition-colors
-          ${uploading ? 'cursor-not-allowed opacity-70' : 'hover:border-blue-400 dark:hover:border-white'}
-          ${error ? 'border-red-400' : 'border-slate-300 dark:border-neutral-700'}
-          bg-slate-50 dark:bg-neutral-800`}
+          ${uploading ? 'cursor-not-allowed opacity-70' : 'hover:border-sello'}
+          ${error ? 'border-salida' : 'border-rule'}
+          bg-sunken`}
       >
         {done ? (
-          <DocumentCheckIcon className="size-8 text-emerald-500 shrink-0" />
+          <DocumentCheckIcon className="size-8 text-sello shrink-0" />
         ) : (
-          <CloudArrowUpIcon className="size-5 text-slate-400 shrink-0" />
+          <CloudArrowUpIcon className="size-5 text-faint shrink-0" />
         )}
 
         <div className="flex-1 min-w-0">
           {fileName ? (
-            <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{fileName}</p>
+            <p className="text-sm text-muted truncate">{fileName}</p>
           ) : (
-            <p className="text-sm text-slate-400">Haz clic para subir un archivo</p>
+            <p className="text-sm text-faint">Haz clic para subir un archivo</p>
           )}
           {uploading && (
-            <div className="mt-1.5 h-1 bg-slate-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 rounded-full animate-pulse w-full" />
+            <div className="mt-1.5 h-1 bg-sunken rounded-full overflow-hidden">
+              <div className="h-full bg-sello rounded-full animate-pulse w-full" />
             </div>
           )}
           {done && !uploading && (
-            <p className="text-xs text-emerald-500 mt-0.5">{deferred ? 'Listo para enviar' : 'Subido correctamente'}</p>
+            <p className="text-xs text-sello mt-0.5">{deferred ? 'Listo para enviar' : 'Subido correctamente'}</p>
           )}
         </div>
 
         {fileName && !uploading && (
           <button type="button" onClick={clear}
-            className="shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+            className="shrink-0 text-faint hover:text-ink transition-colors">
             <XMarkIcon className="size-4" />
           </button>
         )}
 
         {uploading && (
-          <div className="shrink-0 size-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="shrink-0 size-4 border-2 border-sello border-t-transparent rounded-full animate-spin" />
         )}
       </div>
 
       {(uploadError || error) && (
-        <p className="text-xs text-red-500">{uploadError ?? error?.message}</p>
+        <p className="text-xs text-salida">{uploadError ?? error?.message}</p>
       )}
 
       <input

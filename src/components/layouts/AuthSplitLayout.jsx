@@ -3,109 +3,124 @@ import { useSelector } from 'react-redux'
 import { useContext, useEffect } from 'react'
 import AuthContext from '../../context/AuthContext'
 import { SwitchDakMode } from '../SwitchDakMode'
-import {
-  ArrowUpRightIcon, ArrowDownLeftIcon, ShieldCheckIcon,
-} from '@heroicons/react/24/outline'
+import { LedgerRow, Stamp } from '../shared/Receipt'
 
-const PERKS = [
-  { icon: <ArrowUpRightIcon className="size-4" />, text: 'Transferencias instantáneas en COP y USD' },
-  { icon: <ArrowDownLeftIcon className="size-4" />, text: 'Solicita cobros y gestiona préstamos' },
-  { icon: <ShieldCheckIcon className="size-4" />, text: 'Verificación segura en cada operación' },
-];
+/**
+ * El panel de marca no explica el producto: lo muestra. Un comprobante
+ * recién emitido, con su sello y su código, es todo el argumento.
+ */
+const SpecimenReceipt = () => (
+  <figure
+    /* El espécimen es papel de verdad: fija sus propios tokens para que no
+       lo alcance el modo oscuro de la página. */
+    style={{ '--c-rule': '207 200 185', '--c-surface': '251 250 247', '--c-faint': '154 146 132' }}
+    className="w-full max-w-[19rem] rotate-[-1.25deg] rounded-t-2xl border border-white/10 bg-[#FBFAF7] tear-b pb-5 text-[#17181B] shadow-2xl"
+  >
+    <div className="flex items-center justify-between px-5 pt-5">
+      <img src="/img/logo.svg" alt="" className="max-h-4 opacity-90" />
+      <span className="figure text-[0.625rem] text-[#9A9284]">N.º 00418</span>
+    </div>
 
-const BrandPanel = ({ darkMode }) => (
-  <div className="hidden lg:flex flex-col justify-between p-10 bg-gradient-to-br from-green-500 to-emerald-700 relative overflow-hidden">
-    <div
-      className="absolute inset-0 opacity-10"
-      style={{ backgroundImage: 'url(/img/card-bg-1.svg)', backgroundSize: 'cover' }}
-    />
+    <p className="eyebrow !text-[#9A9284] px-5 pt-4">Comprobante de transferencia</p>
 
-    <Link to="/" className="relative z-10">
-      <img src="/img/logo_dark.svg" className="max-h-8" />
+    <div className="px-5 pt-1">
+      <p className="figure text-[1.75rem] font-semibold leading-tight tracking-tight">
+        COP 320.000
+      </p>
+    </div>
+
+    <div className="perf mx-5 my-3.5" />
+
+    <div className="px-5">
+      <LedgerRow label="Para" value="@valentina" />
+      <LedgerRow label="Fecha" value="12 ago 2026" />
+      <LedgerRow label="Estado" value="Completada" tone="entrada" mono={false} />
+    </div>
+
+    <div className="flex items-center justify-between gap-3 px-5 pt-3">
+      <span className="figure text-[0.5625rem] leading-relaxed text-[#9A9284] break-all">
+        4f9c2ae1b70d38
+      </span>
+      <Stamp tone="entrada">Verificado</Stamp>
+    </div>
+  </figure>
+)
+
+const BrandPanel = () => (
+  <div className="relative hidden lg:flex flex-col justify-between gap-10 overflow-hidden bg-[#14161A] p-10 text-[#EDEAE3]">
+    {/* Trama del papel de seguridad, apenas perceptible */}
+    <div className="pointer-events-none absolute inset-0 hatch opacity-[0.35]" />
+
+    <Link to="/" className="relative z-10 w-fit">
+      <img src="/img/logo_dark.svg" alt="Casher" className="max-h-7" />
     </Link>
 
-    <div className="relative z-10 flex flex-col gap-8">
+    <div className="relative z-10 flex flex-col gap-9">
       <div className="flex flex-col gap-3">
-        <h2 className="text-3xl font-bold text-white leading-snug">
-          Tu plataforma<br />financiera digital
+        <p className="eyebrow !text-[#E8862B]">Cuenta digital</p>
+        <h2 className="font-wide text-[2.6rem] font-bold leading-[1.05] tracking-tight">
+          Todo movimiento<br />deja comprobante.
         </h2>
-        <p className="text-white/70 text-sm leading-relaxed max-w-xs">
-          Gestiona tu dinero de forma simple, rápida y segura desde cualquier dispositivo.
+        <p className="max-w-sm text-sm leading-relaxed text-[#9AA1AC]">
+          Envía, cobra y retira en pesos y dólares. Cada operación emite un recibo
+          con código verificable que cualquiera puede consultar.
         </p>
       </div>
 
-      <ul className="flex flex-col gap-3">
-        {PERKS.map((p) => (
-          <li key={p.text} className="flex items-center gap-3 text-white/90 text-sm">
-            <div className="size-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-              {p.icon}
-            </div>
-            {p.text}
-          </li>
-        ))}
-      </ul>
-
-      {/* Mini card mockup */}
-      <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-5 flex flex-col gap-4 border border-white/20">
-        <div className="flex justify-between items-center">
-          <span className="text-white/70 text-xs font-medium">Saldo disponible</span>
-          <div className="size-2 rounded-full bg-emerald-300 animate-pulse" />
-        </div>
-        <span className="text-white text-2xl font-bold">$ 4.250.000</span>
-        <div className="flex gap-2">
-          <div className="flex-1 bg-white/10 rounded-xl py-2 text-center text-white/80 text-xs font-medium">Enviar</div>
-          <div className="flex-1 bg-white/10 rounded-xl py-2 text-center text-white/80 text-xs font-medium">Solicitar</div>
-          <div className="flex-1 bg-white/10 rounded-xl py-2 text-center text-white/80 text-xs font-medium">Retirar</div>
-        </div>
-      </div>
+      <SpecimenReceipt />
     </div>
 
-    <p className="relative z-10 text-white/40 text-xs">
-      © {new Date().getFullYear()} Casher. Todos los derechos reservados.
+    <p className="figure relative z-10 text-[0.625rem] text-[#6E7681]">
+      © {new Date().getFullYear()} Casher
     </p>
   </div>
-);
+)
 
 export const AuthSplitLayout = ({ children, title, subtitle, footerText, footerLink, footerLinkText }) => {
-  const darkMode = useSelector((state) => state.darkMode);
-  const { auth } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const darkMode = useSelector((state) => state.darkMode)
+  const { auth } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (auth) navigate('/');
-  }, [auth]);
+    if (auth) navigate('/')
+  }, [auth])
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-white dark:bg-neutral-950">
-      <BrandPanel darkMode={darkMode} />
+    <div className="min-h-screen grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] bg-canvas text-ink">
+      <BrandPanel />
 
       <div className="flex flex-col min-h-screen">
         <div className="flex items-center justify-between px-6 py-5 lg:justify-end">
           <Link to="/" className="lg:hidden">
-            <img src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} className="max-h-7" />
+            <img src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} alt="Casher" className="max-h-6" />
           </Link>
           <SwitchDakMode />
         </div>
 
         <div className="flex-1 flex flex-col justify-center px-6 py-8 sm:px-12 md:px-20 lg:px-16 xl:px-24">
           <div className="w-full max-w-md mx-auto flex flex-col gap-7">
-            <div className="flex flex-col gap-1.5">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h1>
-              {subtitle && <p className="text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>}
+            <div className="flex flex-col gap-2">
+              <h1 className="font-wide text-[1.75rem] font-bold leading-tight tracking-tight text-ink">
+                {title}
+              </h1>
+              {subtitle && <p className="text-sm leading-relaxed text-muted">{subtitle}</p>}
             </div>
             {children}
           </div>
         </div>
 
         {footerText && (
-          <div className="p-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          <div className="px-6 pb-8 pt-2 text-center text-sm text-muted">
             {footerText}{' '}
-            <Link to={footerLink} className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+            <Link
+              to={footerLink}
+              className="font-medium text-sello-ink underline decoration-sello/40 underline-offset-4 hover:decoration-sello"
+            >
               {footerLinkText}
             </Link>
           </div>
         )}
       </div>
     </div>
-  );
-};
+  )
+}

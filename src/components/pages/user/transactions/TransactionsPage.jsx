@@ -18,21 +18,33 @@ import Swal from 'sweetalert2'
 import appError from '../../../../utils/appError'
 
 const KIND_CONFIG = {
-  transfer_sent:     { label: 'Transferencia enviada',   icon: <ArrowUpRightIcon className="size-4" />,   iconBg: 'bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400',                   amountPrefix: '-', amountColor: 'text-red-500' },
-  transfer_received: { label: 'Transferencia recibida',  icon: <ArrowDownLeftIcon className="size-4" />,  iconBg: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',    amountPrefix: '+', amountColor: 'text-emerald-500' },
-  withdrawal:        { label: 'Retiro',                  icon: <ArrowDownTrayIcon className="size-4" />,  iconBg: 'bg-red-100 text-red-500 dark:bg-red-900/30 dark:text-red-400',                   amountPrefix: '-', amountColor: 'text-red-500' },
-  loan:              { label: 'Préstamo',                icon: <BanknotesIcon className="size-4" />,      iconBg: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',    amountPrefix: '+', amountColor: 'text-emerald-500' },
-  payment:           { label: 'Abono a deuda',           icon: <ArrowUturnUpIcon className="size-4" />,  iconBg: 'bg-blue-100 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400',                amountPrefix: '-', amountColor: 'text-blue-500' },
-  deposit:           { label: 'Recarga de fondos',       icon: <ArrowUpTrayIcon className="size-4" />,   iconBg: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',    amountPrefix: '+', amountColor: 'text-emerald-500' },
+  transfer_sent:     { label: 'Transferencia enviada',  icon: <ArrowUpRightIcon className="size-[1.15rem]" />,   dir: 'out' },
+  transfer_received: { label: 'Transferencia recibida', icon: <ArrowDownLeftIcon className="size-[1.15rem]" />,  dir: 'in'  },
+  withdrawal:        { label: 'Retiro',                 icon: <ArrowDownTrayIcon className="size-[1.15rem]" />,  dir: 'out' },
+  loan:              { label: 'Préstamo',               icon: <BanknotesIcon className="size-[1.15rem]" />,      dir: 'in'  },
+  payment:           { label: 'Abono a deuda',          icon: <ArrowUturnUpIcon className="size-[1.15rem]" />,   dir: 'out' },
+  deposit:           { label: 'Recarga de fondos',      icon: <ArrowUpTrayIcon className="size-[1.15rem]" />,    dir: 'in'  },
+}
+
+/* La dirección del dinero es lo único que se colorea. */
+const DIR = {
+  in:  { tone: 'text-entrada', prefix: '+' },
+  out: { tone: 'text-salida',  prefix: '−' },
+}
+
+const kindOf = (kind) => {
+  const cfg = KIND_CONFIG[kind] ?? { label: kind, icon: null, dir: 'in' }
+  const dir = DIR[cfg.dir]
+  return { ...cfg, iconBg: dir.tone, amountColor: dir.tone, amountPrefix: dir.prefix }
 }
 
 export const STATUS_STYLE = {
-  completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  pending:   'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  cancelled: 'bg-slate-100 text-slate-500 dark:bg-neutral-800 dark:text-slate-400',
-  accepted:  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  rejected:  'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  paid:      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  completed: 'border-entrada/35 bg-entrada-soft text-entrada',
+  accepted:  'border-entrada/35 bg-entrada-soft text-entrada',
+  paid:      'border-entrada/35 bg-entrada-soft text-entrada',
+  pending:   'border-rule border-dashed bg-transparent text-espera',
+  cancelled: 'border-line bg-sunken text-faint',
+  rejected:  'border-salida/35 bg-salida-soft text-salida',
 }
 
 export const STATUS_LABEL = {
@@ -83,21 +95,21 @@ const dateLabel = (date) => {
 const Skeleton = () => (
   <div className="flex flex-col gap-3 py-2">
     {[...Array(5)].map((_, i) => (
-      <div key={i} className="flex items-center gap-3.5 px-4 py-3 animate-pulse bg-white dark:bg-neutral-900 rounded-2xl border border-slate-200 dark:border-neutral-800">
-        <div className="size-10 rounded-full bg-slate-200 dark:bg-neutral-700 shrink-0" />
+      <div key={i} className="flex items-center gap-3.5 px-4 py-3 animate-pulse bg-surface rounded-2xl border border-line">
+        <div className="size-10 rounded-full bg-sunken shrink-0" />
         <div className="flex-1 flex flex-col gap-2">
-          <div className="h-3.5 bg-slate-200 dark:bg-neutral-700 rounded w-2/5" />
-          <div className="h-2.5 bg-slate-100 dark:bg-neutral-800 rounded w-1/4" />
+          <div className="h-3.5 bg-sunken rounded w-2/5" />
+          <div className="h-2.5 bg-sunken rounded w-1/4" />
         </div>
-        <div className="h-3.5 bg-slate-200 dark:bg-neutral-700 rounded w-20" />
+        <div className="h-3.5 bg-sunken rounded w-20" />
       </div>
     ))}
   </div>
 )
 
 const Empty = ({ text }) => (
-  <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
-    <div className="size-14 rounded-full bg-slate-100 dark:bg-neutral-800 flex items-center justify-center">
+  <div className="flex flex-col items-center justify-center py-16 gap-3 text-faint">
+    <div className="size-14 rounded-full bg-sunken flex items-center justify-center">
       <BanknotesIcon className="size-7" />
     </div>
     <p className="text-sm">{text}</p>
@@ -110,12 +122,12 @@ const DateGroupList = ({ items, renderRow }) => {
     <div className="flex flex-col gap-3">
       {groups.map(({ date, items: groupItems }) => (
         <div key={date.toISOString()}>
-          <p className="sticky top-0 z-10 text-xs font-semibold text-slate-400 dark:text-slate-500
-            px-1 py-2 uppercase tracking-wider bg-slate-50 dark:bg-neutral-950">
+          <p className="sticky top-0 z-10 text-xs font-semibold text-faint
+            px-1 py-2 uppercase tracking-wider bg-canvas">
             {dateLabel(date)}
           </p>
-          <ul className="bg-white dark:bg-neutral-900 rounded-2xl border border-slate-200 dark:border-neutral-800
-            divide-y divide-slate-100 dark:divide-neutral-800 overflow-hidden">
+          <ul className="bg-surface rounded-2xl border border-line
+            divide-y divide-line overflow-hidden">
             {groupItems.map(renderRow)}
           </ul>
         </div>
@@ -125,7 +137,7 @@ const DateGroupList = ({ items, renderRow }) => {
 }
 
 const ActivityRow = ({ item, onClick, onVoucher }) => {
-  const cfg = KIND_CONFIG[item.kind]
+  const cfg = kindOf(item.kind)
   const sub = txSubtitle(item)
   const isTransfer = item.kind === 'transfer_sent' || item.kind === 'transfer_received'
   const hasVoucher = (item.kind === 'deposit' || item.kind === 'withdrawal') && item.meta?.screenshot
@@ -135,28 +147,28 @@ const ActivityRow = ({ item, onClick, onVoucher }) => {
     <li
       onClick={isTransfer && onClick ? () => onClick(item) : undefined}
       className={`flex items-center gap-3.5 px-4 py-3.5 transition-colors
-        ${isTransfer && onClick ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-neutral-800/60' : ''}`}
+        ${isTransfer && onClick ? 'cursor-pointer hover:bg-sunken/60' : ''}`}
     >
-      <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
+      <div className={`size-9 rounded-lg border border-line bg-sunken flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
         {cfg.icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{cfg.label}</p>
-        {sub && <p className="text-xs text-slate-400 truncate mt-0.5">{sub}</p>}
+        <p className="text-sm font-semibold text-ink truncate">{cfg.label}</p>
+        {sub && <p className="text-xs text-faint truncate mt-0.5">{sub}</p>}
       </div>
       <div className="flex flex-col items-end gap-1 shrink-0">
-        <span className={`text-sm font-bold ${cfg.amountColor}`}>
+        <span className={`figure text-sm font-semibold ${cfg.amountColor}`}>
           {cfg.amountPrefix}{fmt(item.amount, item.currency)}
         </span>
         <div className="flex items-center gap-2">
           {hasVoucher && (
             <button type="button" onClick={(e) => { e.stopPropagation(); onVoucher?.(item.meta.screenshot) }}
-              className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
+              className="text-xs text-sello-ink hover:text-sello transition-colors flex items-center gap-0.5">
               <LinkIcon className="size-3" /> Comprobante
             </button>
           )}
-          <span className="text-xs text-slate-400">{time}</span>
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[item.status]}`}>
+          <span className="text-xs text-faint">{time}</span>
+          <span className={`eyebrow !text-[0.625rem] px-2 py-1 rounded border ${STATUS_STYLE[item.status]}`}>
             {STATUS_LABEL[item.status]}
           </span>
         </div>
@@ -210,7 +222,7 @@ const LoansTab = () => {
     } finally { dispatch(setLoad(true)) }
   }
 
-  const cfg = KIND_CONFIG.loan
+  const cfg = kindOf('loan')
 
   return (
     <div className="flex flex-col gap-4">
@@ -223,28 +235,28 @@ const LoansTab = () => {
       {loading ? <Skeleton /> : loans.length === 0 ? <Empty text="No tienes préstamos aún." /> : (
         <DateGroupList items={loans} renderRow={(loan) => (
           <li key={loan.id} className="flex items-center gap-3.5 px-4 py-3.5">
-            <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
+            <div className={`size-9 rounded-lg border border-line bg-sunken flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
               {cfg.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{cfg.label}</p>
+              <p className="text-sm font-semibold text-ink truncate">{cfg.label}</p>
               {loan.status === 'accepted' && loan.outstanding != null
-                ? <p className="text-xs text-slate-400 truncate mt-0.5">Pendiente: {fmt(loan.outstanding, loan.currency)}</p>
-                : <p className="text-xs text-slate-400 truncate mt-0.5">Tasa: {loan.interest_rate}% diario</p>
+                ? <p className="text-xs text-faint truncate mt-0.5">Pendiente: {fmt(loan.outstanding, loan.currency)}</p>
+                : <p className="text-xs text-faint truncate mt-0.5">Tasa: {loan.interest_rate}% diario</p>
               }
             </div>
             <div className="flex flex-col items-end gap-1 shrink-0">
-              <span className={`text-sm font-bold ${cfg.amountColor}`}>
+              <span className={`figure text-sm font-semibold ${cfg.amountColor}`}>
                 {cfg.amountPrefix}{fmt(loan.amount, loan.currency)}
               </span>
               <div className="flex items-center gap-2">
                 {loan.status === 'pending' && (
                   <button onClick={() => cancel(loan.id)}
-                    className="text-xs text-red-400 hover:text-red-600 transition-colors">
+                    className="text-xs text-salida hover:opacity-80 transition-colors">
                     Cancelar
                   </button>
                 )}
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[loan.status]}`}>
+                <span className={`eyebrow !text-[0.625rem] px-2 py-1 rounded border ${STATUS_STYLE[loan.status]}`}>
                   {STATUS_LABEL[loan.status]}
                 </span>
               </div>
@@ -306,7 +318,7 @@ const WithdrawalsTab = () => {
     } finally { dispatch(setLoad(true)) }
   }
 
-  const cfg = KIND_CONFIG.withdrawal
+  const cfg = kindOf('withdrawal')
 
   return (
     <div className="flex flex-col gap-4">
@@ -320,34 +332,34 @@ const WithdrawalsTab = () => {
       {loading ? <Skeleton /> : withdrawals.length === 0 ? <Empty text="No tienes retiros aún." /> : (
         <DateGroupList items={withdrawals} renderRow={(w) => (
           <li key={w.id} className="flex items-center gap-3.5 px-4 py-3.5">
-            <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
+            <div className={`size-9 rounded-lg border border-line bg-sunken flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
               {cfg.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{cfg.label}</p>
-              <p className="text-xs text-slate-400 truncate mt-0.5">
+              <p className="text-sm font-semibold text-ink truncate">{cfg.label}</p>
+              <p className="text-xs text-faint truncate mt-0.5">
                 {w.bankAccount?.bank_name ?? 'Cuenta bancaria'}
                 {w.bankAccount?.account_number ? ` · ${w.bankAccount.account_number}` : ''}
               </p>
             </div>
             <div className="flex flex-col items-end gap-1 shrink-0">
-              <span className={`text-sm font-bold ${cfg.amountColor}`}>
+              <span className={`figure text-sm font-semibold ${cfg.amountColor}`}>
                 {cfg.amountPrefix}{fmt(w.amount, w.currency)}
               </span>
               <div className="flex items-center gap-2">
                 {w.screenshot && (
                   <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
-                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
+                    className="text-xs text-sello-ink hover:text-sello transition-colors flex items-center gap-0.5">
                     <LinkIcon className="size-3" /> Comprobante
                   </button>
                 )}
                 {w.status === 'pending' && (
                   <button onClick={() => cancel(w.id)}
-                    className="text-xs text-red-400 hover:text-red-600 transition-colors">
+                    className="text-xs text-salida hover:opacity-80 transition-colors">
                     Cancelar
                   </button>
                 )}
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[w.status]}`}>
+                <span className={`eyebrow !text-[0.625rem] px-2 py-1 rounded border ${STATUS_STYLE[w.status]}`}>
                   {STATUS_LABEL[w.status]}
                 </span>
               </div>
@@ -395,7 +407,7 @@ const DepositsTab = () => {
     } finally { dispatch(setLoad(true)) }
   }
 
-  const cfg = KIND_CONFIG.deposit
+  const cfg = kindOf('deposit')
 
   return (
     <div className="flex flex-col gap-4">
@@ -409,34 +421,34 @@ const DepositsTab = () => {
       {loading ? <Skeleton /> : deposits.length === 0 ? <Empty text="No tienes recargas aún." /> : (
         <DateGroupList items={deposits} renderRow={(d) => (
           <li key={d.id} className="flex items-center gap-3.5 px-4 py-3.5">
-            <div className={`size-10 rounded-full flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
+            <div className={`size-9 rounded-lg border border-line bg-sunken flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
               {cfg.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{cfg.label}</p>
-              <p className="text-xs text-slate-400 truncate mt-0.5">
+              <p className="text-sm font-semibold text-ink truncate">{cfg.label}</p>
+              <p className="text-xs text-faint truncate mt-0.5">
                 {d.appBankAccount?.bank_name ?? 'Cuenta de la app'}
                 {d.appBankAccount?.account_number ? ` · ${d.appBankAccount.account_number}` : ''}
               </p>
             </div>
             <div className="flex flex-col items-end gap-1 shrink-0">
-              <span className={`text-sm font-bold ${cfg.amountColor}`}>
+              <span className={`figure text-sm font-semibold ${cfg.amountColor}`}>
                 {cfg.amountPrefix}{fmt(d.amount, d.currency)}
               </span>
               <div className="flex items-center gap-2">
                 {d.screenshot && (
                   <button type="button" onClick={() => setVoucherUrl(d.screenshot)}
-                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-0.5">
+                    className="text-xs text-sello-ink hover:text-sello transition-colors flex items-center gap-0.5">
                     <LinkIcon className="size-3" /> Comprobante
                   </button>
                 )}
                 {d.status === 'pending' && (
                   <button onClick={() => cancel(d.id)}
-                    className="text-xs text-red-400 hover:text-red-600 transition-colors">
+                    className="text-xs text-salida hover:opacity-80 transition-colors">
                     Cancelar
                   </button>
                 )}
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLE[d.status]}`}>
+                <span className={`eyebrow !text-[0.625rem] px-2 py-1 rounded border ${STATUS_STYLE[d.status]}`}>
                   {STATUS_LABEL[d.status]}
                 </span>
               </div>
@@ -494,17 +506,17 @@ export const TransactionsPage = () => {
       <ManageTxModal open={detailOpen} setOpen={setDetailOpen} tx={selectedTx} />
 
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Transacciones</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Historial completo de tu actividad financiera</p>
+        <h1 className="font-wide text-2xl font-bold tracking-tight text-ink">Transacciones</h1>
+        <p className="text-sm text-muted mt-1">Historial completo de tu actividad financiera</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 shrink-0 bg-slate-100 dark:bg-neutral-900 p-1 rounded-2xl gap-1">
+      <div className="grid grid-cols-1 md:grid-cols-5 shrink-0 bg-sunken p-1 rounded-2xl gap-1">
         {TABS.map(({ key, label }) => (
           <button key={key} onClick={() => setTab(key)}
             className={`px-2 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all
               ${tab === key
-                ? 'bg-white dark:bg-neutral-800 text-slate-900 dark:text-white shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                ? 'bg-surface text-ink shadow-sm'
+                : 'text-muted hover:text-ink'
               }`}>
             {label}
           </button>

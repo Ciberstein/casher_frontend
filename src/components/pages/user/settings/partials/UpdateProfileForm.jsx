@@ -70,21 +70,21 @@ const CropModal = ({ open, imageSrc, onConfirm, onCancel }) => {
           step={0.01}
           value={zoom}
           onChange={e => setZoom(Number(e.target.value))}
-          className="w-full accent-blue-500"
+          className="w-full accent-sello"
         />
 
         <div className="flex gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-neutral-700 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-line text-sm font-medium text-muted hover:bg-sunken transition-colors"
           >
             <XMarkIcon className="size-4" /> Cancelar
           </button>
           <button
             type="button"
             onClick={confirm}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-ink hover:bg-ink/88 text-reverse text-sm font-medium transition-colors"
           >
             <CheckIcon className="size-4" /> Confirmar
           </button>
@@ -172,21 +172,21 @@ export const UpdateProfileForm = () => {
 
       <form onSubmit={submit} className="flex flex-col gap-6">
         <div>
-          <h2 className="text-base font-semibold text-slate-900 dark:text-white">Perfil</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Actualiza tu foto de perfil y nombre de usuario</p>
+          <h2 className="text-base font-semibold text-ink">Perfil</h2>
+          <p className="text-sm text-muted mt-0.5">Actualiza tu foto de perfil y nombre de usuario</p>
         </div>
 
         <div className="flex items-center gap-5">
           <div className="relative shrink-0">
             <div
               onClick={() => inputRef.current?.click()}
-              className="group size-20 rounded-full overflow-hidden cursor-pointer ring-2 ring-slate-200 dark:ring-neutral-700 hover:ring-emerald-400 dark:hover:ring-emerald-500 transition-all relative"
+              className="group size-20 rounded-full overflow-hidden cursor-pointer ring-2 ring-line hover:ring-sello transition-all relative"
             >
               {!pendingDelete && (avatarPreview || currentPicture) ? (
                 <img src={avatarPreview ?? currentPicture} alt="Avatar" className="size-full object-cover" />
               ) : (
-                <div className="size-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <span className="text-xl font-bold text-emerald-700 dark:text-emerald-400">{initials}</span>
+                <div className="size-full bg-sello-soft flex items-center justify-center">
+                  <span className="text-xl font-bold text-sello-ink">{initials}</span>
                 </div>
               )}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -197,7 +197,7 @@ export const UpdateProfileForm = () => {
               <button
                 type="button"
                 onClick={markDeleteAvatar}
-                className="absolute -top-1 -right-1 size-6 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center shadow-md transition-colors"
+                className="absolute -top-1 -right-1 size-6 rounded-full bg-salida hover:opacity-90 flex items-center justify-center shadow-md transition-colors"
               >
                 <TrashIcon className="size-3 text-white" />
               </button>
@@ -206,13 +206,13 @@ export const UpdateProfileForm = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium text-slate-900 dark:text-white">
+            <p className="text-sm font-medium text-ink">
               {!pendingDelete && (avatarPreview || currentPicture) ? 'Foto personalizada' : 'Sin foto de perfil'}
             </p>
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline text-left"
+              className="text-xs text-sello-ink hover:underline text-left"
             >
               Cambiar foto
             </button>

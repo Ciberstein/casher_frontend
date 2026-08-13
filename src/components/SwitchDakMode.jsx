@@ -14,15 +14,12 @@ export const SwitchDakMode = () => {
   return (
     <button
       onClick={toggle}
-      className="relative size-9 rounded-xl flex items-center justify-center
-        text-slate-500 dark:text-slate-400
-        hover:bg-slate-100 dark:hover:bg-neutral-800
-        hover:text-slate-700 dark:hover:text-white
-        transition-all duration-150"
+      className="relative size-9 rounded-lg flex items-center justify-center text-muted
+        hover:text-ink hover:bg-sunken transition-colors duration-150"
       aria-label={darkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
     >
-      <SunIcon className={`size-5 absolute transition-all duration-200 ${darkMode ? 'opacity-0 scale-50 rotate-90' : 'opacity-100 scale-100 rotate-0'}`} />
-      <MoonIcon className={`size-5 absolute transition-all duration-200 ${darkMode ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 -rotate-90'}`} />
+      <SunIcon className={`size-[1.15rem] absolute transition-all duration-200 ${darkMode ? 'opacity-0 scale-75' : 'opacity-100 scale-100'}`} />
+      <MoonIcon className={`size-[1.15rem] absolute transition-all duration-200 ${darkMode ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`} />
     </button>
   )
 }

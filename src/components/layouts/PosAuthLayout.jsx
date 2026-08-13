@@ -15,12 +15,12 @@ export const PosAuthLayout = ({ children }) => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-canvas text-ink">
       <Sidebar open={openSidebar} setOpen={setOpenSidebar} />
       <div className="lg:pl-64 flex flex-col min-h-screen">
         <Navbar openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
         <main className="flex-1">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-10">
             {children}
           </div>
         </main>

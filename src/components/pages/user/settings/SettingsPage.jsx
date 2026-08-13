@@ -14,8 +14,8 @@ export const SettingsPage = () => {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Configuración</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Gestiona tu cuenta y preferencias</p>
+        <h1 className="font-wide text-2xl font-bold tracking-tight text-ink">Configuración</h1>
+        <p className="text-sm text-muted mt-1">Gestiona tu cuenta y preferencias</p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 lg:items-start">
@@ -26,14 +26,14 @@ export const SettingsPage = () => {
               onClick={() => setSection(id)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all w-full
                 ${section === id
-                  ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-neutral-800/60 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-ink text-reverse shadow-sm'
+                  : 'text-muted hover:bg-sunken hover:text-ink'
                 }`}
             >
               <Icon className="size-5 shrink-0" />
               <div className="flex flex-col min-w-0 text-left">
                 <span className="text-sm font-medium leading-tight">{label}</span>
-                <span className={`text-xs hidden lg:block truncate mt-0.5 ${section === id ? 'text-white/70' : 'text-slate-400'}`}>
+                <span className={`text-xs hidden lg:block truncate mt-0.5 ${section === id ? 'text-white/70' : 'text-faint'}`}>
                   {description}
                 </span>
               </div>
