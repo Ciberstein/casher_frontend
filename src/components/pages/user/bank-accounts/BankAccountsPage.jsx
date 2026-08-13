@@ -209,15 +209,15 @@ export const BankAccountsPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold dark:text-white">Cuentas bancarias</h1>
+      <h1 className="font-wide text-2xl font-bold tracking-tight text-ink">Cuentas bancarias</h1>
       <AddBankAccountModal open={modal} setOpen={setModal} onSuccess={fetchAccounts} />
       <EditBankAccountModal open={editModal} setOpen={setEditModal} account={editingAccount} onSuccess={fetchAccounts} />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <button
           onClick={() => setModal(true)}
           className="flex flex-col gap-2 justify-center items-center min-h-36 rounded-2xl border-2 border-dashed
-            border-slate-200 dark:border-neutral-700 text-slate-400 dark:text-slate-500
-            hover:border-slate-400 dark:hover:border-slate-600 hover:text-slate-600 dark:hover:text-slate-300
+            border-line text-faint
+            hover:border-rule hover:text-ink
             transition-colors"
         >
           <PlusIcon className="size-8" />
@@ -225,33 +225,33 @@ export const BankAccountsPage = () => {
         </button>
 
         {accounts.map(acc => (
-          <div key={acc.id} className="bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 rounded-2xl p-5 flex flex-col gap-3 min-h-36">
+          <div key={acc.id} className="bg-sunken border border-line rounded-2xl p-5 flex flex-col gap-3 min-h-36">
             <div className="flex justify-between items-start">
-              <span className="font-bold text-slate-900 dark:text-white text-base">{acc.bank_name}</span>
+              <span className="font-bold text-ink text-base">{acc.bank_name}</span>
               <div className="flex gap-2">
                 <button
                   onClick={() => { setEditingAccount(acc); setEditModal(true); }}
-                  className="size-8 rounded-full bg-slate-200 dark:bg-neutral-800 flex items-center justify-center
-                    text-slate-500 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-neutral-700 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  className="size-8 rounded-full bg-sunken flex items-center justify-center
+                    text-muted hover:bg-sunken hover:text-ink transition-colors"
                 >
                   <PencilSquareIcon className="size-4" />
                 </button>
                 <button
                   onClick={() => remove(acc.id)}
-                  className="size-8 rounded-full bg-slate-200 dark:bg-neutral-800 flex items-center justify-center
-                    text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+                  className="size-8 rounded-full bg-sunken flex items-center justify-center
+                    text-salida hover:bg-salida hover:text-white transition-colors"
                 >
                   <TrashIcon className="size-4" />
                 </button>
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-sm text-slate-600 dark:text-slate-300">
+              <span className="text-sm text-muted">
                 {acc.account_number} · {accountTypeLabel[acc.account_type]}
               </span>
-              <span className="text-sm text-slate-500 dark:text-slate-400">{acc.owner_name}</span>
+              <span className="text-sm text-muted">{acc.owner_name}</span>
               {acc.documentType && (
-                <span className="text-sm text-slate-500 dark:text-slate-400">
+                <span className="text-sm text-muted">
                   {acc.documentType.abbreviation} {acc.document_number}
                 </span>
               )}

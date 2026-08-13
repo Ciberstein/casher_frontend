@@ -50,20 +50,20 @@ export const AdminDepositsPage = () => {
                   <UserAvatar username={req.account?.username} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-slate-900 dark:text-white">{req.account?.username}</span>
-                      <span className="text-xs text-slate-400 hidden sm:block truncate">{req.account?.email}</span>
+                      <span className="text-sm font-semibold text-ink">{req.account?.username}</span>
+                      <span className="text-xs text-faint hidden sm:block truncate">{req.account?.email}</span>
                     </div>
                     <div className="flex items-center gap-3 mt-0.5">
-                      <span className="text-base font-bold text-slate-900 dark:text-white">{fmt(req.amount, req.currency)}</span>
+                      <span className="text-base font-bold text-ink">{fmt(req.amount, req.currency)}</span>
                       {req.appBankAccount && (
-                        <span className="text-xs text-slate-400 truncate">{req.appBankAccount.bank_name} · {req.appBankAccount.account_number}</span>
+                        <span className="text-xs text-faint truncate">{req.appBankAccount.bank_name} · {req.appBankAccount.account_number}</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <StatusBadge status={req.status} />
-                      <span className="text-xs text-slate-400">{fmtDate(req.createdAt)}</span>
+                      <span className="text-xs text-faint">{fmtDate(req.createdAt)}</span>
                       <button type="button" onClick={() => setVoucherUrl(req.screenshot)}
-                        className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                        className="flex items-center gap-1 text-xs text-sello-ink hover:underline">
                         <LinkIcon className="size-3" /> Ver comprobante
                       </button>
                     </div>
@@ -71,11 +71,11 @@ export const AdminDepositsPage = () => {
                   {view === 'pending' && (
                     <div className="flex gap-2 shrink-0">
                       <button onClick={() => action(req.id, 'accept')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors">
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
                         <CheckIcon className="size-4" /> Aprobar
                       </button>
                       <button onClick={() => action(req.id, 'reject')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-neutral-800 hover:bg-slate-200 dark:hover:bg-neutral-700 text-slate-600 dark:text-slate-300 text-sm font-semibold transition-colors">
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
                         <XMarkIcon className="size-4" /> Rechazar
                       </button>
                     </div>

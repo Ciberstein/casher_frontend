@@ -62,7 +62,7 @@ export const LoginForm = ({ setAccount }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5 text-black dark:text-white">
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-5 text-ink">
       <Input
         icon={<EnvelopeIcon className="size-5" />}
         id="email" name="email" type="email"
@@ -115,15 +115,15 @@ export const LoginForm = ({ setAccount }) => {
       </Button>
 
       <div className="flex items-center gap-3">
-        <hr className="flex-1 border-slate-200 dark:border-neutral-700" />
-        <span className="text-xs text-slate-400 uppercase font-medium">o continúa con</span>
-        <hr className="flex-1 border-slate-200 dark:border-neutral-700" />
+        <hr className="flex-1 border-line" />
+        <span className="eyebrow">o continúa con</span>
+        <hr className="flex-1 border-line" />
       </div>
 
       <button
         type="button"
         onClick={google}
-        className="w-full flex items-center justify-center gap-3 border border-slate-200 dark:border-neutral-700 rounded-xl py-3 px-4 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-neutral-800 transition-colors"
+        className="w-full flex items-center justify-center gap-3 border border-line rounded-lg py-3 px-4 text-sm font-medium text-muted hover:bg-sunken transition-colors"
       >
         <GoogleIcon />
         Google

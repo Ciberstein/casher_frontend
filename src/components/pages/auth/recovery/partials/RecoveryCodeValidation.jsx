@@ -42,11 +42,11 @@ export const RecoveryCodeValidation = ({ account }) => {
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-4">
       <div className="flex flex-col items-center gap-3 py-2">
-        <div className="size-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-          <EnvelopeIcon className="size-7 text-emerald-600 dark:text-emerald-400" />
+        <div className="size-14 rounded-2xl bg-sello-soft flex items-center justify-center">
+          <EnvelopeIcon className="size-7 text-sello-ink" />
         </div>
-        <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
-          Enviamos un código a <span className="font-semibold text-slate-800 dark:text-white">{account.email}</span>
+        <p className="text-sm text-muted text-center">
+          Enviamos un código a <span className="font-semibold text-ink">{account.email}</span>
         </p>
       </div>
 
@@ -87,7 +87,7 @@ export const RecoveryCodeValidation = ({ account }) => {
         id="code" name="code"
         maxLength="6"
         label="Código de verificación" placeholder="000000"
-        helperLink={{ url: '', text: <button type="button" onClick={reSendCode} className="text-emerald-600 dark:text-emerald-400 hover:underline">Reenviar código</button> }}
+        helperLink={{ url: '', text: <button type="button" onClick={reSendCode} className="text-sello-ink hover:underline">Reenviar código</button> }}
         register={{
           function: register,
           errors: { function: errors, rules: { required: 'Requerido' } },

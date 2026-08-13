@@ -12,9 +12,9 @@ export const PreAuthLayout = ({ children }) => {
   }, [auth])
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950">
+    <div className="min-h-screen bg-canvas text-ink">
       <Navbar />
-      <div className="max-w-2xl mx-auto px-4 py-8 dark:text-white">
+      <div className="max-w-2xl mx-auto px-4 py-8">
         {children}
       </div>
     </div>

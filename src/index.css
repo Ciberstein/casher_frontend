@@ -1,3 +1,233 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ------------------------------------------------------------------ *
+ * Casher — "Comprobante"
+ * Tinta sobre papel. El color cromático solo aparece donde el dinero
+ * se mueve. Los tokens son triples RGB para admitir /opacidad.
+ * ------------------------------------------------------------------ */
+
+:root {
+  --c-canvas:  242 240 234;
+  --c-surface: 251 250 247;
+  --c-sunken:  234 231 222;
+  --c-raised:  255 255 255;
+
+  --c-line: 224 219 208;
+  --c-rule: 207 200 185;
+
+  --c-ink:     23 24 27;
+  --c-muted:   108 102 89;
+  --c-faint:   154 146 132;
+  --c-reverse: 251 250 247;
+
+  --c-sello:      210 105 10;
+  --c-sello-ink:  169 79 4;
+  --c-sello-soft: 248 231 210;
+
+  --c-entrada:      11 107 74;
+  --c-entrada-soft: 220 237 229;
+  --c-salida:       178 49 39;
+  --c-salida-soft:  246 223 220;
+  --c-espera:       108 102 89;
+  --c-espera-soft:  234 231 222;
+
+  --c-shadow: 32 28 20;
+
+  color-scheme: light;
+}
+
+body.dark {
+  --c-canvas:  14 16 19;
+  --c-surface: 23 26 31;
+  --c-sunken:  34 37 44;
+  --c-raised:  29 32 39;
+
+  --c-line: 42 46 54;
+  --c-rule: 58 64 73;
+
+  --c-ink:     237 234 227;
+  --c-muted:   154 161 172;
+  --c-faint:   110 118 129;
+  --c-reverse: 20 22 26;
+
+  --c-sello:      232 134 43;
+  --c-sello-ink:  240 162 75;
+  --c-sello-soft: 58 38 17;
+
+  --c-entrada:      63 191 142;
+  --c-entrada-soft: 16 53 42;
+  --c-salida:       240 121 107;
+  --c-salida-soft:  58 31 28;
+  --c-espera:       154 161 172;
+  --c-espera-soft:  34 37 44;
+
+  --c-shadow: 0 0 0;
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--c-canvas));
+    color: rgb(var(--c-ink));
+    font-family: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Los títulos van en Archivo ancho: aire de formulario oficial. */
+  h1, h2, h3 {
+    font-stretch: 112%;
+    letter-spacing: -0.015em;
+  }
+
+  ::selection {
+    background-color: rgb(var(--c-sello) / 0.22);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-sello));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Barra de desplazamiento discreta, del color del papel. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--c-rule)) transparent;
+  }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--c-rule));
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 9999px;
+  }
+}
+
+@layer components {
+  /* --- Tipografía de sistema ------------------------------------- */
+
+  /* Ancho variable de Archivo: el display se estira, el cuerpo no. */
+  .font-wide     { font-stretch: 125%; }
+  .font-semiwide { font-stretch: 112%; }
+  .font-narrow   { font-stretch: 87%; }
+
+  /* Rótulo impreso: la etiqueta pequeña que encabeza cada bloque. */
+  .eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(var(--c-faint));
+  }
+
+  /* Toda cifra de dinero se imprime en mono tabular: las columnas cuadran. */
+  .figure {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1, 'zero' 1;
+    letter-spacing: -0.02em;
+  }
+
+  /* --- Firma: el borde troquelado -------------------------------- */
+
+  .tear-b {
+    --tear-r: 7px;
+    --tear-s: 20px;
+    -webkit-mask: radial-gradient(var(--tear-r) at 50% 100%, #0000 97%, #000) 50% 0 / var(--tear-s) 100%;
+    mask: radial-gradient(var(--tear-r) at 50% 100%, #0000 97%, #000) 50% 0 / var(--tear-s) 100%;
+  }
+
+  .tear-y {
+    --tear-r: 7px;
+    --tear-s: 20px;
+    -webkit-mask:
+      radial-gradient(var(--tear-r) at 50% 100%, #0000 97%, #000) 50% 0 / var(--tear-s) 100%,
+      radial-gradient(var(--tear-r) at 50% 0,    #0000 97%, #000) 50% 0 / var(--tear-s) 100%;
+    -webkit-mask-composite: source-in;
+    mask:
+      radial-gradient(var(--tear-r) at 50% 100%, #0000 97%, #000) 50% 0 / var(--tear-s) 100%,
+      radial-gradient(var(--tear-r) at 50% 0,    #0000 97%, #000) 50% 0 / var(--tear-s) 100%;
+    mask-composite: intersect;
+  }
+
+  /* Línea de perforación: por donde se corta el comprobante. */
+  .perf {
+    height: 1px;
+    background-image: radial-gradient(circle, rgb(var(--c-rule)) 1px, transparent 1.4px);
+    background-size: 7px 1px;
+    background-repeat: repeat-x;
+  }
+
+  /* --- Renglón de libreta ---------------------------------------- */
+
+  /* El relleno punteado que une etiqueta y cifra, como en un recibo. */
+  .leader {
+    flex: 1 1 auto;
+    min-width: 1.5rem;
+    align-self: center;
+    border-bottom: 1px dotted rgb(var(--c-rule));
+    transform: translateY(1px);
+  }
+
+  /* --- Sello ------------------------------------------------------ */
+
+  .stamp {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    box-shadow: inset 0 0 0 1px rgb(var(--c-surface));
+  }
+
+  /* Trama diagonal: marca las copias y los saldos aún no liberados. */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgb(var(--c-rule) / 0.28) 0 1px,
+      transparent 1px 7px
+    );
+  }
+}
+
+@layer utilities {
+  .animate-delay-1 { animation-delay: 70ms; }
+  .animate-delay-2 { animation-delay: 140ms; }
+  .animate-delay-3 { animation-delay: 210ms; }
+  .animate-delay-4 { animation-delay: 280ms; }
+}
+
+/* Nadie pidió movimiento: si lo desactivaron, se apaga entero. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Un comprobante se imprime. */
+@media print {
+  body { background: #fff; }
+  .no-print { display: none !important; }
+  .print-sheet {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}

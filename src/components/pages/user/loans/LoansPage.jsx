@@ -14,7 +14,7 @@ import { accountThunk } from '../../../../store/slices/account.slice'
 import useCurrency from '../../../../hooks/useCurrency'
 
 const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rechazado', paid: 'Pagado' };
-const statusColor = { pending: 'text-yellow-500', accepted: 'text-emerald-500', rejected: 'text-red-500', paid: 'text-blue-500' };
+const statusColor = { pending: 'text-espera', accepted: 'text-sello', rejected: 'text-salida', paid: 'text-entrada' };
 
 const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
   const { register, handleSubmit, reset, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
@@ -46,9 +46,9 @@ const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
           register={{ function: register, errors: { function: errors, rules: { required: 'Monto requerido', min: { value: 1, message: 'Mínimo 1' } } } }}
         />
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium dark:text-white">Moneda</label>
+          <label className="text-sm font-medium text-ink">Moneda</label>
           <select {...register('currency', { required: true })}
-            className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-neutral-600">
+            className="border rounded-lg p-2 bg-sunken text-ink border-line">
             <option value="COP">COP</option>
             <option value="USD">USD</option>
           </select>
@@ -79,27 +79,27 @@ export const LoansPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold dark:text-white">Préstamos</h1>
+        <h1 className="font-wide text-2xl font-bold tracking-tight text-ink">Préstamos</h1>
         <Button onClick={() => setModal(true)} className="flex items-center gap-2">
           <PlusIcon className="size-4" /> Solicitar
         </Button>
       </div>
       <LoanRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       <div className="flex flex-col gap-3">
-        {loans.length === 0 && <p className="text-slate-400 text-sm">No tienes préstamos aún.</p>}
+        {loans.length === 0 && <p className="text-faint text-sm">No tienes préstamos aún.</p>}
         {loans.map(loan => (
-          <div key={loan.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+          <div key={loan.id} className="bg-surface rounded-2xl p-4 shadow flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="font-semibold dark:text-white">{format(loan.amount, loan.currency)}</span>
+              <span className="font-semibold text-ink">{format(loan.amount, loan.currency)}</span>
               <span className={`text-sm font-medium ${statusColor[loan.status]}`}>{statusLabel[loan.status]}</span>
             </div>
-            <div className="flex gap-6 text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex gap-6 text-sm text-muted">
               <span>Tasa: {loan.interest_rate}% diario</span>
               {loan.status === 'accepted' && loan.outstanding != null && (
                 <span>Saldo actual: {format(loan.outstanding, loan.currency)}</span>
               )}
             </div>
-            <span className="text-xs text-slate-400">{new Date(loan.createdAt).toLocaleDateString()}</span>
+            <span className="text-xs text-faint">{new Date(loan.createdAt).toLocaleDateString()}</span>
           </div>
         ))}
       </div>

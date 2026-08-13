@@ -32,15 +32,15 @@ const StepIndicator = ({ current }) => (
       <div key={label} className="flex items-center flex-1 last:flex-none">
         <div className="flex flex-col items-center gap-1.5">
           <div className={`size-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-            ${current > i + 1 ? 'bg-emerald-500 text-white' : current === i + 1 ? 'bg-emerald-500 text-white ring-4 ring-emerald-100 dark:ring-emerald-900/40' : 'bg-slate-100 dark:bg-neutral-700 text-slate-400'}`}>
+            ${current > i + 1 ? 'bg-ink text-reverse' : current === i + 1 ? 'bg-ink text-reverse ring-4 ring-sello/25' : 'bg-sunken text-faint'}`}>
             {current > i + 1 ? <CheckIcon className="size-4" /> : i + 1}
           </div>
-          <span className={`text-xs font-medium whitespace-nowrap ${current >= i + 1 ? 'text-slate-700 dark:text-slate-200' : 'text-slate-400'}`}>
+          <span className={`text-xs font-medium whitespace-nowrap ${current >= i + 1 ? 'text-ink' : 'text-faint'}`}>
             {label}
           </span>
         </div>
         {i < STEPS.length - 1 && (
-          <div className={`flex-1 h-0.5 mx-2 mb-5 transition-colors ${current > i + 1 ? 'bg-emerald-500' : 'bg-slate-100 dark:bg-neutral-700'}`} />
+          <div className={`flex-1 h-0.5 mx-2 mb-5 transition-colors ${current > i + 1 ? 'bg-sello' : 'bg-sunken'}`} />
         )}
       </div>
     ))}
@@ -70,28 +70,28 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm text-slate-500">Destinatario</label>
+      <label className="text-sm text-muted">Destinatario</label>
       <Combobox
         value={value}
         onChange={(val) => { onChange(val); setQuery(''); }}
         onClose={() => setQuery('')}
       >
-        <div className="flex gap-2 items-center border-transparent border rounded-xl bg-slate-200 dark:bg-neutral-800 p-2">
-          <span className="text-slate-500 dark:text-slate-400 shrink-0">{icon}</span>
+        <div className="flex gap-2 items-center border-transparent border rounded-xl bg-sunken p-2">
+          <span className="text-muted shrink-0">{icon}</span>
           <ComboboxInput
-            className="bg-transparent w-full placeholder:text-slate-500 focus-visible:outline-none text-slate-900 dark:text-white text-md"
+            className="bg-transparent w-full placeholder:text-muted focus-visible:outline-none text-ink text-md"
             placeholder="usuario@dominio.com o @apodo"
             displayValue={(v) => v ?? ''}
             onChange={(e) => { setQuery(e.target.value); onChange(e.target.value); }}
           />
           {recipients.length > 0 && (
             <ComboboxButton className="shrink-0">
-              <ChevronUpDownIcon className="size-5 text-slate-400" />
+              <ChevronUpDownIcon className="size-5 text-faint" />
             </ComboboxButton>
           )}
         </div>
         {filtered.length > 0 && (
-          <ComboboxOptions className="absolute z-50 w-full mt-1 max-h-52 overflow-y-auto rounded-xl bg-white dark:bg-neutral-800 shadow-xl border border-slate-100 dark:border-neutral-700 p-1">
+          <ComboboxOptions className="absolute z-50 w-full mt-1 max-h-52 overflow-y-auto rounded-xl bg-surface shadow-xl border border-line p-1">
             {filtered.map(r => {
               const rec = r.recipient;
               const name = `${rec.data?.first_name ?? ''} ${rec.data?.surname_1 ?? ''}`.trim() || rec.username;
@@ -100,17 +100,17 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
                 <ComboboxOption
                   key={r.id}
                   value={rec.email}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-slate-100 dark:data-[focus]:bg-slate-700 transition-colors"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-sunken transition-colors"
                 >
-                  <div className="size-8 rounded-full shrink-0 overflow-hidden bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
+                  <div className="size-8 rounded-full shrink-0 overflow-hidden bg-sello-soft flex items-center justify-center">
                     {rec.picture
                       ? <img src={rec.picture} className="size-full object-cover" />
-                      : <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">{initials}</span>
+                      : <span className="text-xs font-bold text-sello-ink">{initials}</span>
                     }
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-slate-700 dark:text-slate-300 truncate">{name}</p>
-                    <p className="text-xs text-slate-400 truncate">@{rec.username} · {rec.email}</p>
+                    <p className="text-sm text-muted truncate">{name}</p>
+                    <p className="text-xs text-faint truncate">@{rec.username} · {rec.email}</p>
                   </div>
                 </ComboboxOption>
               );
@@ -163,7 +163,7 @@ export const ChargeModal = ({ open, setOpen }) => {
 
   return (
     <Modal open={open} setOpen={handleClose} title="Cargar fondos" className="flex flex-col gap-5">
-      <p className="text-sm text-slate-500 dark:text-slate-400">
+      <p className="text-sm text-muted">
         Realiza una transferencia a una de las cuentas de la app y adjunta el comprobante. El saldo será acreditado tras la verificación.
       </p>
 
@@ -171,7 +171,7 @@ export const ChargeModal = ({ open, setOpen }) => {
         <Controller name="appBankAccountId" control={control} rules={{ required: 'Requerido' }}
           render={({ field }) => (
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-600 dark:text-slate-400">¿A cuál cuenta depositaste?</label>
+              <label className="text-sm font-medium text-muted">¿A cuál cuenta depositaste?</label>
               <div className="flex flex-col gap-2">
                 {accounts.map(acc => {
                   const selected = field.value === String(acc.id)
@@ -182,25 +182,25 @@ export const ChargeModal = ({ open, setOpen }) => {
                       onClick={() => field.onChange(String(acc.id))}
                       className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all
                         ${selected
-                          ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10'
-                          : 'border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800/60 hover:border-slate-300 dark:hover:border-neutral-600'
+                          ? 'border-sello bg-sello-soft'
+                          : 'border-line bg-sunken hover:border-rule'
                         }`}
                     >
                       <div className={`size-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all
-                        ${selected ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300 dark:border-neutral-600'}`}>
+                        ${selected ? 'border-sello bg-sello' : 'border-rule'}`}>
                         {selected && <CheckIcon className="size-3 text-white" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-semibold text-slate-900 dark:text-white">{acc.bank_name}</p>
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium shrink-0">
+                          <p className="text-sm font-semibold text-ink">{acc.bank_name}</p>
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-sello-soft text-sello-ink font-medium shrink-0">
                             {ACCOUNT_TYPE_LABEL[acc.account_type]}
                           </span>
                         </div>
-                        <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-0.5">{acc.account_number}</p>
-                        <p className="text-xs text-slate-400 mt-0.5">{acc.owner_name}</p>
+                        <p className="text-xs font-mono text-muted mt-0.5">{acc.account_number}</p>
+                        <p className="text-xs text-faint mt-0.5">{acc.owner_name}</p>
                         {acc.documentType && (
-                          <p className="text-xs text-slate-400">{acc.documentType.abbreviation}: {acc.document_number}</p>
+                          <p className="text-xs text-faint">{acc.documentType.abbreviation}: {acc.document_number}</p>
                         )}
                       </div>
                     </button>
@@ -208,7 +208,7 @@ export const ChargeModal = ({ open, setOpen }) => {
                 })}
               </div>
               {errors.appBankAccountId && (
-                <p className="text-xs text-red-500">{errors.appBankAccountId.message}</p>
+                <p className="text-xs text-salida">{errors.appBankAccountId.message}</p>
               )}
             </div>
           )} />
@@ -322,7 +322,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
                     />
                   )}
                 />
-                {errors.user && <p className="text-xs text-red-400 mt-1">{errors.user.message}</p>}
+                {errors.user && <p className="text-xs text-salida mt-1">{errors.user.message}</p>}
               </div>
 
               <Button type="submit" disabled={!isValid || isSubmitting} className="w-full">
@@ -354,8 +354,8 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
                     },
                   }}
                 />
-                <p className="text-xs text-slate-400 text-right">
-                  Disponible: <span className="font-semibold text-slate-600 dark:text-slate-300">{format(available, selectedCurrency)}</span>
+                <p className="text-xs text-faint text-right">
+                  Disponible: <span className="font-semibold text-muted">{format(available, selectedCurrency)}</span>
                 </p>
               </div>
 
@@ -368,25 +368,25 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
           {section === 3 && (
             <>
-              <div className="bg-slate-50 dark:bg-neutral-900 rounded-2xl border border-slate-100 dark:border-neutral-700 overflow-hidden">
+              <div className="bg-surface rounded-2xl border border-line overflow-hidden">
                 <div className="flex items-center gap-3 p-4">
-                  <div className="size-11 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase">
+                  <div className="size-11 rounded-full bg-sello-soft flex items-center justify-center shrink-0">
+                    <span className="text-sm font-bold text-sello-ink uppercase">
                       {params.data?.first_name?.[0]}{params.data?.surname_1?.[0]}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">
+                    <p className="font-semibold text-ink text-sm truncate">
                       {params.data?.first_name} {params.data?.surname_1}
                     </p>
-                    <p className="text-xs text-slate-400 truncate">{params?.email}</p>
+                    <p className="text-xs text-faint truncate">{params?.email}</p>
                   </div>
-                  <ArrowRightIcon className={`size-5 shrink-0 ${txType ? 'text-red-400' : 'text-emerald-400 rotate-180'}`} />
+                  <ArrowRightIcon className={`size-5 shrink-0 ${txType ? 'text-salida' : 'text-entrada rotate-180'}`} />
                 </div>
 
-                <div className="border-t border-slate-100 dark:border-neutral-700 px-4 py-3 flex items-center justify-between">
-                  <span className="text-xs text-slate-500">{txType ? 'El beneficiario recibe' : 'Usted recibirá'}</span>
-                  <span className={`text-lg font-bold ${txType ? 'text-red-500' : 'text-emerald-500'}`}>
+                <div className="border-t border-line px-4 py-3 flex items-center justify-between">
+                  <span className="text-xs text-muted">{txType ? 'El beneficiario recibe' : 'Usted recibirá'}</span>
+                  <span className={`text-lg font-bold ${txType ? 'text-salida' : 'text-sello'}`}>
                     {fmt(params?.amount, params?.currency)}
                   </span>
                 </div>
@@ -437,7 +437,7 @@ const WithdrawModal = ({ open, setOpen, onSuccess }) => {
   return (
     <Modal open={open} setOpen={setOpen} title="Solicitar retiro" className="grid gap-6">
       {bankAccounts.length === 0
-        ? <p className="text-sm text-slate-400">Primero agrega una cuenta bancaria en la sección Cuentas bancarias.</p>
+        ? <p className="text-sm text-faint">Primero agrega una cuenta bancaria en la sección Cuentas bancarias.</p>
         : (
           <form onSubmit={handleSubmit(submit)} className="grid gap-4">
             <Controller name="bankAccountId" control={control} rules={{ required: 'Requerido' }}
@@ -457,8 +457,8 @@ const WithdrawModal = ({ open, setOpen, onSuccess }) => {
               <Input icon={<CurrencyDollarIcon className="size-6" />} id="w_amount" name="amount"
                 type="number" min="1" step="0.01" label="Monto" placeholder="0.00"
                 register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', min: { value: 1, message: 'Mínimo 1' }, max: { value: available, message: 'Saldo insuficiente' } } } }} />
-              <span className="text-xs text-slate-400 text-right">
-                Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{format(available, selectedCurrency)}</span>
+              <span className="text-xs text-faint text-right">
+                Disponible: <span className="font-medium text-muted">{format(available, selectedCurrency)}</span>
               </span>
             </div>
             <Button type="submit" disabled={!isValid || isSubmitting}>Solicitar retiro</Button>
@@ -469,24 +469,37 @@ const WithdrawModal = ({ open, setOpen, onSuccess }) => {
   );
 };
 
+/** Selector de moneda sobre la hoja: discreto, del color del reverso. */
 const CardCurrencySelect = ({ currencies, value, onChange }) => (
   <Listbox value={value} onChange={onChange}>
-    <ListboxButton className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-2.5 py-1 rounded-full transition-colors">
+    <ListboxButton className="figure flex items-center gap-1 rounded border border-reverse/25 px-2 py-1
+      text-[0.6875rem] font-medium tracking-stamp text-reverse/85 transition-colors hover:border-reverse/50">
       {value}
       <ChevronUpDownIcon className="size-3.5 opacity-70" />
     </ListboxButton>
-    <ListboxOptions anchor="bottom end" className="z-50 mt-1 min-w-[72px] rounded-xl bg-white dark:bg-neutral-900 shadow-xl border border-slate-200 dark:border-neutral-700 p-1 focus:outline-none">
+    <ListboxOptions
+      anchor="bottom end"
+      className="z-50 mt-1 min-w-[84px] rounded-lg border border-line bg-surface p-1 shadow-xl focus:outline-none"
+    >
       {currencies.map(c => (
-        <ListboxOption key={c} value={c}
-          className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-slate-100 dark:data-[focus]:bg-neutral-800 transition-colors">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{c}</span>
-          {value === c && <CheckIcon className="size-3.5 text-emerald-500" />}
+        <ListboxOption
+          key={c}
+          value={c}
+          className="flex cursor-pointer select-none items-center justify-between gap-2 rounded px-3 py-2
+            transition-colors data-[focus]:bg-sunken"
+        >
+          <span className="figure text-sm font-medium text-ink">{c}</span>
+          {value === c && <CheckIcon className="size-3.5 text-sello" />}
         </ListboxOption>
       ))}
     </ListboxOptions>
   </Listbox>
 )
 
+/**
+ * La cuenta principal se imprime en negativo: siempre al revés de la página,
+ * como un tiquete recién salido de la caja sobre el escritorio.
+ */
 export const BalanceCard = ({ balances = {} }) => {
   const [show, setShow] = useState(() => localStorage.getItem('balanceVisible') !== 'false');
   const [chargeModal, setChargeModal] = useState(false);
@@ -510,50 +523,60 @@ export const BalanceCard = ({ balances = {} }) => {
     localStorage.setItem('balanceVisible', next);
   };
 
-  return (
-    <div className="relative overflow-hidden rounded-3xl p-6 flex flex-col gap-8 justify-between text-white min-h-64"
-      style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)' }}
-    >
-      <div className="absolute -right-8 -top-8 size-48 rounded-full bg-white/10 pointer-events-none" />
-      <div className="absolute right-12 bottom-0 size-32 rounded-full bg-black/10 pointer-events-none" />
-      <div className="absolute -left-6 bottom-8 size-28 rounded-full bg-white/10 pointer-events-none" />
+  const actions = [
+    { icon: <PlusIcon className="size-[1.15rem]" />,              label: 'Cargar',    onClick: () => setChargeModal(true) },
+    { icon: <ArrowTurnUpRightIcon className="size-[1.15rem]" />,  label: 'Enviar',    onClick: () => { setSendOrRequestModal(true); setTxType(true); } },
+    { icon: <ArrowTurnDownLeftIcon className="size-[1.15rem]" />, label: 'Solicitar', onClick: () => { setSendOrRequestModal(true); setTxType(false); } },
+    { icon: <MinusIcon className="size-[1.15rem]" />,             label: 'Retirar',   onClick: () => setWithdrawModal(true) },
+  ];
 
+  return (
+    <div className="relative flex min-h-64 flex-col justify-between rounded-t-2xl bg-ink pb-5 text-reverse tear-b">
       <ChargeModal open={chargeModal} setOpen={setChargeModal} />
       <SendOrRequestModal open={sendOrRequestModal} setOpen={setSendOrRequestModal} txType={txType} />
-      <WithdrawModal open={withdrawModal} setOpen={setWithdrawModal} onSuccess={() => { dispatch(accountThunk()); dispatch(activityThunk()); }} />
+      <WithdrawModal
+        open={withdrawModal}
+        setOpen={setWithdrawModal}
+        onSuccess={() => { dispatch(accountThunk()); dispatch(activityThunk()); }}
+      />
 
-      <div className="relative flex flex-col gap-3">
-        <div className="flex justify-between items-center gap-4">
-          <span className="text-sm font-medium text-white/70 tracking-wide uppercase">Saldo disponible</span>
-          <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-4 px-6 pt-6">
+        <div className="flex items-center justify-between gap-4">
+          <span className="eyebrow !text-reverse/55">Saldo disponible</span>
+          <div className="flex items-center gap-1.5">
             {currencies.length > 1 && (
               <CardCurrencySelect currencies={currencies} value={selectedCurrency} onChange={setSelectedCurrency} />
             )}
-            <button onClick={handleShow} className="p-1 rounded-lg hover:bg-white/20 transition-colors">
-              {show ? <EyeSlashIcon className="size-5" /> : <EyeIcon className="size-5" />}
+            <button
+              onClick={handleShow}
+              aria-label={show ? 'Ocultar saldo' : 'Mostrar saldo'}
+              className="rounded p-1.5 text-reverse/70 transition-colors hover:bg-reverse/10 hover:text-reverse"
+            >
+              {show ? <EyeSlashIcon className="size-[1.15rem]" /> : <EyeIcon className="size-[1.15rem]" />}
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-4xl lg:text-5xl font-bold tracking-tight">
-            {show ? format(balances[selectedCurrency] ?? 0, selectedCurrency) : '••••••'}
-          </span>
-        </div>
+
+        <p className="figure animate-print-in text-[2.25rem] font-semibold leading-none tracking-tight lg:text-[2.75rem]">
+          {show ? format(balances[selectedCurrency] ?? 0, selectedCurrency) : '••••••'}
+        </p>
       </div>
 
-      <div className="relative grid grid-cols-4 gap-2">
-        {[
-          { icon: <PlusIcon className="size-5" />, label: 'Cargar', onClick: () => setChargeModal(true) },
-          { icon: <ArrowTurnUpRightIcon className="size-5" />, label: 'Enviar', onClick: () => { setSendOrRequestModal(true); setTxType(true); } },
-          { icon: <ArrowTurnDownLeftIcon className="size-5" />, label: 'Solicitar', onClick: () => { setSendOrRequestModal(true); setTxType(false); } },
-          { icon: <MinusIcon className="size-5" />, label: 'Retirar', onClick: () => setWithdrawModal(true) },
-        ].map(({ icon, label, onClick }) => (
-          <button key={label} onClick={onClick}
-            className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white/15 hover:bg-white/25 active:bg-white/30 transition-colors">
-            {icon}
-            <span className="text-xs font-medium text-white/90">{label}</span>
-          </button>
-        ))}
+      <div className="px-6 pt-6">
+        <div className="perf opacity-40" />
+        <div className="mt-4 grid grid-cols-4 divide-x divide-reverse/15 overflow-hidden rounded-lg border border-reverse/15">
+          {actions.map(({ icon, label, onClick }) => (
+            <button
+              key={label}
+              onClick={onClick}
+              className="flex flex-col items-center gap-1.5 py-3 text-reverse/85 transition-colors
+                hover:bg-reverse/10 hover:text-reverse active:bg-reverse/15"
+            >
+              {icon}
+              <span className="text-[0.6875rem] font-medium font-semiwide">{label}</span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

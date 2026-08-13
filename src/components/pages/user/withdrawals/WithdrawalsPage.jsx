@@ -15,7 +15,7 @@ import { accountThunk } from '../../../../store/slices/account.slice'
 import useCurrency from '../../../../hooks/useCurrency'
 
 const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rechazado' };
-const statusColor = { pending: 'text-yellow-500', accepted: 'text-emerald-500', rejected: 'text-red-500' };
+const statusColor = { pending: 'text-espera', accepted: 'text-sello', rejected: 'text-salida' };
 
 const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
   const { register, handleSubmit, reset, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
@@ -45,13 +45,13 @@ const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
   return (
     <Modal open={open} setOpen={setOpen} title="Solicitar retiro" className="grid gap-6">
       {bankAccounts.length === 0
-        ? <p className="text-sm text-slate-400">Primero agrega una cuenta bancaria en la sección Cuentas bancarias.</p>
+        ? <p className="text-sm text-faint">Primero agrega una cuenta bancaria en la sección Cuentas bancarias.</p>
         : (
           <form onSubmit={handleSubmit(submit)} className="grid gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium dark:text-white">Cuenta bancaria</label>
+              <label className="text-sm font-medium text-ink">Cuenta bancaria</label>
               <select {...register('bankAccountId', { required: true })}
-                className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-neutral-600">
+                className="border rounded-lg p-2 bg-sunken text-ink border-line">
                 {bankAccounts.map(acc => (
                   <option key={acc.id} value={acc.id}>{acc.bank_name} · {acc.account_number}</option>
                 ))}
@@ -61,9 +61,9 @@ const WithdrawalModal = ({ open, setOpen, onSuccess }) => {
               type="number" min="1" step="0.01" label="Monto" placeholder="0.00"
               register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', min: { value: 1, message: 'Mínimo 1' } } } }} />
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium dark:text-white">Moneda</label>
+              <label className="text-sm font-medium text-ink">Moneda</label>
               <select {...register('currency', { required: true })}
-                className="border rounded-lg p-2 dark:bg-neutral-800 dark:text-white dark:border-neutral-600">
+                className="border rounded-lg p-2 bg-sunken text-ink border-line">
                 <option value="COP">COP</option>
                 <option value="USD">USD</option>
               </select>
@@ -112,7 +112,7 @@ export const WithdrawalsPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold dark:text-white">Retiros</h1>
+        <h1 className="font-wide text-2xl font-bold tracking-tight text-ink">Retiros</h1>
         <Button onClick={() => setModal(true)} className="flex items-center gap-2">
           <PlusIcon className="size-4" /> Solicitar
         </Button>
@@ -120,23 +120,23 @@ export const WithdrawalsPage = () => {
       <VoucherModal open={!!voucherUrl} setOpen={() => setVoucherUrl(null)} url={voucherUrl} />
       <WithdrawalModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
       <div className="flex flex-col gap-3">
-        {withdrawals.length === 0 && <p className="text-slate-400 text-sm">No tienes retiros aún.</p>}
+        {withdrawals.length === 0 && <p className="text-faint text-sm">No tienes retiros aún.</p>}
         {withdrawals.map(w => (
-          <div key={w.id} className="bg-white dark:bg-neutral-900 rounded-2xl p-4 shadow flex flex-col gap-2">
+          <div key={w.id} className="bg-surface rounded-2xl p-4 shadow flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="font-semibold dark:text-white">{format(w.amount, w.currency)}</span>
+              <span className="font-semibold text-ink">{format(w.amount, w.currency)}</span>
               <span className={`text-sm font-medium ${statusColor[w.status]}`}>{statusLabel[w.status]}</span>
             </div>
-            <span className="text-sm text-slate-500 dark:text-slate-400">
+            <span className="text-sm text-muted">
               {w.bankAccount?.bank_name} — {w.bankAccount?.account_number}
             </span>
             {w.screenshot && (
               <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
-                className="flex items-center gap-1 text-xs text-blue-500 hover:underline w-fit">
+                className="flex items-center gap-1 text-xs text-sello-ink hover:text-sello w-fit">
                 <LinkIcon className="size-3" /> Ver comprobante
               </button>
             )}
-            <span className="text-xs text-slate-400">{new Date(w.createdAt).toLocaleDateString()}</span>
+            <span className="text-xs text-faint">{new Date(w.createdAt).toLocaleDateString()}</span>
           </div>
         ))}
       </div>

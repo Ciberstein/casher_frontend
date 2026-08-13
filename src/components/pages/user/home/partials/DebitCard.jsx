@@ -22,18 +22,27 @@ const CURRENCY_OPTIONS = [
   { value: 'USD', label: 'USD' },
 ];
 
+/** Mismo selector, en versión clara: esta hoja es la copia, no el original. */
 const CardCurrencySelect = ({ currencies, value, onChange }) => (
   <Listbox value={value} onChange={onChange}>
-    <ListboxButton className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white text-xs font-semibold px-2.5 py-1 rounded-full transition-colors">
+    <ListboxButton className="figure flex items-center gap-1 rounded border border-line px-2 py-1
+      text-[0.6875rem] font-medium tracking-stamp text-muted transition-colors hover:border-rule hover:text-ink">
       {value}
       <ChevronUpDownIcon className="size-3.5 opacity-70" />
     </ListboxButton>
-    <ListboxOptions anchor="bottom end" className="z-50 mt-1 min-w-[72px] rounded-xl bg-white dark:bg-neutral-900 shadow-xl border border-slate-200 dark:border-neutral-700 p-1 focus:outline-none">
+    <ListboxOptions
+      anchor="bottom end"
+      className="z-50 mt-1 min-w-[84px] rounded-lg border border-line bg-surface p-1 shadow-xl focus:outline-none"
+    >
       {currencies.map(c => (
-        <ListboxOption key={c} value={c}
-          className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg cursor-pointer select-none data-[focus]:bg-slate-100 dark:data-[focus]:bg-neutral-800 transition-colors">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{c}</span>
-          {value === c && <CheckIcon className="size-3.5 text-emerald-500" />}
+        <ListboxOption
+          key={c}
+          value={c}
+          className="flex cursor-pointer select-none items-center justify-between gap-2 rounded px-3 py-2
+            transition-colors data-[focus]:bg-sunken"
+        >
+          <span className="figure text-sm font-medium text-ink">{c}</span>
+          {value === c && <CheckIcon className="size-3.5 text-sello" />}
         </ListboxOption>
       ))}
     </ListboxOptions>
@@ -87,9 +96,9 @@ const PayModal = ({ open, setOpen, pendingPerCurrency, onSuccess }) => {
                 noExceedDebt:      (v) => Number(v) <= pending   || `Máximo adeudado: ${fmt(pending)}`,
               },
             }}}} />
-          <div className="flex justify-between text-xs text-slate-400">
-            <span>Deuda pendiente: <span className="font-medium text-slate-600 dark:text-slate-300">{fmt(pending)}</span></span>
-            <span>Disponible: <span className="font-medium text-slate-600 dark:text-slate-300">{fmt(available)}</span></span>
+          <div className="flex justify-between text-xs text-faint">
+            <span>Deuda pendiente: <span className="font-medium text-muted">{fmt(pending)}</span></span>
+            <span>Disponible: <span className="font-medium text-muted">{fmt(available)}</span></span>
           </div>
         </div>
         <Button type="submit" color="green" disabled={!isValid || isSubmitting}>Abonar</Button>
@@ -97,11 +106,14 @@ const PayModal = ({ open, setOpen, pendingPerCurrency, onSuccess }) => {
     </Modal>
   );
 };
-
+/**
+ * La deuda es la copia al carbón del saldo: mismo formato, papel hundido,
+ * trama diagonal encima. Nunca compite con el original.
+ */
 export const DebitCard = ({ pending = {} }) => {
-  const [show, setShow] = useState(() => localStorage.getItem('pendingBalanceVisible') !== 'false');
   const [loanModal, setLoanModal] = useState(false);
   const [payModal, setPayModal] = useState(false);
+  const [show, setShow] = useState(() => localStorage.getItem('pendingBalanceVisible') !== 'false');
   const { format } = useCurrency();
   const dispatch = useDispatch();
 
@@ -126,45 +138,60 @@ export const DebitCard = ({ pending = {} }) => {
     <Fragment>
       <LoanRequestModal open={loanModal} setOpen={setLoanModal} onSuccess={onSuccess} />
       <PayModal open={payModal} setOpen={setPayModal} pendingPerCurrency={pending} onSuccess={onSuccess} />
-      <div className="relative overflow-hidden rounded-3xl p-6 flex flex-col gap-8 justify-between text-white min-h-64"
-        style={{ background: 'linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%)' }}
-      >
-        <div className="absolute -right-8 -top-8 size-48 rounded-full bg-white/10 pointer-events-none" />
-        <div className="absolute right-12 bottom-0 size-32 rounded-full bg-black/10 pointer-events-none" />
-        <div className="absolute -left-6 bottom-8 size-28 rounded-full bg-white/10 pointer-events-none" />
 
-        <div className="relative flex flex-col gap-3">
-          <div className="flex justify-between items-center gap-4">
-            <span className="text-sm font-medium text-white/70 tracking-wide uppercase">Saldo pendiente</span>
-            <div className="flex items-center gap-2">
+      <div className="relative flex min-h-64 flex-col justify-between rounded-t-2xl border border-dashed border-rule
+        bg-sunken pb-5 text-ink tear-b">
+        <div className="pointer-events-none absolute inset-0 hatch opacity-60" aria-hidden="true" />
+
+        <div className="relative flex flex-col gap-4 px-6 pt-6">
+          <div className="flex items-center justify-between gap-4">
+            <span className="eyebrow">Saldo pendiente</span>
+            <div className="flex items-center gap-1.5">
               {currencies.length > 1 && (
                 <CardCurrencySelect currencies={currencies} value={selectedCurrency} onChange={setSelectedCurrency} />
               )}
-              <button onClick={handleShow} className="p-1 rounded-lg hover:bg-white/20 transition-colors">
-                {show ? <EyeSlashIcon className="size-5" /> : <EyeIcon className="size-5" />}
+              <button
+                onClick={handleShow}
+                aria-label={show ? 'Ocultar saldo pendiente' : 'Mostrar saldo pendiente'}
+                className="rounded p-1.5 text-muted transition-colors hover:bg-surface hover:text-ink"
+              >
+                {show ? <EyeSlashIcon className="size-[1.15rem]" /> : <EyeIcon className="size-[1.15rem]" />}
               </button>
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-4xl lg:text-5xl font-bold tracking-tight">
-              {show ? format(pending[selectedCurrency] ?? 0, selectedCurrency) : '••••••'}
-            </span>
-          </div>
+
+          <p className="figure animate-print-in animate-delay-1 text-[2.25rem] font-semibold leading-none tracking-tight lg:text-[2.75rem]">
+            {show ? format(pending[selectedCurrency] ?? 0, selectedCurrency) : '••••••'}
+          </p>
+
+          <p className="text-[0.8125rem] leading-relaxed text-muted">
+            {hasPending
+              ? 'Lo que debes por los préstamos aceptados. Abona cuando quieras.'
+              : 'No debes nada. Puedes solicitar un préstamo cuando lo necesites.'}
+          </p>
         </div>
 
-        <div className="relative grid grid-cols-4 gap-2">
-          <button onClick={() => setLoanModal(true)}
-            className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white/15 hover:bg-white/25 active:bg-white/30 transition-colors">
-            <ArrowTurnDownLeftIcon className="size-5" />
-            <span className="text-xs font-medium text-white/90">Solicitar</span>
-          </button>
-          {hasPending && (
-            <button onClick={() => setPayModal(true)}
-              className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-white/15 hover:bg-white/25 active:bg-white/30 transition-colors">
-              <PlusIcon className="size-5" />
-              <span className="text-xs font-medium text-white/90">Abonar</span>
+        <div className="relative px-6 pt-6">
+          <div className="perf" />
+          <div className={`mt-4 grid divide-x divide-line overflow-hidden rounded-lg border border-line bg-surface
+            ${hasPending ? 'grid-cols-2' : 'grid-cols-1'}`}>
+            <button
+              onClick={() => setLoanModal(true)}
+              className="flex flex-col items-center gap-1.5 py-3 text-muted transition-colors hover:bg-sunken hover:text-ink"
+            >
+              <ArrowTurnDownLeftIcon className="size-[1.15rem]" />
+              <span className="text-[0.6875rem] font-medium font-semiwide">Solicitar</span>
             </button>
-          )}
+            {hasPending && (
+              <button
+                onClick={() => setPayModal(true)}
+                className="flex flex-col items-center gap-1.5 py-3 text-muted transition-colors hover:bg-sunken hover:text-ink"
+              >
+                <PlusIcon className="size-[1.15rem]" />
+                <span className="text-[0.6875rem] font-medium font-semiwide">Abonar</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </Fragment>

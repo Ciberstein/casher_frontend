@@ -12,8 +12,8 @@ export const RegisterPage = () => {
 
   return (
     <AuthSplitLayout
-      title={account ? 'Verifica tu correo' : 'Crea tu cuenta'}
-      subtitle={account ? `Enviamos un código a ${account.email}` : 'Completa el formulario para comenzar'}
+      title={account ? 'Verifica tu correo' : 'Abre tu cuenta'}
+      subtitle={account ? `Enviamos un código a ${account.email}` : 'Unos datos y ya puedes mover dinero'}
       footerText="¿Ya tienes cuenta?"
       footerLink="/login"
       footerLinkText="Ingresar"

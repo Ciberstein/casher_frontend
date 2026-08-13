@@ -1,194 +1,205 @@
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { PreAuthNavbar } from '../shared/user/Navbar'
-import {
-  ArrowUpRightIcon, ArrowDownLeftIcon, BanknotesIcon,
-  ShieldCheckIcon, CurrencyDollarIcon, QrCodeIcon,
-  ArrowRightIcon,
-} from '@heroicons/react/24/outline'
+import { Mark } from '../shared/Mark'
+import { LedgerRow, Stamp } from '../shared/Receipt'
 
-const FEATURES = [
-  {
-    icon: <ArrowUpRightIcon className="size-6" />,
-    color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
-    title: 'Transferencias instantáneas',
-    desc: 'Envía y solicita dinero a cualquier usuario de Casher en segundos, sin comisiones ocultas.',
-  },
-  {
-    icon: <CurrencyDollarIcon className="size-6" />,
-    color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-    title: 'Múltiples divisas',
-    desc: 'Opera en pesos colombianos (COP) y dólares (USD) con tasas de cambio en tiempo real.',
-  },
-  {
-    icon: <BanknotesIcon className="size-6" />,
-    color: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
-    title: 'Préstamos y retiros',
-    desc: 'Solicita préstamos y retira fondos a tu cuenta bancaria directamente desde la plataforma.',
-  },
-  {
-    icon: <QrCodeIcon className="size-6" />,
-    color: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
-    title: 'Comprobantes QR',
-    desc: 'Cada transferencia genera un comprobante verificable con código QR, accesible desde cualquier dispositivo.',
-  },
-  {
-    icon: <ArrowDownLeftIcon className="size-6" />,
-    color: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400',
-    title: 'Solicitudes de cobro',
-    desc: 'Solicita pagos a otros usuarios y gestiona tus cobros pendientes desde un solo lugar.',
-  },
-  {
-    icon: <ShieldCheckIcon className="size-6" />,
-    color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-    title: 'Seguro y confiable',
-    desc: 'Autenticación segura con verificación en dos pasos y registro de toda tu actividad financiera.',
-  },
-];
+/**
+ * La portada no describe el producto: enseña lo que produce. Un comprobante
+ * emitido, con su sello y su código, dice más que seis tarjetas de beneficios.
+ */
+const HeroReceipt = () => (
+  <figure
+    style={{ '--c-rule': '207 200 185', '--c-surface': '251 250 247', '--c-faint': '154 146 132' }}
+    className="w-full max-w-[20rem] animate-feed-in animate-delay-2 rotate-[-1.5deg] rounded-t-2xl
+      border border-black/[0.06] bg-[#FBFAF7] tear-b pb-5 text-[#17181B] shadow-2xl"
+  >
+    <div className="flex items-center justify-between px-6 pt-6">
+      <img src="/img/logo.svg" alt="" className="max-h-4 opacity-90" />
+      <span className="figure text-[0.625rem] text-[#9A9284]">REF 4F9C2AE1</span>
+    </div>
 
-const STATS = [
-  { value: '100%', label: 'Transacciones verificadas' },
-  { value: 'COP & USD', label: 'Divisas soportadas' },
-  { value: '24/7', label: 'Disponibilidad' },
-];
+    <p className="eyebrow !text-[#9A9284] px-6 pt-5">Comprobante de transferencia</p>
+
+    <div className="flex items-end justify-between gap-4 px-6 pt-1">
+      <p className="figure text-[1.75rem] font-semibold leading-tight tracking-tight">COP 320.000</p>
+      <Stamp tone="entrada" className="mb-1">Verificado</Stamp>
+    </div>
+
+    <div className="perf mx-6 my-4" />
+
+    <div className="px-6">
+      <LedgerRow label="Emisor" value="@daniel" />
+      <LedgerRow label="Destinatario" value="@valentina" />
+      <LedgerRow label="Fecha" value="12/08/2026" />
+      <LedgerRow label="Hora" value="14:38" />
+    </div>
+
+    <div className="perf mx-6 my-4" />
+
+    <p className="figure break-all px-6 text-center text-[0.5625rem] leading-relaxed text-[#9A9284]">
+      4f9c2ae1b70d3852c4419fe07ab6d1c3
+    </p>
+  </figure>
+)
+
+const CAPABILITIES = [
+  {
+    verb: 'Recibir',
+    line: 'Te pagan a tu apodo.',
+    detail: 'Comparte tu @apodo y recibe transferencias de cualquier usuario de Casher. Si te deben, envía una solicitud de cobro.',
+  },
+  {
+    verb: 'Enviar',
+    line: 'En pesos o en dólares.',
+    detail: 'Guarda a tus destinatarios frecuentes y transfiere en segundos. Cada envío emite su comprobante.',
+  },
+  {
+    verb: 'Retirar',
+    line: 'A tu cuenta bancaria.',
+    detail: 'Registra tus cuentas, pide el retiro y sigue el estado de la solicitud hasta que el dinero salga.',
+  },
+  {
+    verb: 'Pedir',
+    line: 'Préstamos con abonos.',
+    detail: 'Solicita un préstamo, recíbelo en tu saldo y abona a la deuda cuando puedas, en la moneda que quieras.',
+  },
+]
 
 export const Landing = () => {
-  const darkMode = useSelector((state) => state.darkMode);
+  const darkMode = useSelector((state) => state.darkMode)
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-neutral-950 dark:text-white">
-      <div className="sticky top-0 z-30 border-b border-slate-200 dark:border-neutral-800">
+    <div className="min-h-screen bg-canvas text-ink">
+      <div className="sticky top-0 z-30 border-b border-line">
         <PreAuthNavbar />
       </div>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600" />
-        <div className="absolute inset-0 opacity-20"
-          style={{ backgroundImage: 'url(/img/card-bg-1.svg)', backgroundSize: 'cover' }} />
+      {/* Portada */}
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-[1.05fr_minmax(0,0.95fr)] lg:gap-16 lg:py-24">
+        <div className="flex flex-col items-start gap-6">
+          <p className="eyebrow animate-feed-in">Cuenta digital · COP y USD</p>
 
-        <div className="relative max-w-5xl mx-auto px-6 py-24 md:py-36 flex flex-col items-center text-center gap-8">
-          <div className="inline-flex items-center gap-2 bg-white/20 text-white text-xs font-semibold px-4 py-1.5 rounded-full backdrop-blur-sm">
-            <ShieldCheckIcon className="size-3.5" />
-            Plataforma financiera segura
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-            Transfiere dinero
-            <br />
-            <span className="text-white/80">con total facilidad</span>
+          <h1 className="animate-feed-in animate-delay-1 font-wide text-[2.6rem] font-bold leading-[1.03] tracking-tight sm:text-6xl">
+            Envía plata.<br />
+            <span className="text-muted">Queda el comprobante.</span>
           </h1>
 
-          <p className="text-white/75 text-lg md:text-xl max-w-xl">
-            Envía, solicita y gestiona tu dinero en pesos y dólares. Rápido, seguro y sin complicaciones.
+          <p className="max-w-md text-base leading-relaxed text-muted animate-feed-in animate-delay-2">
+            Casher mueve tu dinero entre personas en pesos y dólares. Por cada operación
+            emite un recibo con código que cualquiera puede verificar, sin cuenta y desde
+            cualquier dispositivo.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+          <div className="flex w-full animate-feed-in animate-delay-3 flex-col gap-3 sm:w-auto sm:flex-row">
             <Link
               to="/register"
-              className="inline-flex items-center justify-center gap-2 bg-white text-emerald-600 font-semibold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              className="inline-flex items-center justify-center rounded-lg bg-ink px-6 py-3 text-sm
+                font-semibold font-semiwide text-reverse transition-colors hover:bg-ink/88"
             >
-              Crear cuenta gratis
-              <ArrowRightIcon className="size-4" />
+              Abrir cuenta
             </Link>
             <Link
               to="/login"
-              className="inline-flex items-center justify-center gap-2 bg-white/15 text-white font-semibold px-8 py-3.5 rounded-full border border-white/30 backdrop-blur-sm hover:bg-white/25 transition-all"
+              className="inline-flex items-center justify-center rounded-lg border border-line px-6 py-3
+                text-sm font-semibold font-semiwide text-ink transition-colors hover:border-rule hover:bg-sunken"
             >
-              Ingresar
+              Ya tengo cuenta
             </Link>
           </div>
         </div>
 
-        {/* Wave divider */}
-        <div className="relative h-16 overflow-hidden">
-          <svg viewBox="0 0 1440 64" className="absolute bottom-0 w-full" preserveAspectRatio="none">
-            <path
-              d="M0,32 C360,64 1080,0 1440,32 L1440,64 L0,64 Z"
-              fill={darkMode ? '#18181b' : '#f9fafb'}
-            />
-          </svg>
+        <div className="flex justify-center lg:justify-end">
+          <HeroReceipt />
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="max-w-5xl mx-auto px-6 py-12 w-full">
-        <div className="grid grid-cols-3 gap-6">
-          {STATS.map((s) => (
-            <div key={s.label} className="flex flex-col items-center text-center gap-1">
-              <span className="text-2xl md:text-3xl font-bold text-emerald-500">{s.value}</span>
-              <span className="text-xs md:text-sm text-slate-500 dark:text-slate-400">{s.label}</span>
+      {/* Qué se puede hacer */}
+      <section className="mx-auto max-w-6xl px-6 pb-16 lg:pb-24">
+        <h2 className="eyebrow border-b border-line pb-3">Qué puedes hacer con tu cuenta</h2>
+
+        <div className="grid gap-x-12 gap-y-10 pt-10 sm:grid-cols-2">
+          {CAPABILITIES.map(({ verb, line, detail }) => (
+            <div key={verb} className="flex flex-col gap-2 border-t border-line pt-5">
+              <div className="flex items-baseline gap-2.5">
+                <Mark direction={verb === 'Recibir' || verb === 'Pedir' ? 'in' : 'out'} className="h-3.5 w-auto text-sello" />
+                <h3 className="font-wide text-xl font-bold tracking-tight">{verb}</h3>
+                <span className="text-lg text-muted">{line}</span>
+              </div>
+              <p className="max-w-md text-sm leading-relaxed text-muted">{detail}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Features */}
-      <section className="max-w-5xl mx-auto px-6 py-12 w-full flex flex-col gap-10">
-        <div className="text-center flex flex-col gap-2">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
-            Todo lo que necesitas en un solo lugar
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base max-w-lg mx-auto">
-            Casher centraliza tu actividad financiera con herramientas pensadas para simplificar tu día a día.
-          </p>
-        </div>
+      {/* Verificación: el argumento de la casa */}
+      <section className="mx-auto max-w-6xl px-6 pb-16 lg:pb-24">
+        <div className="grid items-center gap-10 rounded-2xl border border-line bg-surface p-8 lg:grid-cols-2 lg:p-12">
+          <div className="flex flex-col gap-4">
+            <p className="eyebrow">Verificación pública</p>
+            <h2 className="font-wide text-2xl font-bold leading-tight tracking-tight sm:text-3xl">
+              Cada transferencia<br />tiene su propia dirección.
+            </h2>
+            <p className="max-w-md text-sm leading-relaxed text-muted">
+              Al confirmar un envío, Casher publica el comprobante en un enlace único.
+              Quien lo abra ve el monto, las partes, la fecha y el sello de verificación.
+              No necesita cuenta ni la app.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="bg-white dark:bg-neutral-800 rounded-2xl border border-slate-100 dark:border-neutral-700 p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-shadow"
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3 rounded-lg border border-line bg-sunken px-4 py-3">
+              <span className="size-2 shrink-0 rounded-full bg-entrada" />
+              <span className="figure truncate text-[0.8125rem] text-ink">
+                casher.app/tx/<span className="text-sello-ink">4f9c2ae1b70d3852</span>
+              </span>
+            </div>
+            <div className="rounded-lg border border-dashed border-rule px-4 py-3">
+              <LedgerRow label="Monto" value="COP 320.000" />
+              <LedgerRow label="Estado" value="Verificado" tone="entrada" mono={false} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Cierre */}
+      <section className="mx-auto max-w-6xl px-6 pb-20">
+        <div className="relative overflow-hidden rounded-t-2xl bg-ink px-8 pb-10 pt-12 text-reverse tear-b sm:px-12">
+          <div className="pointer-events-none absolute inset-0 hatch opacity-30" aria-hidden="true" />
+          <div className="relative flex flex-col items-start gap-5">
+            <h2 className="font-wide max-w-lg text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+              Abre tu cuenta y emite tu primer comprobante.
+            </h2>
+            <p className="max-w-sm text-sm leading-relaxed text-reverse/65">
+              Toma un par de minutos y no cuesta nada.
+            </p>
+            <Link
+              to="/register"
+              className="inline-flex items-center justify-center rounded-lg bg-reverse px-6 py-3 text-sm
+                font-semibold font-semiwide text-ink transition-opacity hover:opacity-90"
             >
-              <div className={`size-12 rounded-xl flex items-center justify-center ${f.color}`}>
-                {f.icon}
-              </div>
-              <div className="flex flex-col gap-1">
-                <h3 className="font-semibold text-slate-900 dark:text-white">{f.title}</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{f.desc}</p>
-              </div>
-            </div>
-          ))}
+              Abrir cuenta
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* CTA bottom */}
-      <section className="max-w-5xl mx-auto px-6 py-16 w-full">
-        <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-10 md:p-16 flex flex-col items-center text-center gap-6 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10"
-            style={{ backgroundImage: 'url(/img/card-bg-1.svg)', backgroundSize: 'cover' }} />
-          <h2 className="relative text-2xl md:text-4xl font-bold text-white">
-            Empieza a usar Casher hoy
-          </h2>
-          <p className="relative text-white/75 max-w-sm text-sm md:text-base">
-            Crea tu cuenta gratis en minutos y comienza a gestionar tu dinero de forma inteligente.
-          </p>
-          <Link
-            to="/register"
-            className="relative inline-flex items-center gap-2 bg-white text-emerald-600 font-semibold px-8 py-3.5 rounded-full shadow-lg hover:scale-105 transition-transform"
-          >
-            Registrarme ahora
-            <ArrowRightIcon className="size-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-neutral-800 mt-auto">
-        <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-line">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
           <img
             src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`}
-            className="max-h-7 opacity-70"
+            alt="Casher"
+            className="max-h-6 opacity-60"
           />
-          <p className="text-xs text-slate-400 text-center">
-            © {new Date().getFullYear()} Casher. Todos los derechos reservados.
+          <p className="figure text-[0.625rem] text-faint">
+            © {new Date().getFullYear()} Casher · Todos los derechos reservados
           </p>
-          <div className="flex gap-4 text-xs text-slate-400">
-            <Link to="/login" className="hover:text-emerald-500 transition-colors">Ingresar</Link>
-            <Link to="/register" className="hover:text-emerald-500 transition-colors">Registrarse</Link>
+          <div className="flex gap-5 text-xs text-muted">
+            <Link to="/login" className="transition-colors hover:text-ink">Ingresar</Link>
+            <Link to="/register" className="transition-colors hover:text-ink">Abrir cuenta</Link>
           </div>
         </div>
       </footer>
     </div>
-  );
-};
+  )
+}

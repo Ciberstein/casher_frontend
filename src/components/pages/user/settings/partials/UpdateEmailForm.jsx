@@ -72,8 +72,8 @@ export const UpdateEmailForm = ({ setEmail }) => {
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit(submit)}>
       <div>
-        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Correo electrónico</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Cambia la dirección de correo asociada a tu cuenta</p>
+        <h2 className="text-base font-semibold text-ink">Correo electrónico</h2>
+        <p className="text-sm text-muted mt-0.5">Cambia la dirección de correo asociada a tu cuenta</p>
       </div>
       <Input
         icon={<EnvelopeIcon className="size-6"/>}
@@ -84,7 +84,7 @@ export const UpdateEmailForm = ({ setEmail }) => {
         defaultValue={account.email}
         element={
           <span title={"Verified"}>
-            <CheckCircleIcon className="size-6 text-emerald-500" />
+            <CheckCircleIcon className="size-6 text-sello" />
           </span>
         }
         disabled

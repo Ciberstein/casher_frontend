@@ -53,19 +53,19 @@ export const AdminWithdrawalsPage = () => {
                   <UserAvatar username={w.account?.username} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-slate-900 dark:text-white">{w.account?.username}</span>
-                      <span className="text-xs text-slate-400 hidden sm:block truncate">{w.account?.email}</span>
+                      <span className="text-sm font-semibold text-ink">{w.account?.username}</span>
+                      <span className="text-xs text-faint hidden sm:block truncate">{w.account?.email}</span>
                     </div>
                     <div className="flex items-center gap-3 mt-0.5">
-                      <span className="text-base font-bold text-slate-900 dark:text-white">{fmt(w.amount, w.currency)}</span>
-                      <span className="text-xs text-slate-400 truncate">{w.bankAccount?.bank_name} · {w.bankAccount?.account_number}</span>
+                      <span className="text-base font-bold text-ink">{fmt(w.amount, w.currency)}</span>
+                      <span className="text-xs text-faint truncate">{w.bankAccount?.bank_name} · {w.bankAccount?.account_number}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <StatusBadge status={w.status} />
-                      <span className="text-xs text-slate-400">{fmtDate(w.createdAt)}</span>
+                      <span className="text-xs text-faint">{fmtDate(w.createdAt)}</span>
                       {w.screenshot && (
                         <button type="button" onClick={() => setVoucherUrl(w.screenshot)}
-                          className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                          className="flex items-center gap-1 text-xs text-sello-ink hover:underline">
                           <LinkIcon className="size-3" /> Ver comprobante
                         </button>
                       )}
@@ -74,11 +74,11 @@ export const AdminWithdrawalsPage = () => {
                   {view === 'pending' && (
                     <div className="flex gap-2 shrink-0">
                       <button onClick={() => { setSelected(w); setModal(true) }}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors">
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
                         <CheckIcon className="size-4" /> Aceptar
                       </button>
                       <button onClick={() => reject(w.id)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-neutral-800 hover:bg-slate-200 dark:hover:bg-neutral-700 text-slate-600 dark:text-slate-300 text-sm font-semibold transition-colors">
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
                         <XMarkIcon className="size-4" /> Rechazar
                       </button>
                     </div>

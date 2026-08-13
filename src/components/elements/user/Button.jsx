@@ -1,26 +1,32 @@
 import React from 'react'
 
 const SIZES = {
-  sm: 'text-xs px-3 py-1.5 rounded-lg',
-  md: 'text-sm px-4 py-2.5 rounded-xl',
-  lg: 'text-sm px-5 py-3 rounded-xl',
-  xl: 'text-base px-6 py-3.5 rounded-2xl',
+  sm: 'text-xs px-3 py-1.5 gap-1.5',
+  md: 'text-sm px-4 py-2.5 gap-2',
+  lg: 'text-sm px-5 py-3 gap-2',
+  xl: 'text-base px-6 py-3.5 gap-2.5',
 }
 
+/**
+ * La acción principal se imprime en tinta plena. El sello (naranja) firma,
+ * no grita: aparece en el foco, en el contorno y en las acciones secundarias.
+ */
 const VARIANTS = {
   normal: {
-    blue:   'bg-blue-600 text-white hover:bg-blue-700 shadow-sm',
-    green:  'bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm',
-    red:    'bg-red-500 text-white hover:bg-red-600 shadow-sm',
-    gray:   'bg-slate-200 dark:bg-neutral-700 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600',
-    yellow: 'bg-yellow-400 text-slate-900 hover:bg-yellow-500 shadow-sm',
+    green:  'bg-ink text-reverse hover:bg-ink/88 active:bg-ink/95 shadow-sm',
+    blue:   'bg-sello-soft text-sello-ink border border-sello/35 hover:border-sello/60 hover:bg-sello-soft/70',
+    red:    'bg-salida text-white hover:bg-salida/88',
+    gray:   'bg-sunken text-ink border border-line hover:border-rule',
+    white:  'bg-surface text-ink border border-line hover:border-rule shadow-sm',
+    yellow: 'bg-sello text-white hover:bg-sello/88',
   },
   outline: {
-    blue:   'border border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20',
-    green:  'border border-emerald-500 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
-    red:    'border border-red-400 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20',
-    gray:   'border border-slate-300 dark:border-neutral-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-neutral-800',
-    yellow: 'border border-yellow-400 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20',
+    green:  'border border-ink/25 text-ink hover:border-ink/60 hover:bg-ink/[0.04]',
+    blue:   'border border-sello/45 text-sello-ink hover:bg-sello-soft',
+    red:    'border border-salida/45 text-salida hover:bg-salida-soft',
+    gray:   'border border-line text-muted hover:text-ink hover:border-rule',
+    white:  'border border-line text-ink hover:border-rule',
+    yellow: 'border border-sello/45 text-sello-ink hover:bg-sello-soft',
   },
 }
 
@@ -33,13 +39,13 @@ export const Button = ({
   size = 'md',
   ...props
 }) => {
-  const variantStyles = VARIANTS[variant]?.[color] ?? VARIANTS.normal.blue
+  const variantStyles = VARIANTS[variant]?.[color] ?? VARIANTS.normal.green
 
   return (
     <As
-      className={`inline-flex items-center justify-center font-medium transition-all duration-150
-        disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none
-        focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-1
+      className={`inline-flex items-center justify-center rounded-lg font-medium font-semiwide
+        transition-[background-color,border-color,color,opacity] duration-150
+        disabled:opacity-40 disabled:pointer-events-none
         ${SIZES[size] ?? SIZES.md}
         ${variantStyles}
         ${className}`}
