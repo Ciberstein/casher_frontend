@@ -2,6 +2,32 @@ import { Fragment, useRef } from 'react'
 import { Dialog, DialogPanel, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 
+// Definidos fuera del componente a propósito: si Backdrop se creara en cada render,
+// React lo trataría como un componente nuevo y lo remontaría (el fondo parpadea)
+// cada vez que el padre se vuelve a renderizar con el modal abierto.
+const Backdrop = ({ strong }) => (
+  <Transition.Child
+    as={Fragment}
+    enter="ease-out duration-200"
+    enterFrom="opacity-0"
+    enterTo="opacity-100"
+    leave="ease-in duration-150"
+    leaveFrom="opacity-100"
+    leaveTo="opacity-0"
+  >
+    <div className={`fixed inset-0 bg-ink/45 ${strong ? 'backdrop-blur-md' : 'backdrop-blur-[2px]'} transition-opacity`} />
+  </Transition.Child>
+)
+
+const panelTransition = {
+  enter: 'ease-out duration-200',
+  enterFrom: 'opacity-0 -translate-y-3 sm:scale-[0.98]',
+  enterTo: 'opacity-100 translate-y-0 sm:scale-100',
+  leave: 'ease-in duration-150',
+  leaveFrom: 'opacity-100 translate-y-0 sm:scale-100',
+  leaveTo: 'opacity-0 -translate-y-2 sm:scale-[0.98]',
+}
+
 /**
  * Una hoja que sale de la máquina: entra desde arriba, con la línea de
  * perforación separando el encabezado del cuerpo.
@@ -17,29 +43,6 @@ export default function Modal({
   screen = false,
 }) {
   const cancelButtonRef = useRef(null)
-
-  const Backdrop = ({ strong }) => (
-    <Transition.Child
-      as={Fragment}
-      enter="ease-out duration-200"
-      enterFrom="opacity-0"
-      enterTo="opacity-100"
-      leave="ease-in duration-150"
-      leaveFrom="opacity-100"
-      leaveTo="opacity-0"
-    >
-      <div className={`fixed inset-0 bg-ink/45 ${strong ? 'backdrop-blur-md' : 'backdrop-blur-[2px]'} transition-opacity`} />
-    </Transition.Child>
-  )
-
-  const panelTransition = {
-    enter: 'ease-out duration-200',
-    enterFrom: 'opacity-0 -translate-y-3 sm:scale-[0.98]',
-    enterTo: 'opacity-100 translate-y-0 sm:scale-100',
-    leave: 'ease-in duration-150',
-    leaveFrom: 'opacity-100 translate-y-0 sm:scale-100',
-    leaveTo: 'opacity-0 -translate-y-2 sm:scale-[0.98]',
-  }
 
   if (screen)
     return (

@@ -15,7 +15,7 @@ import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../../../../../../firebase/config'
 import { Turnstile } from '@marsidev/react-turnstile'
 
-export const LoginForm = ({ setAccount }) => {
+export const LoginForm = ({ setAccount, setChallenge }) => {
   const [hide, setHide] = useState(true)
   const [captchaToken, setCaptchaToken] = useState(null)
   const turnstileRef = useRef(null)
@@ -27,6 +27,7 @@ export const LoginForm = ({ setAccount }) => {
   const trigger = (res) => {
     if (res.status === 200) location.reload()
     else if (res.status === 201) navigate('/register', { state: { data: res.data } })
+    else if (res.status === 202 && res.data.twoFactor) setChallenge(res.data.challenge)
     else if (res.status === 202) setAccount(res.data.account)
   }
 
