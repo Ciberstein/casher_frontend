@@ -289,7 +289,7 @@ const LoansTab = () => {
               </div>
 
               {isActive && (
-                <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mx-4 mb-3.5 px-3 py-3 rounded-lg bg-sunken border border-line">
+                <dl aria-label="Desglose de la deuda" className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mx-4 mb-3.5 px-3 py-3 rounded-lg bg-sunken border border-line">
                   <div>
                     <dt className="eyebrow !text-[0.625rem]">Días adeudados</dt>
                     <dd className="figure text-sm font-semibold text-ink mt-0.5">{days ?? '—'} {days === 1 ? 'día' : 'días'}</dd>
