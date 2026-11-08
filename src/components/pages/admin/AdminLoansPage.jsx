@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { BanknotesIcon, ChevronDownIcon, MagnifyingGlassIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { useDispatch } from 'react-redux'
@@ -6,6 +6,8 @@ import { setLoad } from '../../../store/slices/loader.slice'
 import api from '../../../api/axios'
 import Swal from 'sweetalert2'
 import appError from '../../../utils/appError'
+// Las gráficas (MUI X Charts) pesan bastante: se descargan solo al abrir la pestaña Deudas
+const AdminDebtCharts = lazy(() => import('./AdminDebtCharts').then(m => ({ default: m.AdminDebtCharts })))
 import { fmt, fmtDate, StatusBadge, UserAvatar, EmptyState, ViewToggle, ItemList, ItemRow, PageHeader, Pagination, EditRateModal } from './adminShared'
 
 const daysOwed = (acceptedAt) =>
@@ -218,6 +220,9 @@ export const AdminLoansPage = () => {
                     ))}
                   </div>
                 </div>
+                <Suspense fallback={<div className="h-16 rounded-2xl bg-sunken animate-pulse" />}>
+                  <AdminDebtCharts debts={debts} />
+                </Suspense>
                 {pagedDebts.map(d => <UserDebtCard key={d.account?.id} debt={d} onEditRate={setRateLoan} />)}
                 <Pagination page={currentPage} total={totalItems} pageSize={pageSize} onChange={setPage} />
               </>
