@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BanknotesIcon, ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { BanknotesIcon, ChevronDownIcon, MagnifyingGlassIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { useDispatch } from 'react-redux'
 import { setLoad } from '../../../store/slices/loader.slice'
 import api from '../../../api/axios'
 import Swal from 'sweetalert2'
 import appError from '../../../utils/appError'
-import { fmt, fmtDate, StatusBadge, UserAvatar, EmptyState, ViewToggle, ItemList, ItemRow, PageHeader, Pagination } from './adminShared'
+import { fmt, fmtDate, StatusBadge, UserAvatar, EmptyState, ViewToggle, ItemList, ItemRow, PageHeader, Pagination, EditRateModal } from './adminShared'
 
 const daysOwed = (acceptedAt) =>
   acceptedAt ? Math.max(0, Math.floor((Date.now() - new Date(acceptedAt).getTime()) / 86400000)) : null
@@ -38,7 +38,7 @@ const groupDebtsByUser = (loans) => {
     .sort((a, b) => Object.values(b.totals).reduce((s, n) => s + n, 0) - Object.values(a.totals).reduce((s, n) => s + n, 0))
 }
 
-const UserDebtCard = ({ debt }) => {
+const UserDebtCard = ({ debt, onEditRate }) => {
   const [open, setOpen] = useState(true)
   const { account, loans, totals } = debt
   const currencies = Object.entries(totals)
@@ -63,15 +63,19 @@ const UserDebtCard = ({ debt }) => {
 
       {open && (
         <div className="border-t border-line bg-sunken">
-          <div className="hidden sm:grid grid-cols-[1fr_1fr_5rem_6rem_1fr] gap-4 px-5 py-2 eyebrow !text-[0.625rem] border-b border-line">
+          <div className="hidden sm:grid grid-cols-[1fr_1fr_5rem_8rem_1fr] gap-4 px-5 py-2 eyebrow !text-[0.625rem] border-b border-line">
             <span>Aceptado</span><span>Monto original</span><span>Días</span><span>Interés</span><span className="text-right">Saldo</span>
           </div>
           {loans.map((l, i) => (
-            <div key={l.id} className={`grid grid-cols-2 sm:grid-cols-[1fr_1fr_5rem_6rem_1fr] gap-x-4 gap-y-1 px-5 py-3 text-sm ${i < loans.length - 1 ? 'border-b border-line' : ''}`}>
+            <div key={l.id} className={`grid grid-cols-2 sm:grid-cols-[1fr_1fr_5rem_8rem_1fr] gap-x-4 gap-y-1 px-5 py-3 text-sm ${i < loans.length - 1 ? 'border-b border-line' : ''}`}>
               <span className="text-muted">{fmtDate(l.accepted_at ?? l.createdAt)}</span>
               <span className="figure text-ink text-right sm:text-left">{fmt(l.amount, l.currency)}</span>
               <span className="figure text-ink">{fmtDays(l.accepted_at)}</span>
-              <span className="text-xs text-faint self-center text-right sm:text-left">{l.interest_rate}% diario</span>
+              <button type="button" onClick={() => onEditRate(l)} title="Modificar tasa de interés"
+                className="group flex items-center gap-1 text-xs text-faint hover:text-ink self-center justify-end sm:justify-start transition-colors">
+                {l.interest_rate}% diario
+                <PencilSquareIcon className="size-3.5 opacity-60 group-hover:opacity-100" />
+              </button>
               <span className="figure font-semibold text-salida text-right">{fmt(l.outstanding, l.currency)}</span>
             </div>
           ))}
@@ -95,6 +99,7 @@ export const AdminLoansPage = () => {
   const [lists, setLists] = useState({ pending: [], history: [] })
   const [view, setView] = useState('pending')
   const [page, setPage] = useState(1)
+  const [rateLoan, setRateLoan] = useState(null)
   const [filters, setFilters] = useState({ user: '', from: '', to: '' })
   const dispatch = useDispatch()
 
@@ -158,6 +163,8 @@ export const AdminLoansPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
+      <EditRateModal open={!!rateLoan} setOpen={() => setRateLoan(null)} loan={rateLoan} onSuccess={fetchLoans} />
+
       <PageHeader title="Préstamos" subtitle="Gestiona las solicitudes de préstamo de los usuarios" />
 
       <div className="flex flex-col gap-4">
@@ -207,7 +214,7 @@ export const AdminLoansPage = () => {
                     ))}
                   </div>
                 </div>
-                {pagedDebts.map(d => <UserDebtCard key={d.account?.id} debt={d} />)}
+                {pagedDebts.map(d => <UserDebtCard key={d.account?.id} debt={d} onEditRate={setRateLoan} />)}
                 <Pagination page={currentPage} total={totalItems} pageSize={pageSize} onChange={setPage} />
               </>
             ))

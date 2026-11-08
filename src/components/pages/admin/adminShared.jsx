@@ -1,10 +1,11 @@
 import { LoadingImage } from '../../elements/user/LoadingImage'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LinkIcon, ClockIcon, ScaleIcon, ArchiveBoxIcon } from '@heroicons/react/24/outline'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import Modal from '../../elements/user/Modal'
 import { Button } from '../../elements/user/Button'
 import { FileUpload } from '../../elements/user/FileUpload'
+import { Input } from '../../elements/user/Input'
 import { useDispatch } from 'react-redux'
 import { setLoad } from '../../../store/slices/loader.slice'
 import api from '../../../api/axios'
@@ -186,7 +187,81 @@ export const AcceptWithdrawalModal = ({ open, setOpen, withdrawal, onSuccess }) 
   )
 }
 
-export const PageHeader = ({ title, subtitle, action }) => (
+// Saldo estimado con una tasa dada (misma fórmula que el backend)
+const outstandingAt = (loan, rate) => {
+  const days = loan.accepted_at ? Math.max(0, Math.floor((Date.now() - new Date(loan.accepted_at).getTime()) / 86400000)) : 0
+  return Math.max(0, loan.amount * Math.pow(1 + rate / 100, days) - (loan.paid_amount ?? 0))
+}
+
+export const EditRateModal = ({ open, setOpen, loan, onSuccess }) => {
+  const [rate, setRate] = useState('')
+  const dispatch = useDispatch()
+
+  useEffect(() => { if (loan) setRate(String(loan.interest_rate)) }, [loan])
+
+  const value = Number(rate)
+  const valid = rate !== '' && Number.isFinite(value) && value >= 0 && value <= 100
+  const unchanged = loan && valid && value === Number(loan.interest_rate)
+  const projected = loan && valid ? outstandingAt(loan, value) : null
+  const diff = projected != null ? projected - Number(loan.outstanding) : 0
+
+  const submit = async (e) => {
+    e.preventDefault()
+    if (!valid || unchanged) return
+    dispatch(setLoad(false))
+    try {
+      await api.patch(`/api/v1/loans/${loan.id}/interest-rate`, { interest_rate: value })
+      setOpen(false)
+      onSuccess()
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'success', text: 'Tasa actualizada', showConfirmButton: false, timer: 3000 })
+    } catch (err) {
+      appError(err)
+      Swal.fire({ toast: true, position: 'bottom-right', icon: 'error', text: err.response?.data?.message, showConfirmButton: false, timer: 5000 })
+    } finally { dispatch(setLoad(true)) }
+  }
+
+  return (
+    <Modal open={open} setOpen={setOpen} title="Modificar tasa de interés" className="grid gap-6">
+      {loan && (
+        <div className="flex items-center gap-4 p-4 rounded-2xl bg-sunken border border-line">
+          <UserAvatar username={loan.account?.username} />
+          <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+            <p className="text-sm font-semibold text-ink truncate">{loan.account?.username}</p>
+            <p className="text-xs text-faint truncate">{loan.account?.email}</p>
+            <p className="text-xs text-faint">Préstamo de {fmt(loan.amount, loan.currency)} · {loan.interest_rate}% diario</p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="eyebrow !text-[0.625rem]">Saldo actual</p>
+            <p className="figure text-lg font-bold text-ink">{fmt(loan.outstanding, loan.currency)}</p>
+          </div>
+        </div>
+      )}
+      <form onSubmit={submit} className="grid gap-4">
+        <Input id="interest_rate" name="interest_rate" type="number" min="0" max="100" step="0.01"
+          label="Nueva tasa (% diario)" placeholder="0.70" value={rate} onChange={(e) => setRate(e.target.value)}
+          register={{ function: null, errors: { function: valid || rate === '' ? null : { interest_rate: { message: 'Ingresa un valor entre 0 y 100' } }, rules: {} } }} />
+
+        {projected != null && !unchanged && (
+          <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-lg border border-line bg-sunken text-sm">
+            <span className="text-muted">Nuevo saldo estimado</span>
+            <span className="text-right">
+              <span className="figure font-bold text-ink block">{fmt(projected, loan.currency)}</span>
+              <span className={`figure text-xs ${diff < 0 ? 'text-entrada' : 'text-salida'}`}>
+                {diff < 0 ? '−' : '+'}{fmt(Math.abs(diff), loan.currency)}
+              </span>
+            </span>
+          </div>
+        )}
+        <p className="text-xs text-faint">
+          El cambio es retroactivo: el saldo se recalcula con la nueva tasa desde la fecha de aceptación.
+        </p>
+        <Button type="submit" disabled={!valid || unchanged}>Guardar tasa</Button>
+      </form>
+    </Modal>
+  )
+}
+
+export const PageHeader =({ title, subtitle, action }) => (
   <div className="flex items-center justify-between gap-4">
     <div>
       <h1 className="font-wide text-xl font-bold tracking-tight text-ink">{title}</h1>
