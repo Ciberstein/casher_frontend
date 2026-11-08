@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { UpdatePasswordForm } from './UpdatePasswordForm'
 import { CodePasswordValidation } from './CodePasswordValidation'
 import { TwoFactorCard } from './TwoFactorCard'
+import { SessionsCard, TrustedDevicesCard } from './SessionsCard'
 
 export const SecuritySection = () => {
   const [password, setPassword] = useState(false)
@@ -18,6 +19,8 @@ export const SecuritySection = () => {
       </div>
 
       <TwoFactorCard />
+      <TrustedDevicesCard />
+      <SessionsCard />
     </div>
   )
 }

@@ -11,11 +11,11 @@ import { Button } from '../../../../elements/user/Button'
 
 export const TwoFactorForm = ({ challenge, onBack }) => {
   const dispatch = useDispatch()
-  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' })
+  const { register, handleSubmit, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange', defaultValues: { trustDevice: false } })
 
-  const submit = async ({ code }) => {
+  const submit = async ({ code, trustDevice }) => {
     dispatch(setLoad(false))
-    await api.post('/api/v1/auth/login/2fa', { challenge, code })
+    await api.post('/api/v1/auth/login/2fa', { challenge, code, trustDevice })
       .then(() => location.reload())
       .catch((err) => {
         appError(err)
@@ -47,6 +47,11 @@ export const TwoFactorForm = ({ challenge, onBack }) => {
           errors: { function: errors, rules: { required: 'Requerido' } },
         }}
       />
+
+      <label className="flex items-start gap-2.5 text-sm text-muted cursor-pointer">
+        <input type="checkbox" {...register('trustDevice')} className="mt-0.5 size-4 accent-[rgb(var(--c-sello))]" />
+        <span>Confiar en este dispositivo durante 30 días y no pedir el código de nuevo</span>
+      </label>
 
       <Button type="submit" size="lg" className="w-full" disabled={!isValid || isSubmitting}>
         Verificar
