@@ -3,6 +3,7 @@ import { CodeEmailValidation } from './CodeEmailValidation'
 import { UpdateEmailForm } from './UpdateEmailForm'
 import { UpdatePersonalDataForm } from './UpdatePersonalDataForm'
 import { UpdateProfileForm } from './UpdateProfileForm'
+import { UpdateRegionForm } from './UpdateRegionForm'
 
 export const GeneralSection = () => {
   const [email, setEmail] = useState(false)
@@ -14,6 +15,9 @@ export const GeneralSection = () => {
       </div>
       <div className="p-6">
         <UpdatePersonalDataForm />
+      </div>
+      <div className="p-6">
+        <UpdateRegionForm />
       </div>
       <div className="p-6">
         {email

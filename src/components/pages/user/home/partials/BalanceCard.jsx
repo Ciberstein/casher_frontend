@@ -1,3 +1,4 @@
+import useCurrencyOptions from '../../../../../hooks/useCurrencyOptions'
 import { LoadingImage } from '../../../../elements/user/LoadingImage'
 import { ArrowTurnDownLeftIcon, ArrowTurnUpRightIcon, CheckIcon, ChevronUpDownIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid'
 import { ArrowRightIcon, CurrencyDollarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, TagIcon } from '@heroicons/react/24/outline'
@@ -19,11 +20,6 @@ import appError from '../../../../../utils/appError'
 import { accountThunk } from '../../../../../store/slices/account.slice'
 import { transfersThunk } from '../../../../../store/slices/transfers.slice'
 import { activityThunk } from '../../../../../store/slices/activity.slice'
-
-const CURRENCY_OPTIONS = [
-  { value: 'COP', label: 'COP' },
-  { value: 'USD', label: 'USD' },
-];
 
 const STEPS = ['Usuario', 'Monto', 'Confirmar'];
 
@@ -126,6 +122,7 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
 const ACCOUNT_TYPE_LABEL = { savings: 'Ahorros', checking: 'Corriente' };
 
 export const ChargeModal = ({ open, setOpen }) => {
+  const CURRENCY_OPTIONS = useCurrencyOptions()
   const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [accounts, setAccounts] = useState([]);
   const [file, setFile] = useState(null);
@@ -237,6 +234,7 @@ export const ChargeModal = ({ open, setOpen }) => {
 };
 
 export const SendOrRequestModal = ({ open, setOpen, txType }) => {
+  const CURRENCY_OPTIONS = useCurrencyOptions()
   const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({
     mode: 'onChange', defaultValues: { currency: 'COP' },
   });
@@ -408,6 +406,7 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 };
 
 const WithdrawModal = ({ open, setOpen, onSuccess }) => {
+  const CURRENCY_OPTIONS = useCurrencyOptions()
   const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
@@ -509,14 +508,20 @@ export const BalanceCard = ({ balances = {} }) => {
   const [withdrawModal, setWithdrawModal] = useState(false);
   const dispatch = useDispatch();
 
-  const { format } = useCurrency();
-  const currencies = Object.keys(balances);
-  const [selectedCurrency, setSelectedCurrency] = useState(() => currencies[0] || 'COP');
+  // Se muestra siempre la moneda por defecto de la cuenta (tenga saldo o no). El selector solo aparece
+  // si además hay saldo disponible en alguna otra moneda, y entonces solo ofrece esas monedas.
+  const { format, preference: mainCurrency } = useCurrency();
+  const otherCurrencies = Object.entries(balances)
+    .filter(([cur, amount]) => cur !== mainCurrency && Number(amount) > 0)
+    .map(([cur]) => cur);
+  const currencies = [mainCurrency, ...otherCurrencies];
+  const [picked, setPicked] = useState(mainCurrency);
 
-  useEffect(() => {
-    const keys = Object.keys(balances);
-    if (keys.length > 0 && !balances[selectedCurrency]) setSelectedCurrency(keys[0]);
-  }, [balances]);
+  // Si cambia la moneda por defecto, se vuelve a ella
+  useEffect(() => { setPicked(mainCurrency); }, [mainCurrency]);
+
+  // Si la moneda elegida se queda sin saldo, se vuelve a la principal
+  const selectedCurrency = currencies.includes(picked) ? picked : mainCurrency;
 
   const handleShow = () => {
     const next = !show;
@@ -546,7 +551,7 @@ export const BalanceCard = ({ balances = {} }) => {
           <span className="eyebrow !text-reverse/55">Saldo disponible</span>
           <div className="flex items-center gap-1.5">
             {currencies.length > 1 && (
-              <CardCurrencySelect currencies={currencies} value={selectedCurrency} onChange={setSelectedCurrency} />
+              <CardCurrencySelect currencies={currencies} value={selectedCurrency} onChange={setPicked} />
             )}
             <button
               onClick={handleShow}

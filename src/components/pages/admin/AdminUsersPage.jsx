@@ -1,7 +1,10 @@
+import useCurrencyOptions from '../../../hooks/useCurrencyOptions'
+import useCountryOptions from '../../../hooks/useCountryOptions'
 import { LoadingImage } from '../../elements/user/LoadingImage'
 import { useEffect, useState, useRef } from 'react'
 import { UsersIcon, MagnifyingGlassIcon, PencilSquareIcon, CameraIcon, XMarkIcon, KeyIcon } from '@heroicons/react/24/outline'
-import { useForm, useWatch } from 'react-hook-form'
+import { useForm, useWatch, Controller } from 'react-hook-form'
+import { ComboSelect } from '../../elements/user/ComboSelect'
 import { useDispatch } from 'react-redux'
 import Modal from '../../elements/user/Modal'
 import { Button } from '../../elements/user/Button'
@@ -50,6 +53,8 @@ const UserAvatar = ({ user, size = 'md' }) => {
 }
 
 const EditUserModal = ({ open, setOpen, user, onSuccess }) => {
+  const CURRENCY_OPTIONS = useCurrencyOptions()
+  const COUNTRY_OPTIONS = useCountryOptions()
   const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting, isDirty } } = useForm({ mode: 'onChange' })
   const dispatch = useDispatch()
   const fileInputRef = useRef(null)
@@ -70,6 +75,8 @@ const EditUserModal = ({ open, setOpen, user, onSuccess }) => {
         username:      user.username ?? '',
         email:         user.email ?? '',
         interest_rate: user.interest_rate ?? 1.5,
+        currency:      user.currency ?? 'COP',
+        country:       user.country ?? 'CO',
         status:        user.status ?? 'active',
       })
       setPictureFile(null)
@@ -104,6 +111,8 @@ const EditUserModal = ({ open, setOpen, user, onSuccess }) => {
         username:      data.username,
         email:         data.email,
         interest_rate: Number(data.interest_rate),
+        currency:      data.currency,
+        country:       data.country,
         status:        data.status,
       })
 
@@ -181,6 +190,16 @@ const EditUserModal = ({ open, setOpen, user, onSuccess }) => {
                 <Input id="email" name="email" label="Correo electrónico" type="email"
                   register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo inválido' } } } }} />
               </div>
+              <Controller name="country" control={control} rules={{ required: 'Requerido' }}
+                render={({ field }) => (
+                  <ComboSelect label="País" options={COUNTRY_OPTIONS} value={field.value}
+                    onChange={field.onChange} searchable={false} error={errors.country} />
+                )} />
+              <Controller name="currency" control={control} rules={{ required: 'Requerido' }}
+                render={({ field }) => (
+                  <ComboSelect label="Moneda por defecto" options={CURRENCY_OPTIONS} value={field.value}
+                    onChange={field.onChange} searchable={false} error={errors.currency} />
+                )} />
             </div>
 
             <div className="flex flex-col gap-1.5">

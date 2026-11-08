@@ -1,3 +1,4 @@
+import useCurrencyOptions from '../../../../../hooks/useCurrencyOptions'
 import { ArrowTurnDownLeftIcon, CheckIcon, ChevronUpDownIcon, PlusIcon } from '@heroicons/react/20/solid'
 import { EyeIcon, EyeSlashIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline'
 import { useState, useEffect, Fragment } from 'react'
@@ -16,11 +17,6 @@ import { setLoad } from '../../../../../store/slices/loader.slice'
 import api from '../../../../../api/axios'
 import Swal from 'sweetalert2'
 import appError from '../../../../../utils/appError'
-
-const CURRENCY_OPTIONS = [
-  { value: 'COP', label: 'COP' },
-  { value: 'USD', label: 'USD' },
-];
 
 /** Mismo selector, en versión clara: esta hoja es la copia, no el original. */
 const CardCurrencySelect = ({ currencies, value, onChange }) => (
@@ -50,6 +46,7 @@ const CardCurrencySelect = ({ currencies, value, onChange }) => (
 )
 
 const PayModal = ({ open, setOpen, pendingPerCurrency, onSuccess }) => {
+  const CURRENCY_OPTIONS = useCurrencyOptions()
   const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange', defaultValues: { currency: 'COP' } });
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
@@ -114,17 +111,23 @@ export const DebitCard = ({ pending = {} }) => {
   const [loanModal, setLoanModal] = useState(false);
   const [payModal, setPayModal] = useState(false);
   const [show, setShow] = useState(() => localStorage.getItem('pendingBalanceVisible') !== 'false');
-  const { format } = useCurrency();
+  // Se muestra siempre la moneda por defecto de la cuenta (tenga deuda o no). El selector solo aparece
+  // si además hay deuda en alguna otra moneda, y entonces solo ofrece esas monedas.
+  const { format, preference: mainCurrency } = useCurrency();
   const dispatch = useDispatch();
 
-  const currencies = Object.keys(pending);
-  const hasPending = currencies.length > 0;
-  const [selectedCurrency, setSelectedCurrency] = useState(() => currencies[0] || 'COP');
+  const hasPending = Object.keys(pending).length > 0;
+  const otherCurrencies = Object.entries(pending)
+    .filter(([cur, amount]) => cur !== mainCurrency && Number(amount) > 0)
+    .map(([cur]) => cur);
+  const currencies = [mainCurrency, ...otherCurrencies];
+  const [picked, setPicked] = useState(mainCurrency);
 
-  useEffect(() => {
-    const keys = Object.keys(pending);
-    if (keys.length > 0 && !pending[selectedCurrency]) setSelectedCurrency(keys[0]);
-  }, [pending]);
+  // Si cambia la moneda por defecto, se vuelve a ella
+  useEffect(() => { setPicked(mainCurrency); }, [mainCurrency]);
+
+  // Si la moneda elegida se queda sin deuda, se vuelve a la principal
+  const selectedCurrency = currencies.includes(picked) ? picked : mainCurrency;
 
   const handleShow = () => {
     const next = !show;
@@ -148,7 +151,7 @@ export const DebitCard = ({ pending = {} }) => {
             <span className="eyebrow">Saldo pendiente</span>
             <div className="flex items-center gap-1.5">
               {currencies.length > 1 && (
-                <CardCurrencySelect currencies={currencies} value={selectedCurrency} onChange={setSelectedCurrency} />
+                <CardCurrencySelect currencies={currencies} value={selectedCurrency} onChange={setPicked} />
               )}
               <button
                 onClick={handleShow}

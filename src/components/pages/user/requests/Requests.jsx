@@ -1,3 +1,4 @@
+import useCurrencyOptions from '../../../../hooks/useCurrencyOptions'
 import { LoadingImage } from '../../../elements/user/LoadingImage'
 import { useEffect, useState } from 'react'
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
@@ -20,12 +21,8 @@ import useCurrency from '../../../../hooks/useCurrency'
 const statusLabel = { pending: 'Pendiente', accepted: 'Aceptado', rejected: 'Rechazado', paid: 'Pagado', cancelled: 'Cancelado' };
 const statusColor = { pending: 'text-espera', accepted: 'text-sello', rejected: 'text-salida', paid: 'text-entrada', cancelled: 'text-faint' };
 
-const CURRENCY_OPTIONS = [
-  { value: 'COP', label: 'COP' },
-  { value: 'USD', label: 'USD' },
-];
-
 export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
+  const CURRENCY_OPTIONS = useCurrencyOptions()
   const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const dispatch = useDispatch();
 
@@ -62,6 +59,7 @@ export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
 };
 
 export const WithdrawalRequestModal = ({ open, setOpen, onSuccess }) => {
+  const CURRENCY_OPTIONS = useCurrencyOptions()
   const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
