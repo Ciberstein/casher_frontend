@@ -35,7 +35,7 @@ const menuItemCls = `flex items-center gap-2.5 w-full text-left px-3 py-2 rounde
 
 const UserMenu = ({ account, extraItems }) => (
   <Menu as="div" className="relative">
-    <MenuButton className="flex items-center gap-2.5 rounded-lg p-1 pr-2 hover:bg-sunken transition-colors">
+    <MenuButton className="flex items-center gap-2.5 rounded-lg p-1 sm:pr-2 hover:bg-sunken transition-colors">
       <UserAvatar account={account} />
       <span className="hidden sm:block text-sm font-medium text-ink max-w-28 truncate">
         {account.data?.first_name} {account.data?.surname_1}
