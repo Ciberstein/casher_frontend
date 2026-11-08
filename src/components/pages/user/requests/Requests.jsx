@@ -46,7 +46,7 @@ export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
   return (
     <Modal open={open} setOpen={setOpen} title="Solicitar préstamo" className="grid gap-6">
       <form onSubmit={handleSubmit(submit)} className="grid gap-4">
-        <Input icon={<CurrencyDollarIcon className="size-6" />} id="amount" name="amount"
+        <Input icon={<CurrencyDollarIcon className="size-5" />} id="amount" name="amount"
           type="number" min="1" step="0.01" label="Monto" placeholder="0.00"
           register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', min: { value: 1, message: 'Mínimo 1' } } } }} />
         <Controller name="currency" control={control} rules={{ required: 'Requerido' }}
