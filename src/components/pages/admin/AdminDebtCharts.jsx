@@ -4,6 +4,8 @@ import { ChevronDownIcon, ChartBarIcon } from '@heroicons/react/24/outline'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { BarChart } from '@mui/x-charts/BarChart'
 import { fmt } from './adminShared'
+import { ComboSelect } from '../../elements/user/ComboSelect'
+import useCurrencyOptions from '../../../hooks/useCurrencyOptions'
 
 const TOKENS = ['ink', 'muted', 'faint', 'line', 'surface', 'sello', 'entrada', 'salida', 'espera']
 
@@ -54,11 +56,13 @@ export const AdminDebtCharts = ({ debts }) => {
   const darkMode = useSelector((state) => state.darkMode)
   const c = useTokenColors()
 
-  const currencies = useMemo(
-    () => [...new Set(debts.flatMap((d) => d.loans.map((l) => l.currency)))].sort(),
+  const currencyOptions = useCurrencyOptions()
+  // Por defecto, la primera moneda (del catálogo) en la que realmente hay deuda
+  const withDebt = useMemo(
+    () => new Set(debts.flatMap((d) => d.loans.map((l) => l.currency))),
     [debts]
   )
-  const currency = currencies.includes(picked) ? picked : currencies[0]
+  const currency = picked ?? currencyOptions.find((o) => withDebt.has(o.value))?.value ?? currencyOptions[0]?.value
 
   const data = useMemo(() => {
     if (!currency) return null
@@ -123,23 +127,17 @@ export const AdminDebtCharts = ({ debts }) => {
       {open && data && (
         <ThemeProvider theme={theme}>
           <div className="border-t border-line bg-sunken p-4 sm:p-5 flex flex-col gap-4">
-            {currencies.length > 1 && (
-              <div className="flex gap-2" role="tablist" aria-label="Moneda">
-                {currencies.map((cur) => (
-                  <button
-                    key={cur}
-                    role="tab"
-                    aria-selected={cur === currency}
-                    onClick={() => setPicked(cur)}
-                    className={`h-9 px-4 rounded-lg text-xs font-semibold border transition-colors
-                      ${cur === currency ? 'bg-surface text-ink border-ink' : 'bg-surface text-muted border-line hover:text-ink'}`}
-                  >
-                    {cur}
-                  </button>
-                ))}
-              </div>
-            )}
+            <div className="w-full sm:w-56">
+              <ComboSelect
+                label="Moneda"
+                options={currencyOptions}
+                value={currency}
+                onChange={setPicked}
+                searchable={false}
+              />
+            </div>
 
+            {withDebt.has(currency) ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <ChartCard title="Composición" subtitle={`Qué hay detrás de la deuda en ${currency}`}>
                 <BarChart
@@ -180,6 +178,9 @@ export const AdminDebtCharts = ({ debts }) => {
                 />
               </ChartCard>
             </div>
+            ) : (
+              <p className="text-sm text-muted">No hay deudas en {currency}.</p>
+            )}
           </div>
         </ThemeProvider>
       )}
