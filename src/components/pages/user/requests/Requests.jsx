@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../../elements/user/LoadingImage'
 import { useEffect, useState } from 'react'
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { BanknotesIcon, ArrowDownTrayIcon, CurrencyDollarIcon, LinkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
@@ -45,7 +46,7 @@ export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
   return (
     <Modal open={open} setOpen={setOpen} title="Solicitar préstamo" className="grid gap-6">
       <form onSubmit={handleSubmit(submit)} className="grid gap-4">
-        <Input icon={<CurrencyDollarIcon className="size-6" />} id="amount" name="amount"
+        <Input icon={<CurrencyDollarIcon className="size-5" />} id="amount" name="amount"
           type="number" min="1" step="0.01" label="Monto" placeholder="0.00"
           register={{ function: register, errors: { function: errors, rules: { required: 'Requerido', min: { value: 1, message: 'Mínimo 1' } } } }} />
         <Controller name="currency" control={control} rules={{ required: 'Requerido' }}
@@ -212,7 +213,7 @@ const VoucherModal = ({ open, setOpen, url }) => {
         {isPdf ? (
           <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
         ) : (
-          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
+          <LoadingImage src={url} alt="Comprobante" spinner className="w-full bg-slate-950" imgClassName="w-full max-h-[70vh] object-contain" />
         )}
       </div>
     </Modal>

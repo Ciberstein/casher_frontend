@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../elements/user/LoadingImage'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, ChevronDownIcon } from '@heroicons/react/20/solid'
 import { ShieldCheckIcon, ArrowLeftIcon, Cog6ToothIcon, ArrowRightStartOnRectangleIcon } from '@heroicons/react/24/outline'
@@ -15,11 +16,10 @@ const UserAvatar = ({ account, size = 'md' }) => {
 
   if (account.picture && !imgFailed) {
     return (
-      <img
+      <LoadingImage
         src={account.picture}
         onError={() => setImgFailed(true)}
-        alt=""
-        className={`${cls} rounded-lg object-cover shrink-0 border border-line`}
+        className={`${cls} rounded-lg shrink-0 border border-line`}
       />
     )
   }
@@ -177,9 +177,10 @@ export const AdminNavbar = ({ openSidebar, setOpenSidebar }) => {
         >
           <Bars3Icon className="size-5" />
         </button>
-        <Link to="/admin" className="hidden lg:flex items-center gap-3">
+        {/* En escritorio el logo ya está en la barra lateral; aquí solo se muestra en móvil */}
+        <Link to="/admin" className="flex lg:hidden items-center gap-3">
           <img src={`/img/${darkMode ? 'logo_dark.svg' : 'logo.svg'}`} alt="Casher" className="max-h-7" />
-          <span className="eyebrow border-l border-line pl-3">Administración</span>
+          <span className="eyebrow border-l border-line pl-3">Admin</span>
         </Link>
       </div>
 

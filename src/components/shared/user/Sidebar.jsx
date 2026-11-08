@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../elements/user/LoadingImage'
 import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import {
@@ -59,11 +60,10 @@ const AccountHolder = ({ account }) => {
   return (
     <div className="flex items-center gap-3 px-4 py-3">
       {account.picture && !imgFailed
-        ? <img
+        ? <LoadingImage
             src={account.picture}
             onError={() => setImgFailed(true)}
-            alt=""
-            className="size-9 rounded-lg object-cover shrink-0 border border-line"
+            className="size-9 rounded-lg shrink-0 border border-line"
           />
         : <div className="size-9 rounded-lg bg-ink flex items-center justify-center shrink-0">
             <span className="figure text-[0.7rem] font-semibold uppercase text-reverse">{initials}</span>

@@ -33,7 +33,7 @@ export const SettingsPage = () => {
               <Icon className="size-5 shrink-0" />
               <div className="flex flex-col min-w-0 text-left">
                 <span className="text-sm font-medium leading-tight">{label}</span>
-                <span className={`text-xs hidden lg:block truncate mt-0.5 ${section === id ? 'text-white/70' : 'text-faint'}`}>
+                <span className={`text-xs hidden lg:block truncate mt-0.5 ${section === id ? 'text-reverse/70' : 'text-faint'}`}>
                   {description}
                 </span>
               </div>

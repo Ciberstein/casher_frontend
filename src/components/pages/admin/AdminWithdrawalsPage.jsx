@@ -9,21 +9,26 @@ import appError from '../../../utils/appError'
 import { fmt, fmtDate, StatusBadge, UserAvatar, EmptyState, ViewToggle, ItemList, ItemRow, VoucherModal, AcceptWithdrawalModal, PageHeader } from './adminShared'
 
 export const AdminWithdrawalsPage = () => {
-  const [withdrawals, setWithdrawals] = useState([])
+  const [lists, setLists] = useState({ pending: [], history: [] })
   const [view, setView] = useState('pending')
   const [modal, setModal] = useState(false)
   const [selected, setSelected] = useState(null)
   const [voucherUrl, setVoucherUrl] = useState(null)
   const dispatch = useDispatch()
 
-  const fetchWithdrawals = async (v = view) => {
+  const fetchWithdrawals = async () => {
     try {
-      const r = await api.get(`/api/v1/withdrawals/admin${v === 'history' ? '?history=true' : ''}`)
-      setWithdrawals(r.data)
+      const [pending, history] = await Promise.all([
+        api.get('/api/v1/withdrawals/admin'),
+        api.get('/api/v1/withdrawals/admin?history=true'),
+      ])
+      setLists({ pending: pending.data, history: history.data })
     } catch (err) { appError(err) }
   }
 
-  useEffect(() => { fetchWithdrawals(view) }, [view])
+  useEffect(() => { fetchWithdrawals() }, [])
+
+  const withdrawals = lists[view]
 
   const reject = async (id) => {
     dispatch(setLoad(false))
@@ -43,7 +48,7 @@ export const AdminWithdrawalsPage = () => {
       <PageHeader title="Retiros" subtitle="Gestiona las solicitudes de retiro de los usuarios" />
 
       <div className="flex flex-col gap-4">
-        <ViewToggle value={view} onChange={setView} />
+        <ViewToggle value={view} onChange={setView} counts={{ pending: lists.pending.length, history: lists.history.length }} />
         {withdrawals.length === 0
           ? <EmptyState icon={<ArrowDownTrayIcon className="size-16" />} text={view === 'pending' ? 'No hay retiros pendientes' : 'Sin historial de retiros'} />
           : (

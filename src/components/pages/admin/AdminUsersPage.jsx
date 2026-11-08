@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../elements/user/LoadingImage'
 import { useEffect, useState, useRef } from 'react'
 import { UsersIcon, MagnifyingGlassIcon, PencilSquareIcon, CameraIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useForm, useWatch } from 'react-hook-form'
@@ -35,8 +36,8 @@ const UserAvatar = ({ user, size = 'md' }) => {
 
   if (user.picture && !imgFailed) {
     return (
-      <img src={user.picture} onError={() => setImgFailed(true)} alt=""
-        className={`${cls} rounded-full object-cover shrink-0 ring-2 ring-line`} />
+      <LoadingImage src={user.picture} onError={() => setImgFailed(true)}
+        className={`${cls} rounded-full shrink-0 ring-2 ring-line`} />
     )
   }
   return (
@@ -130,7 +131,7 @@ const EditUserModal = ({ open, setOpen, user, onSuccess }) => {
           <div className="flex items-center gap-4 p-4 rounded-2xl bg-sunken border border-line">
             <div className="relative group shrink-0">
               {showPicture ? (
-                <img src={showPicture} alt="" className="size-14 rounded-full object-cover ring-2 ring-line" />
+                <LoadingImage src={showPicture} className="size-14 rounded-full ring-2 ring-line" />
               ) : (
                 <div className="size-14 rounded-lg bg-ink flex items-center justify-center">
                   <span className="font-bold text-white text-base">{initials}</span>

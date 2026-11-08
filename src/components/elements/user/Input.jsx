@@ -58,7 +58,8 @@ export const Input = ({
           ${SIZES[size] ?? SIZES.md}
           ${className}`}
       >
-        {icon && <span className="text-faint shrink-0">{icon}</span>}
+        {/* El icono se fija a 20px (= alto de línea del texto) para que el campo mida igual que ComboSelect */}
+        {icon && <span className="text-faint shrink-0 [&>svg]:size-5">{icon}</span>}
         <input
           id={props.id ?? null}
           name={props.name ?? null}
