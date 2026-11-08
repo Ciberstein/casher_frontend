@@ -225,45 +225,92 @@ const LoansTab = () => {
 
   const cfg = kindOf('loan')
 
+  // Deuda activa: préstamos aceptados con saldo, sumados por moneda
+  const active = loans.filter(l => l.status === 'accepted' && Number(l.outstanding) > 0)
+  const totals = active.reduce((acc, l) => {
+    acc[l.currency] = (acc[l.currency] ?? 0) + Number(l.outstanding)
+    return acc
+  }, {})
+
   return (
     <div className="flex flex-col gap-4">
       <LoanRequestModal open={modal} setOpen={setModal} onSuccess={onSuccess} />
+
+      {active.length > 0 && (
+        <div className="flex items-center justify-between gap-4 bg-surface rounded-2xl border border-line px-4 py-4">
+          <div>
+            <p className="eyebrow !text-[0.625rem]">Deuda total</p>
+            <p className="text-xs text-faint mt-0.5">{active.length} {active.length === 1 ? 'préstamo activo' : 'préstamos activos'}</p>
+          </div>
+          <div className="text-right">
+            {Object.entries(totals).map(([cur, total]) => (
+              <p key={cur} className="figure text-lg font-bold text-salida">{fmt(total, cur)}</p>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-end">
         <Button size="md" color="green" onClick={() => setModal(true)} className="flex items-center gap-1.5">
           <PlusIcon className="size-4" /> Solicitar préstamo
         </Button>
       </div>
       {loading ? <Skeleton /> : loans.length === 0 ? <Empty text="No tienes préstamos aún." /> : (
-        <DateGroupList items={loans} renderRow={(loan) => (
-          <li key={loan.id} className="flex items-center gap-3.5 px-4 py-3.5">
-            <div className={`size-9 rounded-lg border border-line bg-sunken flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
-              {cfg.icon}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-ink truncate">{cfg.label}</p>
-              {loan.status === 'accepted' && loan.outstanding != null
-                ? <p className="text-xs text-faint truncate mt-0.5">Pendiente: {fmt(loan.outstanding, loan.currency)}</p>
-                : <p className="text-xs text-faint truncate mt-0.5">Tasa: {loan.interest_rate}% diario</p>
-              }
-            </div>
-            <div className="flex flex-col items-end gap-1 shrink-0">
-              <span className={`figure text-sm font-semibold ${cfg.amountColor}`}>
-                {cfg.amountPrefix}{fmt(loan.amount, loan.currency)}
-              </span>
-              <div className="flex items-center gap-2">
-                {loan.status === 'pending' && (
-                  <button onClick={() => cancel(loan.id)}
-                    className="text-xs text-salida hover:opacity-80 transition-colors">
-                    Cancelar
-                  </button>
-                )}
-                <span className={`eyebrow !text-[0.625rem] px-2 py-1 rounded border ${STATUS_STYLE[loan.status]}`}>
-                  {STATUS_LABEL[loan.status]}
-                </span>
+        <DateGroupList items={loans} renderRow={(loan) => {
+          const isActive = loan.status === 'accepted' && loan.outstanding != null
+          const days = loan.accepted_at ? Math.max(0, Math.floor((Date.now() - new Date(loan.accepted_at).getTime()) / 86400000)) : null
+          const interest = isActive ? Math.max(0, Number(loan.outstanding) + Number(loan.paid_amount ?? 0) - Number(loan.amount)) : 0
+          return (
+            <li key={loan.id} className="flex flex-col">
+              <div className="flex items-center gap-3.5 px-4 py-3.5">
+                <div className={`size-9 rounded-lg border border-line bg-sunken flex items-center justify-center shrink-0 ${cfg.iconBg}`}>
+                  {cfg.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-ink truncate">{cfg.label}</p>
+                  <p className="text-xs text-faint truncate mt-0.5">Tasa: {loan.interest_rate}% diario</p>
+                </div>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className={`figure text-sm font-semibold ${cfg.amountColor}`}>
+                    {cfg.amountPrefix}{fmt(loan.amount, loan.currency)}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {loan.status === 'pending' && (
+                      <button onClick={() => cancel(loan.id)}
+                        className="text-xs text-salida hover:opacity-80 transition-colors">
+                        Cancelar
+                      </button>
+                    )}
+                    <span className={`eyebrow !text-[0.625rem] px-2 py-1 rounded border ${STATUS_STYLE[loan.status]}`}>
+                      {STATUS_LABEL[loan.status]}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </li>
-        )} />
+
+              {isActive && (
+                <dl className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mx-4 mb-3.5 px-3 py-3 rounded-lg bg-sunken border border-line">
+                  <div>
+                    <dt className="eyebrow !text-[0.625rem]">Días adeudados</dt>
+                    <dd className="figure text-sm font-semibold text-ink mt-0.5">{days ?? '—'} {days === 1 ? 'día' : 'días'}</dd>
+                  </div>
+                  <div>
+                    <dt className="eyebrow !text-[0.625rem]">Interés acumulado</dt>
+                    <dd className="figure text-sm font-semibold text-ink mt-0.5">{fmt(interest, loan.currency)}</dd>
+                  </div>
+                  <div>
+                    <dt className="eyebrow !text-[0.625rem]">Abonado</dt>
+                    <dd className="figure text-sm font-semibold text-ink mt-0.5">{fmt(loan.paid_amount ?? 0, loan.currency)}</dd>
+                  </div>
+                  <div>
+                    <dt className="eyebrow !text-[0.625rem]">Saldo</dt>
+                    <dd className="figure text-sm font-bold text-salida mt-0.5">{fmt(loan.outstanding, loan.currency)}</dd>
+                  </div>
+                </dl>
+              )}
+            </li>
+          )
+        }} />
       )}
     </div>
   )
