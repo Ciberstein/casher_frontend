@@ -9,19 +9,24 @@ import appError from '../../../utils/appError'
 import { fmt, fmtDate, StatusBadge, UserAvatar, EmptyState, ViewToggle, ItemList, ItemRow, VoucherModal, PageHeader } from './adminShared'
 
 export const AdminDepositsPage = () => {
-  const [requests, setRequests] = useState([])
+  const [lists, setLists] = useState({ pending: [], history: [] })
   const [view, setView] = useState('pending')
   const [voucherUrl, setVoucherUrl] = useState(null)
   const dispatch = useDispatch()
 
-  const fetchRequests = async (v = view) => {
+  const fetchRequests = async () => {
     try {
-      const r = await api.get(`/api/v1/deposit-requests/admin${v === 'history' ? '?history=true' : ''}`)
-      setRequests(r.data)
+      const [pending, history] = await Promise.all([
+        api.get('/api/v1/deposit-requests/admin'),
+        api.get('/api/v1/deposit-requests/admin?history=true'),
+      ])
+      setLists({ pending: pending.data, history: history.data })
     } catch (err) { appError(err) }
   }
 
-  useEffect(() => { fetchRequests(view) }, [view])
+  useEffect(() => { fetchRequests() }, [])
+
+  const requests = lists[view]
 
   const action = async (id, type) => {
     dispatch(setLoad(false))
@@ -40,7 +45,7 @@ export const AdminDepositsPage = () => {
       <PageHeader title="Recargas" subtitle="Aprueba o rechaza las solicitudes de recarga de fondos" />
 
       <div className="flex flex-col gap-4">
-        <ViewToggle value={view} onChange={setView} />
+        <ViewToggle value={view} onChange={setView} counts={{ pending: lists.pending.length, history: lists.history.length }} />
         {requests.length === 0
           ? <EmptyState icon={<ArrowUpTrayIcon className="size-16" />} text={view === 'pending' ? 'No hay recargas pendientes' : 'Sin historial de recargas'} />
           : (

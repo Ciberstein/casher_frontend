@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../../elements/user/LoadingImage'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import {
@@ -275,7 +276,7 @@ const VoucherModal = ({ open, setOpen, url }) => {
       <div className="w-full overflow-hidden rounded-b-2xl">
         {isPdf
           ? <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
-          : <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
+          : <LoadingImage src={url} alt="Comprobante" spinner className="w-full bg-slate-950" imgClassName="w-full max-h-[70vh] object-contain" />
         }
       </div>
     </Modal>

@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../../elements/user/LoadingImage'
 import { useEffect, useState } from 'react'
 import { PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 import { BanknotesIcon, ArrowDownTrayIcon, CurrencyDollarIcon, LinkIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline'
@@ -212,7 +213,7 @@ const VoucherModal = ({ open, setOpen, url }) => {
         {isPdf ? (
           <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
         ) : (
-          <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
+          <LoadingImage src={url} alt="Comprobante" spinner className="w-full bg-slate-950" imgClassName="w-full max-h-[70vh] object-contain" />
         )}
       </div>
     </Modal>

@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../../elements/user/LoadingImage'
 import { useEffect, useMemo, useState } from 'react'
 import { EnvelopeIcon, MagnifyingGlassIcon, PlusIcon, TagIcon, TrashIcon, UserPlusIcon } from '@heroicons/react/24/outline'
 import { Button } from '../../../elements/user/Button'
@@ -152,7 +153,7 @@ export const Recipients = () => {
               >
                 <div className="size-10 rounded-full shrink-0 overflow-hidden bg-sello-soft flex items-center justify-center">
                   {rec.picture
-                    ? <img src={rec.picture} alt={rec.username} className="size-full object-cover" />
+                    ? <LoadingImage src={rec.picture} alt={rec.username} className="size-full" />
                     : <span className="text-sm font-bold text-sello-ink">{initials(rec)}</span>
                   }
                 </div>

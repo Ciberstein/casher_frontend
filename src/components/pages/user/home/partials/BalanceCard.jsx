@@ -1,3 +1,4 @@
+import { LoadingImage } from '../../../../elements/user/LoadingImage'
 import { ArrowTurnDownLeftIcon, ArrowTurnUpRightIcon, CheckIcon, ChevronUpDownIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid'
 import { ArrowRightIcon, CurrencyDollarIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, TagIcon } from '@heroicons/react/24/outline'
 import { FileUpload } from '../../../../elements/user/FileUpload'
@@ -104,7 +105,7 @@ const RecipientCombo = ({ value, onChange, recipients }) => {
                 >
                   <div className="size-8 rounded-full shrink-0 overflow-hidden bg-sello-soft flex items-center justify-center">
                     {rec.picture
-                      ? <img src={rec.picture} className="size-full object-cover" />
+                      ? <LoadingImage src={rec.picture} className="size-full" />
                       : <span className="text-xs font-bold text-sello-ink">{initials}</span>
                     }
                   </div>

@@ -1,5 +1,6 @@
+import { LoadingImage } from '../../elements/user/LoadingImage'
 import { useState } from 'react'
-import { LinkIcon } from '@heroicons/react/24/outline'
+import { LinkIcon, ClockIcon, ScaleIcon, ArchiveBoxIcon } from '@heroicons/react/24/outline'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import Modal from '../../elements/user/Modal'
 import { Button } from '../../elements/user/Button'
@@ -48,22 +49,66 @@ export const EmptyState = ({ icon, text }) => (
   </div>
 )
 
-export const ViewToggle = ({ value, onChange }) => (
-  <div className="flex gap-1 bg-sunken rounded-lg p-0.5 w-fit text-xs">
-    {['pending', 'history'].map(v => (
-      <button key={v} onClick={() => onChange(v)}
-        className={`px-3 py-1.5 rounded-md font-medium transition-colors
-          ${value === v
-            ? 'bg-surface text-ink shadow-sm'
-            : 'text-muted hover:text-ink'
-          }`}>
-        {v === 'pending' ? 'Pendientes' : 'Historial'}
-      </button>
-    ))}
+const VIEWS = {
+  pending: { label: 'Pendientes', hint: 'Por revisar', Icon: ClockIcon },
+  debts:   { label: 'Deudas',     hint: 'Por cobrar',  Icon: ScaleIcon },
+  history: { label: 'Historial',  hint: 'Resueltos',   Icon: ArchiveBoxIcon },
+}
+
+// Barra de pestañas a todo el ancho: icono, rótulo, nota y contador por vista.
+// `counts` es opcional: { pending: 3, history: 40 }
+export const ViewToggle = ({ value, onChange, views = ['pending', 'history'], counts = {} }) => (
+  <div role="tablist"
+    className="grid w-full bg-surface rounded-2xl border border-line overflow-hidden shadow-sm"
+    style={{ gridTemplateColumns: `repeat(${views.length}, minmax(0, 1fr))` }}>
+    {views.map((v, i) => {
+      const { label, hint, Icon } = VIEWS[v]
+      const active = value === v
+      const count = counts[v]
+      return (
+        <button key={v} role="tab" aria-selected={active} onClick={() => onChange(v)}
+          className={`group relative flex items-center justify-center sm:justify-start gap-3 px-3 sm:px-5 py-3.5 text-left transition-colors
+            ${i > 0 ? 'border-l border-line' : ''}
+            ${active ? 'bg-sunken text-ink' : 'text-muted hover:bg-sunken hover:text-ink'}`}>
+          <span className={`hidden sm:flex size-9 shrink-0 items-center justify-center rounded-lg border bg-surface transition-colors
+            ${active ? 'border-ink' : 'border-line'}`}>
+            <Icon className="size-5" />
+          </span>
+          <span className="flex flex-col min-w-0">
+            <span className="text-sm font-semibold leading-tight">{label}</span>
+            <span className="eyebrow !text-[0.625rem] hidden sm:block">{hint}</span>
+          </span>
+          {count != null && (
+            <span className="figure ml-auto text-xs font-semibold px-2 py-0.5 rounded-md border border-line bg-surface text-ink">
+              {count}
+            </span>
+          )}
+          {active && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-ink" />}
+        </button>
+      )
+    })}
   </div>
 )
 
-export const ItemList = ({ children }) => (
+export const Pagination = ({ page, total, pageSize, onChange }) => {
+  const pages = Math.ceil(total / pageSize)
+  if (pages <= 1) return null
+  const from = (page - 1) * pageSize + 1
+  const to = Math.min(page * pageSize, total)
+  const btn = 'px-3 py-1.5 rounded-md font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed'
+  return (
+    <div className="flex items-center justify-between gap-3 text-xs">
+      <span className="figure text-faint">{from}–{to} de {total}</span>
+      <div className="flex items-center gap-1 bg-sunken rounded-lg p-0.5">
+        <button className={`${btn} text-muted hover:text-ink`} disabled={page === 1} onClick={() => onChange(page - 1)}>Anterior</button>
+        <span className="figure px-2 text-ink">{page} / {pages}</span>
+        <button className={`${btn} text-muted hover:text-ink`} disabled={page === pages} onClick={() => onChange(page + 1)}>Siguiente</button>
+      </div>
+    </div>
+  )
+}
+
+export const ItemList =({ children }) => (
   <div className="bg-surface rounded-2xl border border-line overflow-hidden shadow-sm">
     {children}
   </div>
@@ -82,7 +127,7 @@ export const VoucherModal = ({ open, setOpen, url }) => {
       <div className="w-full overflow-hidden rounded-b-2xl">
         {isPdf
           ? <iframe src={url} className="w-full h-[70vh]" title="Comprobante PDF" />
-          : <img src={url} alt="Comprobante" className="w-full max-h-[70vh] object-contain bg-slate-950" />
+          : <LoadingImage src={url} alt="Comprobante" spinner className="w-full bg-slate-950" imgClassName="w-full max-h-[70vh] object-contain" />
         }
       </div>
     </Modal>
