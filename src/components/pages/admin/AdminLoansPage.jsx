@@ -63,11 +63,11 @@ const UserDebtCard = ({ debt, onEditRate }) => {
 
       {open && (
         <div className="border-t border-line bg-sunken">
-          <div className="hidden sm:grid grid-cols-[1fr_1fr_5rem_8rem_1fr] gap-4 px-5 py-2 eyebrow !text-[0.625rem] border-b border-line">
-            <span>Aceptado</span><span>Monto original</span><span>Días</span><span>Interés</span><span className="text-right">Saldo</span>
+          <div className="hidden sm:grid grid-cols-[1fr_1fr_5rem_8rem_1fr_1fr] gap-4 px-5 py-2 eyebrow !text-[0.625rem] border-b border-line">
+            <span>Aceptado</span><span>Monto original</span><span>Días</span><span>Interés</span><span>Abonado</span><span className="text-right">Saldo</span>
           </div>
           {loans.map((l, i) => (
-            <div key={l.id} className={`grid grid-cols-2 sm:grid-cols-[1fr_1fr_5rem_8rem_1fr] gap-x-4 gap-y-1 px-5 py-3 text-sm ${i < loans.length - 1 ? 'border-b border-line' : ''}`}>
+            <div key={l.id} className={`grid grid-cols-2 sm:grid-cols-[1fr_1fr_5rem_8rem_1fr_1fr] gap-x-4 gap-y-1 px-5 py-3 text-sm ${i < loans.length - 1 ? 'border-b border-line' : ''}`}>
               <span className="text-muted">{fmtDate(l.accepted_at ?? l.createdAt)}</span>
               <span className="figure text-ink text-right sm:text-left">{fmt(l.amount, l.currency)}</span>
               <span className="figure text-ink">{fmtDays(l.accepted_at)}</span>
@@ -76,6 +76,10 @@ const UserDebtCard = ({ debt, onEditRate }) => {
                 {l.interest_rate}% diario
                 <PencilSquareIcon className="size-3.5 opacity-60 group-hover:opacity-100" />
               </button>
+              <span className="figure text-ink">
+                <span className="sm:hidden eyebrow !text-[0.625rem] mr-1.5">Abonado</span>
+                {Number(l.paid_amount) > 0 ? fmt(l.paid_amount, l.currency) : '—'}
+              </span>
               <span className="figure font-semibold text-salida text-right">{fmt(l.outstanding, l.currency)}</span>
             </div>
           ))}
