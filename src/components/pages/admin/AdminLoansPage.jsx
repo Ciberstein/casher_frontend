@@ -16,7 +16,7 @@ const fmtDays = (acceptedAt) => {
   return d == null ? '—' : `${d} ${d === 1 ? 'día' : 'días'}`
 }
 
-const INPUT_CLS = 'h-10 px-3 rounded-lg leading-none bg-surface border border-line text-sm text-ink placeholder:text-faint focus:outline-none focus:border-ink'
+const INPUT_CLS = 'w-full sm:w-auto h-10 px-3 rounded-lg leading-none bg-surface border border-line text-sm text-ink placeholder:text-faint focus:outline-none focus:border-ink'
 
 const LIST_PAGE_SIZE = 10
 const DEBT_PAGE_SIZE = 5
@@ -174,14 +174,14 @@ export const AdminLoansPage = () => {
       <div className="flex flex-col gap-4">
         <ViewToggle value={view} onChange={setView} views={['pending', 'debts', 'history']} counts={counts} />
 
-        <div className="flex flex-wrap items-end gap-3">
-          <label className="flex flex-col gap-1 flex-1 min-w-48">
+        <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-end">
+          <label className="flex flex-col gap-1 sm:flex-1 sm:min-w-48">
             <span className="eyebrow !text-[0.625rem]">Usuario</span>
             <div className="relative">
               <MagnifyingGlassIcon className="size-4 text-faint absolute left-3 top-1/2 -translate-y-1/2" />
               <input type="text" value={filters.user} onChange={e => setFilter('user', e.target.value)}
                 placeholder="Nombre o correo"
-                className={`${INPUT_CLS} w-full pl-9`} />
+                className={`${INPUT_CLS} sm:w-full pl-9`} />
             </div>
           </label>
           <label className="flex flex-col gap-1">
@@ -196,7 +196,7 @@ export const AdminLoansPage = () => {
           </label>
           {hasFilters && (
             <button onClick={() => { setFilters({ user: '', from: '', to: '' }); setPage(1) }}
-              className="flex items-center gap-1 h-10 px-3 rounded-lg text-xs font-medium text-muted hover:text-ink bg-sunken transition-colors">
+              className="flex items-center justify-center gap-1 h-10 px-3 w-full sm:w-auto rounded-lg text-xs font-medium text-muted hover:text-ink bg-sunken transition-colors">
               <XMarkIcon className="size-4" /> Limpiar
             </button>
           )}
@@ -251,13 +251,13 @@ export const AdminLoansPage = () => {
                     </div>
                   </div>
                   {view === 'pending' && (
-                    <div className="flex gap-2 shrink-0">
+                    <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:shrink-0">
                       <button onClick={() => action(loan.id, 'accept')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
                         <CheckIcon className="size-4" /> Aceptar
                       </button>
                       <button onClick={() => action(loan.id, 'reject')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
                         <XMarkIcon className="size-4" /> Rechazar
                       </button>
                     </div>

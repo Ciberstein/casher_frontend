@@ -60,24 +60,24 @@ const VIEWS = {
 // `counts` es opcional: { pending: 3, history: 40 }
 export const ViewToggle = ({ value, onChange, views = ['pending', 'history'], counts = {} }) => (
   <div role="tablist"
-    className="grid w-full bg-surface rounded-2xl border border-line overflow-hidden shadow-sm"
-    style={{ gridTemplateColumns: `repeat(${views.length}, minmax(0, 1fr))` }}>
+    className="grid grid-cols-1 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))] w-full bg-surface rounded-2xl border border-line overflow-hidden shadow-sm"
+    style={{ '--cols': views.length }}>
     {views.map((v, i) => {
       const { label, hint, Icon } = VIEWS[v]
       const active = value === v
       const count = counts[v]
       return (
         <button key={v} role="tab" aria-selected={active} onClick={() => onChange(v)}
-          className={`group relative flex items-center justify-center sm:justify-start gap-3 px-3 sm:px-5 py-3.5 text-left transition-colors
-            ${i > 0 ? 'border-l border-line' : ''}
+          className={`group relative flex items-center justify-start gap-3 px-4 sm:px-5 py-3.5 text-left transition-colors
+            ${i > 0 ? 'border-t sm:border-t-0 sm:border-l border-line' : ''}
             ${active ? 'bg-sunken text-ink' : 'text-muted hover:bg-sunken hover:text-ink'}`}>
-          <span className={`hidden sm:flex size-9 shrink-0 items-center justify-center rounded-lg border bg-surface transition-colors
+          <span className={`flex size-9 shrink-0 items-center justify-center rounded-lg border bg-surface transition-colors
             ${active ? 'border-ink' : 'border-line'}`}>
             <Icon className="size-5" />
           </span>
           <span className="flex flex-col min-w-0">
             <span className="text-sm font-semibold leading-tight">{label}</span>
-            <span className="eyebrow !text-[0.625rem] hidden sm:block">{hint}</span>
+            <span className="eyebrow !text-[0.625rem]">{hint}</span>
           </span>
           {count != null && (
             <span className="figure ml-auto text-xs font-semibold px-2 py-0.5 rounded-md border border-line bg-surface text-ink">
@@ -116,7 +116,8 @@ export const ItemList =({ children }) => (
 )
 
 export const ItemRow = ({ children, last }) => (
-  <div className={`flex items-center gap-4 px-5 py-4 ${!last ? 'border-b border-line' : ''}`}>
+  // En móvil: avatar + datos arriba y las acciones en su propia fila a todo el ancho
+  <div className={`flex flex-wrap sm:flex-nowrap items-start sm:items-center gap-x-4 gap-y-3 px-4 sm:px-5 py-4 ${!last ? 'border-b border-line' : ''}`}>
     {children}
   </div>
 )

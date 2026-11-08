@@ -61,7 +61,7 @@ export const AdminWithdrawalsPage = () => {
                       <span className="text-sm font-semibold text-ink">{w.account?.username}</span>
                       <span className="text-xs text-faint hidden sm:block truncate">{w.account?.email}</span>
                     </div>
-                    <div className="flex items-center gap-3 mt-0.5">
+                    <div className="flex items-center gap-x-3 gap-y-0.5 mt-0.5 flex-wrap">
                       <span className="text-base font-bold text-ink">{fmt(w.amount, w.currency)}</span>
                       <span className="text-xs text-faint truncate">{w.bankAccount?.bank_name} · {w.bankAccount?.account_number}</span>
                     </div>
@@ -77,13 +77,13 @@ export const AdminWithdrawalsPage = () => {
                     </div>
                   </div>
                   {view === 'pending' && (
-                    <div className="flex gap-2 shrink-0">
+                    <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:shrink-0">
                       <button onClick={() => { setSelected(w); setModal(true) }}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
                         <CheckIcon className="size-4" /> Aceptar
                       </button>
                       <button onClick={() => reject(w.id)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
                         <XMarkIcon className="size-4" /> Rechazar
                       </button>
                     </div>

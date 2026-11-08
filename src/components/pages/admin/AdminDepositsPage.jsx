@@ -58,7 +58,7 @@ export const AdminDepositsPage = () => {
                       <span className="text-sm font-semibold text-ink">{req.account?.username}</span>
                       <span className="text-xs text-faint hidden sm:block truncate">{req.account?.email}</span>
                     </div>
-                    <div className="flex items-center gap-3 mt-0.5">
+                    <div className="flex items-center gap-x-3 gap-y-0.5 mt-0.5 flex-wrap">
                       <span className="text-base font-bold text-ink">{fmt(req.amount, req.currency)}</span>
                       {req.appBankAccount && (
                         <span className="text-xs text-faint truncate">{req.appBankAccount.bank_name} · {req.appBankAccount.account_number}</span>
@@ -74,13 +74,13 @@ export const AdminDepositsPage = () => {
                     </div>
                   </div>
                   {view === 'pending' && (
-                    <div className="flex gap-2 shrink-0">
+                    <div className="grid grid-cols-2 gap-2 w-full sm:flex sm:w-auto sm:shrink-0">
                       <button onClick={() => action(req.id, 'accept')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-sello hover:bg-ink text-reverse text-sm font-semibold transition-colors">
                         <CheckIcon className="size-4" /> Aprobar
                       </button>
                       <button onClick={() => action(req.id, 'reject')}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-sunken hover:bg-sunken text-muted text-sm font-semibold transition-colors">
                         <XMarkIcon className="size-4" /> Rechazar
                       </button>
                     </div>
