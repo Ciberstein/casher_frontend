@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import {
   ArrowUpRightIcon, ArrowDownLeftIcon, ArrowDownTrayIcon, BanknotesIcon,
-  ArrowUturnUpIcon, PlusIcon, LinkIcon, ArrowUpTrayIcon,
+  ArrowUturnUpIcon, PlusIcon, LinkIcon, ArrowUpTrayIcon, InformationCircleIcon,
 } from '@heroicons/react/24/outline'
 import { ChargeModal } from '../home/partials/BalanceCard'
 import { Button } from '../../../elements/user/Button'
@@ -255,6 +255,30 @@ const LoansTab = () => {
           <PlusIcon className="size-4" /> Solicitar préstamo
         </Button>
       </div>
+
+      <aside className="flex gap-3 rounded-2xl border border-line bg-sunken px-4 py-4">
+        <InformationCircleIcon className="size-5 text-muted shrink-0 mt-0.5" />
+        <div className="flex flex-col gap-2 text-sm text-muted min-w-0">
+          <p className="font-semibold text-ink">¿Cómo se calculan los intereses?</p>
+          <p>
+            El interés es <b className="text-ink">diario y compuesto</b>. Cada día completo desde que se acepta
+            el préstamo, la deuda crece según la tasa diaria de ese préstamo.
+          </p>
+          <p className="figure text-xs sm:text-sm text-ink bg-surface border border-line rounded-lg px-3 py-2 overflow-x-auto whitespace-nowrap">
+            Saldo = monto × (1 + tasa ÷ 100) ^ días − abonos
+          </p>
+          <ul className="list-disc pl-5 flex flex-col gap-1">
+            <li>Los días se cuentan desde la fecha en que el préstamo fue <b className="text-ink">aceptado</b>, no desde la solicitud.</li>
+            <li>Cada préstamo tiene su propia tasa; la administración puede ajustarla y el saldo se recalcula con la nueva tasa desde la aceptación.</li>
+            <li>Tus abonos se restan del total acumulado.</li>
+            <li>Con una tasa de 0 % no se genera interés: debes el monto original menos lo abonado.</li>
+          </ul>
+          <p className="text-xs text-faint">
+            Ejemplo: un préstamo de 1.000.000 al 1 % diario, a los 3 días, debe 1.000.000 × 1,01³ = 1.030.301 (sin abonos).
+          </p>
+        </div>
+      </aside>
+
       {loading ? <Skeleton /> : loans.length === 0 ? <Empty text="No tienes préstamos aún." /> : (
         <DateGroupList items={loans} renderRow={(loan) => {
           const isActive = loan.status === 'accepted' && loan.outstanding != null
