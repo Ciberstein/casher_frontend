@@ -1,3 +1,4 @@
+import useDefaultCurrencyField from '../../../../hooks/useDefaultCurrencyField'
 import useCurrencyOptions from '../../../../hooks/useCurrencyOptions'
 import { LoadingImage } from '../../../elements/user/LoadingImage'
 import { useEffect, useState } from 'react'
@@ -23,7 +24,8 @@ const statusColor = { pending: 'text-espera', accepted: 'text-sello', rejected: 
 
 export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
   const CURRENCY_OPTIONS = useCurrencyOptions()
-  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, setValue, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  useDefaultCurrencyField(open, setValue)
   const dispatch = useDispatch();
 
   const submit = async (data) => {
@@ -60,7 +62,8 @@ export const LoanRequestModal = ({ open, setOpen, onSuccess }) => {
 
 export const WithdrawalRequestModal = ({ open, setOpen, onSuccess }) => {
   const CURRENCY_OPTIONS = useCurrencyOptions()
-  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, setValue, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  useDefaultCurrencyField(open, setValue)
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);

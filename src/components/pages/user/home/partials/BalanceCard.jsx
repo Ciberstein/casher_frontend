@@ -1,3 +1,4 @@
+import useDefaultCurrencyField from '../../../../../hooks/useDefaultCurrencyField'
 import useCurrencyOptions from '../../../../../hooks/useCurrencyOptions'
 import { LoadingImage } from '../../../../elements/user/LoadingImage'
 import { ArrowTurnDownLeftIcon, ArrowTurnUpRightIcon, CheckIcon, ChevronUpDownIcon, MinusIcon, PlusIcon } from '@heroicons/react/20/solid'
@@ -123,7 +124,8 @@ const ACCOUNT_TYPE_LABEL = { savings: 'Ahorros', checking: 'Corriente' };
 
 export const ChargeModal = ({ open, setOpen }) => {
   const CURRENCY_OPTIONS = useCurrencyOptions()
-  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, setValue, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  useDefaultCurrencyField(open, setValue)
   const [accounts, setAccounts] = useState([]);
   const [file, setFile] = useState(null);
   const [fileError, setFileError] = useState(false);
@@ -235,9 +237,10 @@ export const ChargeModal = ({ open, setOpen }) => {
 
 export const SendOrRequestModal = ({ open, setOpen, txType }) => {
   const CURRENCY_OPTIONS = useCurrencyOptions()
-  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({
+  const { register, handleSubmit, reset, control, setValue, formState: { errors, isValid, isSubmitting } } = useForm({
     mode: 'onChange', defaultValues: { currency: 'COP' },
   });
+  useDefaultCurrencyField(open, setValue)
   const [section, setSection] = useState(1);
   const [params, setParams] = useState({});
   const [completedTx, setCompletedTx] = useState(null);
@@ -407,7 +410,8 @@ export const SendOrRequestModal = ({ open, setOpen, txType }) => {
 
 const WithdrawModal = ({ open, setOpen, onSuccess }) => {
   const CURRENCY_OPTIONS = useCurrencyOptions()
-  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, control, setValue, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange' });
+  useDefaultCurrencyField(open, setValue)
   const [bankAccounts, setBankAccounts] = useState([]);
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);

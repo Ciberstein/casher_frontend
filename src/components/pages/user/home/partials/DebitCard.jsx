@@ -1,3 +1,4 @@
+import useDefaultCurrencyField from '../../../../../hooks/useDefaultCurrencyField'
 import useCurrencyOptions from '../../../../../hooks/useCurrencyOptions'
 import { ArrowTurnDownLeftIcon, CheckIcon, ChevronUpDownIcon, PlusIcon } from '@heroicons/react/20/solid'
 import { EyeIcon, EyeSlashIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline'
@@ -47,7 +48,8 @@ const CardCurrencySelect = ({ currencies, value, onChange }) => (
 
 const PayModal = ({ open, setOpen, pendingPerCurrency, onSuccess }) => {
   const CURRENCY_OPTIONS = useCurrencyOptions()
-  const { register, handleSubmit, reset, control, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange', defaultValues: { currency: 'COP' } });
+  const { register, handleSubmit, reset, control, setValue, formState: { errors, isValid, isSubmitting } } = useForm({ mode: 'onChange', defaultValues: { currency: 'COP' } });
+  useDefaultCurrencyField(open, setValue)
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account);
   const { format } = useCurrency();
