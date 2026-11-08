@@ -256,34 +256,38 @@ const ChangePasswordModal = ({ open, setOpen, user }) => {
 }
 
 export const AdminUsersPage = () => {
-  const [users, setUsers] = useState([])
+  const [paged, setPaged] = useState([])
+  const [total, setTotal] = useState(0)          // coincidencias de la búsqueda actual
+  const [overall, setOverall] = useState(null)   // usuarios registrados en total (sin filtro)
+  const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
+  const [debounced, setDebounced] = useState('')
   const [editing, setEditing] = useState(null)
   const [editModal, setEditModal] = useState(false)
   const [pwUser, setPwUser] = useState(null)
+  const requestId = useRef(0)
+
+  // La búsqueda espera a que se deje de escribir antes de ir al servidor
+  useEffect(() => {
+    const t = setTimeout(() => { setDebounced(search.trim()); setPage(1) }, 300)
+    return () => clearTimeout(t)
+  }, [search])
 
   const fetchUsers = async () => {
+    const id = ++requestId.current
     try {
-      const r = await api.get('/api/v1/auth/admin/users')
-      setUsers(r.data)
+      const r = await api.get('/api/v1/auth/admin/users', { params: { page, limit: PAGE_SIZE, search: debounced || undefined } })
+      if (id !== requestId.current) return // llegó una respuesta más nueva
+      setPaged(r.data.data)
+      setTotal(r.data.total)
+      if (r.data.page !== page) setPage(r.data.page)
+      if (!debounced) setOverall(r.data.total)
     } catch (err) { appError(err) }
   }
 
-  useEffect(() => { fetchUsers() }, [])
+  useEffect(() => { fetchUsers() }, [page, debounced])
 
-  const filtered = users.filter(u => {
-    const q = search.toLowerCase()
-    return (
-      u.username?.toLowerCase().includes(q) ||
-      u.email?.toLowerCase().includes(q) ||
-      u.data?.first_name?.toLowerCase().includes(q) ||
-      u.data?.surname_1?.toLowerCase().includes(q)
-    )
-  })
-
-  const [page, setPage] = useState(1)
-  const currentPage = Math.min(page, Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)))
-  const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+  const currentPage = page
 
   const openEdit = (user) => { setEditing(user); setEditModal(true) }
 
@@ -294,21 +298,21 @@ export const AdminUsersPage = () => {
 
       <PageHeader
         title="Usuarios"
-        subtitle={`${users.length} usuario${users.length !== 1 ? 's' : ''} registrado${users.length !== 1 ? 's' : ''}`}
+        subtitle={overall == null ? ' ' : `${overall} usuario${overall !== 1 ? 's' : ''} registrado${overall !== 1 ? 's' : ''}`}
       />
 
       <div className="relative">
         <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-faint pointer-events-none" />
         <input
           value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1) }}
+          onChange={e => setSearch(e.target.value)}
           placeholder="Buscar por nombre, usuario o correo..."
           className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-line bg-surface text-sm text-ink placeholder:text-faint focus:outline-none focus:ring-0 focus:border-sello transition-colors"
         />
       </div>
 
-      {filtered.length === 0
-        ? <EmptyState icon={<UsersIcon className="size-16" />} text={search ? 'Sin resultados para esta búsqueda' : 'No hay usuarios registrados'} />
+      {total === 0
+        ? <EmptyState icon={<UsersIcon className="size-16" />} text={debounced ?'Sin resultados para esta búsqueda' : 'No hay usuarios registrados'} />
         : (
           <div className="bg-surface rounded-2xl border border-line overflow-hidden shadow-sm">
             {paged.map((user, i) => (
@@ -356,7 +360,7 @@ export const AdminUsersPage = () => {
           </div>
         )
       }
-      <Pagination page={currentPage} total={filtered.length} pageSize={PAGE_SIZE} onChange={setPage} />
+      <Pagination page={currentPage} total={total} pageSize={PAGE_SIZE} onChange={setPage} />
     </div>
   )
 }
